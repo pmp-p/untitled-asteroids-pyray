@@ -266,8 +266,12 @@ class Menu():
         self.draw_buttons()
         self.draw_title()
         self.check_button_clicks()
-        # functionality for clicking menu
-        
+        # maybe not here, but if player loses self._in_menu_status and exit_clicked reset to defaults, (eventually) 
+        # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
+        # let buttons highlight upon clicked
+        # add sounds for buttons clicked
+        # add menu and game music
+        # add death screen (with menu, exit game buttons)
 
 if __name__ == '__main__':
     game_test = SpaceGame()
