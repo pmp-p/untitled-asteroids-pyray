@@ -232,7 +232,7 @@ class Menu():
         self._buttons = {}
         self._in_menu = True
         self._leaderboard = []
-        self._title = "untitled asteroids"
+        self._title = "untitled asteroids game"
         self.create_buttons()
     
     def create_buttons(self):
@@ -245,9 +245,9 @@ class Menu():
             self._buttons[key].draw_text_rectangle(WHITE, BLACK)
     
     def draw_title(self):
-        title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, 100, 0)
+        title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, 80, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
-        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 100, 0, WHITE)
+        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
 
     def run_menu(self):
         while self._in_menu and not window_should_close():
@@ -261,9 +261,9 @@ class Menu():
         close_window()
 
 if __name__ == '__main__':
-    game_test = SpaceGame()
-    game_test.run()
-    #menu_test = Menu()
-    #menu_test.run_menu()
+    #game_test = SpaceGame()
+    #game_test.run()
+    menu_test = Menu()
+    menu_test.run_menu()
     
     
