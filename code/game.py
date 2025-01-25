@@ -261,8 +261,9 @@ class Menu():
         close_window()
 
 if __name__ == '__main__':
-    menu_test = Menu()
-    menu_test.run_menu()
-    #game_test = SpaceGame()
-    #game_test.run()
+    game_test = SpaceGame()
+    game_test.run()
+    #menu_test = Menu()
+    #menu_test.run_menu()
+    
     
