@@ -214,31 +214,38 @@ class SpaceGame():
             clock.run_clock()
         self.initialize_collision_checks()
 
+    def get_menu_status(self):
+        return self._menu._in_menu
+    
+    def should_exit_menu_status(self):
+        return self._menu._exit_clicked
+
     def run(self):
-        while not window_should_close():
+        while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
             clear_background(BG_COLOR)
-            self.initialize_game()
+            if self.get_menu_status() == True:
+                self._menu.run_menu()
+            else:
+                self.initialize_game()
             end_drawing()
         game_sprites.unload()
         close_audio_device()
         close_window()
-
-    def get_menu_status(self):
-        return self._menu._in_menu
     
 class Menu():
     def __init__(self):
         self._buttons = {}
         self._in_menu = True
+        self._exit_clicked = False
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
     
     def create_buttons(self):
         self._buttons["start"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
-        self._buttons["exit"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
-        self._buttons["stats"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_sprites.get_global_font('slkscreb.ttf'), 60)
+        self._buttons["stats"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
+        self._buttons["exit"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_sprites.get_global_font('slkscreb.ttf'), 60)
 
     def draw_buttons(self):
         for key in self._buttons:
@@ -249,21 +256,21 @@ class Menu():
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
         draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
 
+    def check_button_clicks(self):
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
+            self._in_menu = False
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
+            self._exit_clicked = True
+
     def run_menu(self):
-        while self._in_menu and not window_should_close():
-            begin_drawing()
-            clear_background(BG_COLOR)
-            self.draw_buttons()
-            self.draw_title()
-            end_drawing()
-        game_sprites.unload()
-        close_audio_device()
-        close_window()
+        self.draw_buttons()
+        self.draw_title()
+        self.check_button_clicks()
+        # functionality for clicking menu
+        
 
 if __name__ == '__main__':
-    #game_test = SpaceGame()
-    #game_test.run()
-    menu_test = Menu()
-    menu_test.run_menu()
+    game_test = SpaceGame()
+    game_test.run()
     
     

@@ -385,3 +385,5 @@ class TextRectangle():
         draw_text_pro(self._font, self._text, Vector2(self._pos.x + self._rectangle.width / 2 - text_width/2, 
         self._pos.y + self._rectangle.height / 2 - text_height/2), Vector2(0,0), 0, self._font_size, 0.0, color2)
         
+    def get_rectangle(self):
+        return self._rectangle
