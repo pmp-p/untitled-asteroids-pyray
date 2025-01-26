@@ -59,6 +59,19 @@ class Spaceship(Sprite2D):
         self.generate_ammo()
         self._spaceship_oxygen = OxygenMeter(game_sprites.get_global_font('slkscreb.ttf'))
         self._player_points = Points(game_sprites.get_global_font('slkscreb.ttf'))
+
+    def reset_player(self):
+        self._lasers.clear()
+        self._health_bar.clear()
+        self._current_hp = 9
+        self.generate_health()
+        self._ammo_bar.clear()
+        self._max_ammo = 6
+        self.generate_ammo()
+        self._spaceship_oxygen.reset_oxygen()
+        self._player_points.reset_points()
+        self._pos = Vector2(WINDOW_WIDTH / 2 - 50, WINDOW_HEIGHT / 2)
+
     def get_current_health(self):
         return self._current_hp
 
@@ -229,6 +242,9 @@ class Clock(Sprite2D):
         self._time = Timer(1, True, True, self.count_up)
         self._font = font 
 
+    def reset_time(self):
+        self._current_time = 0
+        
     def get_current_time(self):
         return self._current_time
         
@@ -253,6 +269,9 @@ class OxygenMeter(Sprite2D):
         self._current_oxygen_level = 100
         self._oxygen_clock = Timer(OXYGEN_DEPLETION_RATE, True, True, self.deplete_oxygen)
         self._font = font
+
+    def reset_oxygen(self):
+         self._current_oxygen_level = 100
 
     def get_current_oxygen_level(self):
         return self._current_oxygen_level
@@ -287,6 +306,10 @@ class Points(Sprite2D):
         self._font = font
         self._multiplier = 1
     
+    def reset_points(self):
+        self._current_points = 0
+        self._multiplier = 1
+
     def get_multiplier(self):
         return self._multiplier
 

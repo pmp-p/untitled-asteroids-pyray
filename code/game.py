@@ -14,8 +14,24 @@ class SpaceGame():
         self._power_ups = []
         self._treasure = []
         self._players = [Spaceship()]
-        self._game_clocks = [Clock(game_sprites.get_global_font('slkscr.ttf'))] 
+        self._game_clock = Clock(game_sprites.get_global_font('slkscr.ttf'))
         self._menu = Menu()
+
+    def reset_game(self):
+        self._stars.clear()
+        self.make_stars()
+        self._asteroids.clear()
+        self._max_asteroids = 6
+        self._max_speed_range = [200,250]
+        self._asteroid_spawn_cycle = 0
+        self._asteroid_speed_cycle = 0
+        self._power_ups.clear()
+        self._treasure.clear()
+        for player in self._players:
+            player.reset_player()
+        self._game_clock.reset_time()
+        self._menu._in_menu = True
+        self._menu._exit_clicked = False
 
     def capped_asteroid_speed_timer(self):
         if self._asteroid_speed_cycle < 6:
@@ -120,8 +136,8 @@ class SpaceGame():
                 v2 = Vector2(player_hitbox.x , player_hitbox.y + player_hitbox.height)
                 v3 = Vector2(player_hitbox.x + player_hitbox.width, player_hitbox.y + player_hitbox.height)
                 #draw_triangle_lines(v1,v2,v3,RED)
-                #if player._spaceship_oxygen.get_current_oxygen_level() == 0:
-                    #print("Test: ALL OXYGEN LOST") #test game end
+                if player._spaceship_oxygen.get_current_oxygen_level() == 0:
+                    self.reset_game()
                 if check_collision_circle_line(center, radius, v1, v2) or check_collision_circle_line(center, radius, v1, v3) or check_collision_circle_line(center, radius, v2, v3): # check_collision_recs(asteroid_hitbox, player_hitbox):
                     crash = game_sprites.get_global_sound("crash.wav")
                     set_sound_volume(crash, 0.4)
@@ -134,7 +150,7 @@ class SpaceGame():
                     else:
                         player.take_damage()
                     if player._current_hp == 0:
-                        print("Test: YOU DIED") # test game end
+                        self.reset_game() # test game end
                 for laser in player.get_lasers():
                     laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
                     if check_collision_circle_rec(center, radius, laser_hitbox):
@@ -210,8 +226,7 @@ class SpaceGame():
         self.spawn_obstacles_collectibles()
         for player in self._players:
             player.initialize_player_mechanics()
-        for clock in self._game_clocks:
-            clock.run_clock()
+        self._game_clock.run_clock()
         self.initialize_collision_checks()
 
     def get_menu_status(self):
