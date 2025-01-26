@@ -244,7 +244,7 @@ class Clock(Sprite2D):
 
     def reset_time(self):
         self._current_time = 0
-        
+
     def get_current_time(self):
         return self._current_time
         
@@ -398,15 +398,28 @@ class TextRectangle():
         self._text = text
         self._font = font
         self._font_size = font_size
-        self._rectangle = Rectangle(self._pos.x, self._pos.y, width, height)
+        self._width = width
+        self._height = height
+        self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
 
+    def is_hovered(self):
+        mouse_pos = get_mouse_position()
+        in_rectangle_width = self._pos.x <= mouse_pos.x <= self._pos.x + self._width
+        in_rectangle_height = self._pos.y <= mouse_pos.y <= self._pos.y + self._height
+        return in_rectangle_width and in_rectangle_height
+    
     def draw_text_rectangle(self, color1, color2):
-        draw_rectangle_pro(self._rectangle, Vector2(0,0), 0, color1)
+        box_color = color1
+        text_color = color2
+        if self.is_hovered():
+            box_color = GRAY
+            text_color = LIGHTGRAY
+        draw_rectangle_pro(self._rectangle, Vector2(0,0), 0, box_color)
         text_dimensions = measure_text_ex(self._font, self._text, self._font_size, 0.0)
         text_width = text_dimensions.x
         text_height = text_dimensions.y
         draw_text_pro(self._font, self._text, Vector2(self._pos.x + self._rectangle.width / 2 - text_width/2, 
-        self._pos.y + self._rectangle.height / 2 - text_height/2), Vector2(0,0), 0, self._font_size, 0.0, color2)
+        self._pos.y + self._rectangle.height / 2 - text_height/2), Vector2(0,0), 0, self._font_size, 0.0, text_color)
         
     def get_rectangle(self):
         return self._rectangle

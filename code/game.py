@@ -25,6 +25,7 @@ class SpaceGame():
         self._max_speed_range = [200,250]
         self._asteroid_spawn_cycle = 0
         self._asteroid_speed_cycle = 0
+        self._asteroid_speed_increase_timer.active = False
         self._power_ups.clear()
         self._treasure.clear()
         for player in self._players:
@@ -38,17 +39,17 @@ class SpaceGame():
             self._asteroid_speed_cycle += 1
             for i in range(len(self._max_speed_range)): 
                 self._max_speed_range[i] += 70
-            # print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range}")
+            #print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range}")
 
     def capped_asteroid_spawn_timer(self):
         if self._asteroid_spawn_cycle < 7:
             self._asteroid_spawn_cycle += 1
             self._max_asteroids += 2
-            # print(f"Spawn cycle {self._asteroid_spawn_cycle}: Max asteroids = {self._max_asteroids}")
+            #print(f"Spawn cycle {self._asteroid_spawn_cycle}: Max asteroids = {self._max_asteroids}")
 
     def initiate_asteroid_spawning_mechanics(self):
         if self._asteroid_spawn_cycle == 7:
-            self._asteroid_speed_increase_timer.active = True
+            self._asteroid_speed_increase_timer.activate()
             self._asteroid_speed_increase_timer.update()
         else:
             self._asteroid_spawn_timer.update()
@@ -243,6 +244,7 @@ class SpaceGame():
                 self._menu.run_menu()
             else:
                 self.initialize_game()
+                #print(len(self._asteroids))
             end_drawing()
         game_sprites.unload()
         close_audio_device()
@@ -256,16 +258,16 @@ class Menu():
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
-    
+        
     def create_buttons(self):
         self._buttons["start"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
         self._buttons["stats"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
         self._buttons["exit"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_sprites.get_global_font('slkscreb.ttf'), 60)
-
+    
     def draw_buttons(self):
         for key in self._buttons:
-            self._buttons[key].draw_text_rectangle(WHITE, BLACK)
-    
+            self._buttons[key].draw_text_rectangle(RED, BLACK)
+        
     def draw_title(self):
         title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, 80, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
@@ -281,12 +283,13 @@ class Menu():
         self.draw_buttons()
         self.draw_title()
         self.check_button_clicks()
-        # maybe not here, but if player loses self._in_menu_status and exit_clicked reset to defaults, (eventually) 
         # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
-        # let buttons highlight upon clicked
-        # add sounds for buttons clicked
+        # add death screen (with menu, exit game buttons) and intro tutorial screen (brief timers to each)
+        # add sounds for buttons clicked (and brief delay before game starts)
         # add menu and game music
-        # add death screen (with menu, exit game buttons)
+        # go back and refractor code
+        # go back and comment
+        # adjust game diffuclty as need
 
 if __name__ == '__main__':
     game_test = SpaceGame()
