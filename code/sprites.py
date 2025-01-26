@@ -271,7 +271,7 @@ class OxygenMeter(Sprite2D):
         self._font = font
 
     def reset_oxygen(self):
-         self._current_oxygen_level = 100
+        self._current_oxygen_level = 100
 
     def get_current_oxygen_level(self):
         return self._current_oxygen_level
@@ -284,6 +284,7 @@ class OxygenMeter(Sprite2D):
         else:
             color = RED
         draw_text_ex(self._font, str(self.get_current_oxygen_level()), self.get_position(), OXYGEN_FONT_SIZE, 10.0, color)
+        print(self._current_oxygen_level)
 
     def deplete_oxygen(self):
         if self.get_current_oxygen_level() > 0:
@@ -392,7 +393,7 @@ class Ammo(Sprite2D):
     def draw_laser_ammo(self):
         draw_texture_v(self.get_texture(), self.get_position(), WHITE)
 
-class TextRectangle():
+class Button():
     def __init__(self, pos, width, height, text, font, font_size):
         self._pos = pos
         self._text = text
@@ -401,6 +402,7 @@ class TextRectangle():
         self._width = width
         self._height = height
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
+        self._hovered_yet = False
 
     def is_hovered(self):
         mouse_pos = get_mouse_position()
@@ -414,6 +416,13 @@ class TextRectangle():
         if self.is_hovered():
             box_color = GRAY
             text_color = LIGHTGRAY
+            if not self._hovered_yet:
+                button_click = game_sprites.get_global_sound("button_hover.wav")
+                set_sound_volume(button_click, 0.4)
+                play_sound(button_click)
+                self._hovered_yet = True
+        else:
+            self._hovered_yet = False
         draw_rectangle_pro(self._rectangle, Vector2(0,0), 0, box_color)
         text_dimensions = measure_text_ex(self._font, self._text, self._font_size, 0.0)
         text_width = text_dimensions.x

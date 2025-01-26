@@ -246,7 +246,7 @@ class SpaceGame():
                 self._menu.run_menu()
             else:
                 self.initialize_game()
-                print(len(self._asteroids))
+                # print(len(self._asteroids))
             end_drawing()
         game_sprites.unload()
         close_audio_device()
@@ -262,9 +262,9 @@ class Menu():
         self.create_buttons()
         
     def create_buttons(self):
-        self._buttons["start"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
-        self._buttons["stats"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
-        self._buttons["exit"] = TextRectangle(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_sprites.get_global_font('slkscreb.ttf'), 60)
+        self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
+        self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
+        self._buttons["exit"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_sprites.get_global_font('slkscreb.ttf'), 60)
     
     def draw_buttons(self):
         for key in self._buttons:
@@ -275,11 +275,18 @@ class Menu():
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
         draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
 
+    def play_button_click_sfx(self):
+        button_click = game_sprites.get_global_sound("button_click.wav")
+        set_sound_volume(button_click, 0.4)
+        play_sound(button_click)
+
     def check_button_clicks(self):
         if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
             self._in_menu = False
+            self.play_button_click_sfx()
         elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
             self._exit_clicked = True
+
 
     def run_menu(self):
         self.draw_buttons()
@@ -287,7 +294,6 @@ class Menu():
         self.check_button_clicks()
         # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
         # add death screen (with menu, exit game buttons) and intro tutorial screen (brief timers to each)
-        # add sounds for buttons clicked (and brief delay before game starts)
         # add menu and game music
         # go back and refractor code
         # go back and comment
