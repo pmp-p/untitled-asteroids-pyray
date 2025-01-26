@@ -25,6 +25,8 @@ class SpaceGame():
         self._max_speed_range = [200,250]
         self._asteroid_spawn_cycle = 0
         self._asteroid_speed_cycle = 0
+        self._asteroid_spawn_timer = Timer(4, True, True, self.capped_asteroid_spawn_timer)
+        self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer)
         self._asteroid_speed_increase_timer.active = False
         self._power_ups.clear()
         self._treasure.clear()
@@ -244,7 +246,7 @@ class SpaceGame():
                 self._menu.run_menu()
             else:
                 self.initialize_game()
-                #print(len(self._asteroids))
+                print(len(self._asteroids))
             end_drawing()
         game_sprites.unload()
         close_audio_device()
