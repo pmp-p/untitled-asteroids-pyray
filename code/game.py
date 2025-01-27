@@ -234,7 +234,7 @@ class SpaceGame():
         self.initialize_collision_checks()
     
     def display_tutorial(self):
-        tutorial_texture = game_sprites.get_global_texture("Tutorial.png")
+        tutorial_texture = game_sprites.get_global_texture("tutorial.png")
         tutorial_screen_source = Rectangle(0, 0, tutorial_texture.width, tutorial_texture.height)
         tutorial_screen_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
         draw_texture_pro(tutorial_texture, tutorial_screen_source,tutorial_screen_dest, Vector2(), 0, WHITE)
@@ -271,7 +271,7 @@ class Menu():
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
-        self._start_timer = Timer(10, False, False, self.start_game_after_delay)
+        self._start_timer = Timer(4, False, False, self.start_game_after_delay)
 
     def start_game_after_delay(self):
         self._start_game = True
