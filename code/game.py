@@ -1,5 +1,6 @@
 from sprites import *
 
+
 class SpaceGame():
     def __init__(self):
         self._stars = []
@@ -247,7 +248,7 @@ class SpaceGame():
                 self._menu.run_death_menu()
             else:
                 self.initialize_game()
-                # print(len(self._asteroids))
+                #print(len(self._asteroids))
             end_drawing()
         game_sprites.unload()
         close_audio_device()
@@ -262,7 +263,7 @@ class Menu():
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
-        
+
     def create_buttons(self):
         self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
         self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
@@ -316,9 +317,11 @@ class Menu():
 if __name__ == '__main__':
     game_test = SpaceGame()
     game_test.run()
+    
 
 # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
 # intro tutorial screen (brief timers to each)
+
 # add menu and game music
 # go back and refractor code
 # go back and comment

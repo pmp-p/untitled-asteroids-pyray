@@ -66,6 +66,7 @@ class Spaceship(Sprite2D):
         self._current_hp = 9
         self.generate_health()
         self._ammo_bar.clear()
+        self._ammo = 6
         self._max_ammo = 6
         self.generate_ammo()
         self._spaceship_oxygen.reset_oxygen()
