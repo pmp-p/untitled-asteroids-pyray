@@ -35,6 +35,7 @@ class SpaceGame():
             player.reset_player()
         self._game_clock.reset_time()
         self._menu._in_death_menu = True
+        self._menu._start_game = False
 
     def capped_asteroid_speed_timer(self):
         if self._asteroid_speed_cycle < 6:
@@ -242,12 +243,14 @@ class SpaceGame():
         while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
             clear_background(BG_COLOR)
-            if self.get_menu_status() == True:
+            if self._menu._in_menu == True:
                 self._menu.run_menu()
             elif self._menu._in_death_menu == True:
                 self._menu.run_death_menu()
-            else:
+            elif self._menu._start_game == True:
                 self.initialize_game()
+            else:
+                self._menu._start_timer.update()
                 #print(len(self._asteroids))
             end_drawing()
         game_sprites.unload()
@@ -260,9 +263,14 @@ class Menu():
         self._in_menu = True
         self._in_death_menu = False
         self._exit_clicked = False
+        self._start_game = False
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
+        self._start_timer = Timer(3, False, False, self.start_game_after_delay)
+
+    def start_game_after_delay(self):
+        self._start_game = True
 
     def create_buttons(self):
         self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
@@ -293,6 +301,7 @@ class Menu():
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
                 self._in_menu = False
                 self.play_button_click_sfx()
+                self._start_timer.activate()
         elif self._in_death_menu:
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
                 self._in_death_menu = False
@@ -304,8 +313,8 @@ class Menu():
     def run_menu(self):
         self.draw_buttons()
         self.draw_title()
-        self.check_button_clicks()
-
+        self.check_button_clicks()     
+        
     def run_death_menu(self):
         self.draw_buttons()
         self.check_button_clicks()
@@ -317,10 +326,9 @@ class Menu():
 if __name__ == '__main__':
     game_test = SpaceGame()
     game_test.run()
-    
 
 # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
-# intro tutorial screen (brief timers to each)
+# intro tutorial screen (brief timers)
 
 # add menu and game music
 # go back and refractor code

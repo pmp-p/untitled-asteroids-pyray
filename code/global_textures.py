@@ -42,5 +42,3 @@ class Global_textures:
         self._global_textures.clear()
 
 game_sprites = Global_textures()
-
-#   base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../images")) (use this for relative)
