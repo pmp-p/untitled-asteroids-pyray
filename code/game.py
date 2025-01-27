@@ -33,6 +33,8 @@ class SpaceGame():
         for player in self._players:
             player.reset_player()
         self._game_clock.reset_time()
+        # how about, keep in_menu as false but maybe have a flag variable (in_death_screen) set to true and 
+        # display death screen with buttons to go to main menu (which would then set in_menu to true) and exit button
         self._menu._in_menu = True
         self._menu._exit_clicked = False
 
@@ -244,6 +246,7 @@ class SpaceGame():
             clear_background(BG_COLOR)
             if self.get_menu_status() == True:
                 self._menu.run_menu()
+            # maybe, elif in_death menu == true, display death menu and buttons (have a run_death_menu which adds behavior for button clicks) 
             else:
                 self.initialize_game()
                 # print(len(self._asteroids))
@@ -256,6 +259,7 @@ class Menu():
     def __init__(self):
         self._buttons = {}
         self._in_menu = True
+        # add an in_death_menu flag
         self._exit_clicked = False
         self._leaderboard = []
         self._title = "untitled asteroids game"
@@ -287,20 +291,35 @@ class Menu():
         elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
             self._exit_clicked = True
 
-
     def run_menu(self):
         self.draw_buttons()
         self.draw_title()
         self.check_button_clicks()
-        # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
-        # add death screen (with menu, exit game buttons) and intro tutorial screen (brief timers to each)
-        # add menu and game music
-        # go back and refractor code
-        # go back and comment
-        # adjust game diffuclty as need
+
+    def display_death_menu(self):
+        title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", 200, 0)
+        centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
+        centered_title_height = (WINDOW_HEIGHT - title_text_dimensions.y) / 2
+        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.4)), 200, 0, WHITE)
+        # main menu button (if clicked go to in_menu and turn on in_death_menu)
+        # exit menu button
 
 if __name__ == '__main__':
-    game_test = SpaceGame()
-    game_test.run()
-    
-    
+    #game_test = SpaceGame()
+    #game_test.run()
+    menu_test = Menu()
+    while not window_should_close():
+        begin_drawing()
+        clear_background(BG_COLOR)
+        menu_test.display_death_menu()
+        end_drawing()
+    game_sprites.unload()
+    close_audio_device()
+    close_window()
+
+# save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
+# add death screen (with menu, exit game buttons) and intro tutorial screen (brief timers to each)
+# add menu and game music
+# go back and refractor code
+# go back and comment
+# adjust game diffuclty as need
