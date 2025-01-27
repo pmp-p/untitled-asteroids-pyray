@@ -33,10 +33,7 @@ class SpaceGame():
         for player in self._players:
             player.reset_player()
         self._game_clock.reset_time()
-        # how about, keep in_menu as false but maybe have a flag variable (in_death_screen) set to true and 
-        # display death screen with buttons to go to main menu (which would then set in_menu to true) and exit button
-        self._menu._in_menu = True
-        self._menu._exit_clicked = False
+        self._menu._in_death_menu = True
 
     def capped_asteroid_speed_timer(self):
         if self._asteroid_speed_cycle < 6:
@@ -246,7 +243,8 @@ class SpaceGame():
             clear_background(BG_COLOR)
             if self.get_menu_status() == True:
                 self._menu.run_menu()
-            # maybe, elif in_death menu == true, display death menu and buttons (have a run_death_menu which adds behavior for button clicks) 
+            elif self._menu._in_death_menu == True:
+                self._menu.run_death_menu()
             else:
                 self.initialize_game()
                 # print(len(self._asteroids))
@@ -259,7 +257,7 @@ class Menu():
     def __init__(self):
         self._buttons = {}
         self._in_menu = True
-        # add an in_death_menu flag
+        self._in_death_menu = False
         self._exit_clicked = False
         self._leaderboard = []
         self._title = "untitled asteroids game"
@@ -269,11 +267,16 @@ class Menu():
         self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
         self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
         self._buttons["exit"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_sprites.get_global_font('slkscreb.ttf'), 60)
+        self._buttons["main menu"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550 ), 620, 80, "MAIN MENU", game_sprites.get_global_font('slkscreb.ttf'), 60)
     
     def draw_buttons(self):
-        for key in self._buttons:
-            self._buttons[key].draw_text_rectangle(RED, BLACK)
-        
+        if self._in_menu == True:
+            self._buttons["start"].draw_text_rectangle(RED, BLACK)
+            self._buttons["stats"].draw_text_rectangle(RED, BLACK)
+        elif self._in_death_menu:
+            self._buttons["main menu"].draw_text_rectangle(RED, BLACK)
+        self._buttons["exit"].draw_text_rectangle(RED, BLACK)
+
     def draw_title(self):
         title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, 80, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
@@ -285,10 +288,16 @@ class Menu():
         play_sound(button_click)
 
     def check_button_clicks(self):
-        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
-            self._in_menu = False
-            self.play_button_click_sfx()
-        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
+        if self._in_menu:
+            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
+                self._in_menu = False
+                self.play_button_click_sfx()
+        elif self._in_death_menu:
+            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
+                self._in_death_menu = False
+                self._in_menu = True
+                self.play_button_click_sfx()
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
             self._exit_clicked = True
 
     def run_menu(self):
@@ -296,29 +305,20 @@ class Menu():
         self.draw_title()
         self.check_button_clicks()
 
-    def display_death_menu(self):
+    def run_death_menu(self):
+        self.draw_buttons()
+        self.check_button_clicks()
         title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", 200, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
         centered_title_height = (WINDOW_HEIGHT - title_text_dimensions.y) / 2
-        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.4)), 200, 0, WHITE)
-        # main menu button (if clicked go to in_menu and turn on in_death_menu)
-        # exit menu button
+        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.5)), 200, 0, WHITE)
 
 if __name__ == '__main__':
-    #game_test = SpaceGame()
-    #game_test.run()
-    menu_test = Menu()
-    while not window_should_close():
-        begin_drawing()
-        clear_background(BG_COLOR)
-        menu_test.display_death_menu()
-        end_drawing()
-    game_sprites.unload()
-    close_audio_device()
-    close_window()
+    game_test = SpaceGame()
+    game_test.run()
 
 # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
-# add death screen (with menu, exit game buttons) and intro tutorial screen (brief timers to each)
+# intro tutorial screen (brief timers to each)
 # add menu and game music
 # go back and refractor code
 # go back and comment

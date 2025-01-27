@@ -284,7 +284,7 @@ class OxygenMeter(Sprite2D):
         else:
             color = RED
         draw_text_ex(self._font, str(self.get_current_oxygen_level()), self.get_position(), OXYGEN_FONT_SIZE, 10.0, color)
-        print(self._current_oxygen_level)
+        # print(self._current_oxygen_level)
 
     def deplete_oxygen(self):
         if self.get_current_oxygen_level() > 0:
@@ -429,6 +429,7 @@ class Button():
         text_height = text_dimensions.y
         draw_text_pro(self._font, self._text, Vector2(self._pos.x + self._rectangle.width / 2 - text_width/2, 
         self._pos.y + self._rectangle.height / 2 - text_height/2), Vector2(0,0), 0, self._font_size, 0.0, text_color)
+        draw_rectangle_lines_ex(self._rectangle, 5.0, WHITE)
         
     def get_rectangle(self):
         return self._rectangle
