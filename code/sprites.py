@@ -240,7 +240,7 @@ class Clock(Sprite2D):
     def __init__(self, font, texture = None, pos=Vector2(WINDOW_WIDTH / 2 - 37, 0), speed=0, size=Vector2(0,0), direction=Vector2()):
         super().__init__(pos, speed, size, direction, texture)
         self._current_time = 0
-        self._time = Timer(1, True, True, self.count_up)
+        self._time = Timer(1, True, False, self.count_up)
         self._font = font 
 
     def reset_time(self):
@@ -261,6 +261,7 @@ class Clock(Sprite2D):
         draw_text_ex(self._font, str(self.get_current_time()), Vector2(self.get_position().x - pos_offset, self.get_position().y), FONT_SIZE, 10.0, WHITE)
             
     def run_clock(self):
+        self._time.active = True
         self._time.update()
         self.draw_time()  
 
@@ -268,7 +269,7 @@ class OxygenMeter(Sprite2D):
     def __init__(self, font, texture = None, pos=Vector2(50, 930), speed=0, size=Vector2(), direction=Vector2()):
         super().__init__(pos, speed, size, direction, texture)
         self._current_oxygen_level = 100
-        self._oxygen_clock = Timer(OXYGEN_DEPLETION_RATE, True, True, self.deplete_oxygen)
+        self._oxygen_clock = Timer(OXYGEN_DEPLETION_RATE, True, False, self.deplete_oxygen)
         self._font = font
 
     def reset_oxygen(self):
@@ -298,6 +299,7 @@ class OxygenMeter(Sprite2D):
             self._current_oxygen_level += 30
 
     def run_oxygen_depletion_clock(self):
+        self._oxygen_clock.active = True
         self._oxygen_clock.update()
         self.draw_oxygen_level()
 

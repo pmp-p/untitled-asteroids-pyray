@@ -232,10 +232,13 @@ class SpaceGame():
             player.initialize_player_mechanics()
         self._game_clock.run_clock()
         self.initialize_collision_checks()
-
-    def get_menu_status(self):
-        return self._menu._in_menu
     
+    def display_tutorial(self):
+        title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "Test", 80, 0)
+        centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
+        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "Test", Vector2(centered_title_width, 120), 80, 0, WHITE)
+        # come up with design for tutorial and draw here
+
     def should_exit_menu_status(self):
         return self._menu._exit_clicked
 
@@ -250,6 +253,7 @@ class SpaceGame():
             elif self._menu._start_game == True:
                 self.initialize_game()
             else:
+                self.display_tutorial()
                 self._menu._start_timer.update()
                 #print(len(self._asteroids))
             end_drawing()
@@ -267,7 +271,7 @@ class Menu():
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
-        self._start_timer = Timer(3, False, False, self.start_game_after_delay)
+        self._start_timer = Timer(4, False, False, self.start_game_after_delay)
 
     def start_game_after_delay(self):
         self._start_game = True
@@ -328,7 +332,6 @@ if __name__ == '__main__':
     game_test.run()
 
 # save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
-# intro tutorial screen (brief timers)
 
 # add menu and game music
 # go back and refractor code
