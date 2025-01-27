@@ -10,7 +10,7 @@ class SpaceGame():
         self._max_speed_range = [200,250]
         self._asteroid_spawn_cycle = 0 
         self._asteroid_speed_cycle = 0
-        self._asteroid_spawn_timer = Timer(4, True, True, self.capped_asteroid_spawn_timer)
+        self._asteroid_spawn_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
         self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer)
         self._power_ups = []
         self._treasure = []
@@ -26,9 +26,8 @@ class SpaceGame():
         self._max_speed_range = [200,250]
         self._asteroid_spawn_cycle = 0
         self._asteroid_speed_cycle = 0
-        self._asteroid_spawn_timer = Timer(4, True, True, self.capped_asteroid_spawn_timer)
+        self._asteroid_spawn_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
         self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer)
-        self._asteroid_speed_increase_timer.active = False
         self._power_ups.clear()
         self._treasure.clear()
         for player in self._players:
@@ -42,19 +41,20 @@ class SpaceGame():
             self._asteroid_speed_cycle += 1
             for i in range(len(self._max_speed_range)): 
                 self._max_speed_range[i] += 70
-            #print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range}")
+            print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range}")
 
     def capped_asteroid_spawn_timer(self):
         if self._asteroid_spawn_cycle < 7:
             self._asteroid_spawn_cycle += 1
             self._max_asteroids += 2
-            #print(f"Spawn cycle {self._asteroid_spawn_cycle}: Max asteroids = {self._max_asteroids}")
+            print(f"Spawn cycle {self._asteroid_spawn_cycle}: Max asteroids = {self._max_asteroids}")
 
     def initiate_asteroid_spawning_mechanics(self):
         if self._asteroid_spawn_cycle == 7:
-            self._asteroid_speed_increase_timer.activate()
+            self._asteroid_speed_increase_timer.active = True
             self._asteroid_speed_increase_timer.update()
         else:
+            self._asteroid_spawn_timer.active = True
             self._asteroid_spawn_timer.update()
             
     def make_stars(self):

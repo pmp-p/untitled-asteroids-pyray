@@ -245,6 +245,7 @@ class Clock(Sprite2D):
 
     def reset_time(self):
         self._current_time = 0
+        self._time = Timer(1, True, False, self.count_up)
 
     def get_current_time(self):
         return self._current_time
@@ -274,6 +275,7 @@ class OxygenMeter(Sprite2D):
 
     def reset_oxygen(self):
         self._current_oxygen_level = 100
+        self._oxygen_clock = Timer(OXYGEN_DEPLETION_RATE, True, False, self.deplete_oxygen)
 
     def get_current_oxygen_level(self):
         return self._current_oxygen_level
