@@ -272,6 +272,7 @@ class OxygenMeter(Sprite2D):
         self._current_oxygen_level = 100
         self._oxygen_clock = Timer(OXYGEN_DEPLETION_RATE, True, False, self.deplete_oxygen)
         self._font = font
+        self._alert_playing = False
 
     def reset_oxygen(self):
         self._current_oxygen_level = 100
@@ -281,11 +282,11 @@ class OxygenMeter(Sprite2D):
         return self._current_oxygen_level
 
     def draw_oxygen_level(self):
-        if self.get_current_oxygen_level() >= 75:
+        if self.get_current_oxygen_level() >= 65:
             color = WHITE
-        elif self.get_current_oxygen_level() >= 45:
+        elif self.get_current_oxygen_level() >= 35:
             color = YELLOW
-        else:
+        elif self.get_current_oxygen_level() > 0:
             color = RED
         draw_text_ex(self._font, str(self.get_current_oxygen_level()), self.get_position(), OXYGEN_FONT_SIZE, 10.0, color)
         # print(self._current_oxygen_level)

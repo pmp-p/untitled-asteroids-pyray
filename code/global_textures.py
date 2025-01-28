@@ -31,6 +31,14 @@ class Global_textures:
             self._global_textures[key] = load_sound(base_path)
             return self._global_textures[key]
     
+    def get_global_music(self, key):
+        if key in self._global_textures:
+            return self._global_textures[key]
+        else:
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio/" + key))  # Music directory
+            self._global_textures[key] = load_music_stream(base_path)
+            return self._global_textures[key]
+    
     def unload(self):
         for texture in self._global_textures:
             if type(texture) == Texture2D:
@@ -39,6 +47,8 @@ class Global_textures:
                 unload_font(texture)
             elif type(texture) == Sound:
                 unload_sound(texture)
+            elif type(texture) == Music:
+                unload_music_stream(texture)
         self._global_textures.clear()
 
 game_sprites = Global_textures()

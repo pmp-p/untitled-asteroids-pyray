@@ -35,6 +35,9 @@ class SpaceGame():
         self._game_clock.reset_time()
         self._menu._in_death_menu = True
         self._menu._start_game = False
+        game_over = game_sprites.get_global_sound("game_over.wav")
+        set_sound_volume(game_over, 0.2)
+        play_sound(game_over)
 
     def capped_asteroid_speed_timer(self):
         if self._asteroid_speed_cycle < 6:
@@ -144,7 +147,7 @@ class SpaceGame():
                     self.reset_game()
                 if check_collision_circle_line(center, radius, v1, v2) or check_collision_circle_line(center, radius, v1, v3) or check_collision_circle_line(center, radius, v2, v3): # check_collision_recs(asteroid_hitbox, player_hitbox):
                     crash = game_sprites.get_global_sound("crash.wav")
-                    set_sound_volume(crash, 0.4)
+                    set_sound_volume(crash, 0.2)
                     play_sound(crash)
                     self._asteroids.remove(asteroid)
                     player.get_player_points().reset_multiplier()
