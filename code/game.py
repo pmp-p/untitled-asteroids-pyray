@@ -252,11 +252,11 @@ class SpaceGame():
         self.start_music()
         update_music_stream(self._game_music)
     
-    def display_tutorial(self):
-        tutorial_texture = game_sprites.get_global_texture("tutorial.png")
-        tutorial_screen_source = Rectangle(0, 0, tutorial_texture.width, tutorial_texture.height)
-        tutorial_screen_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
-        draw_texture_pro(tutorial_texture, tutorial_screen_source,tutorial_screen_dest, Vector2(), 0, WHITE)
+    def display_loading_screen(self):
+        loading_texture = game_sprites.get_global_texture("loading_screen.png")
+        loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
+        loading_texture_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+        draw_texture_pro(loading_texture, loading_texture_source,loading_texture_dest, Vector2(), 0, WHITE)
 
     def should_exit_menu_status(self):
         return self._menu._exit_clicked
@@ -272,7 +272,7 @@ class SpaceGame():
             elif self._menu._start_game == True:
                 self.initialize_game()
             else:
-                self.display_tutorial()
+                self.display_loading_screen()
                 self._menu._start_timer.update()
                 #print(len(self._asteroids))
             end_drawing()

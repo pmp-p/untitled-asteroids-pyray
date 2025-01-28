@@ -157,7 +157,7 @@ class Spaceship(Sprite2D):
             self._pos.y = WINDOW_HEIGHT - y_margin
         
     def shoot_laser(self):
-        if is_key_pressed(KEY_P) and len(self.get_lasers()) < 10:
+        if is_key_pressed(KEY_SPACE) and len(self.get_lasers()) < 10:
             if self._ammo > 0:
                 beam = game_sprites.get_global_sound("laser.wav")
                 set_sound_volume(beam, 0.5)
@@ -173,7 +173,7 @@ class Spaceship(Sprite2D):
                 self._lasers.remove(laser)
     
     def initialize_player_mechanics(self):
-        self.movement_update(Vector2(int(is_key_down(KEY_D)) - int(is_key_down(KEY_A)), int(is_key_down(KEY_S)) - int(is_key_down(KEY_W))), 0, Vector2(), WHITE)
+        self.movement_update(Vector2(int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))), 0, Vector2(), WHITE)
         self.shoot_laser()
         self.display_hp()
         self.drain_spaceship_oxygen()
