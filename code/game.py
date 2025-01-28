@@ -58,13 +58,13 @@ class SpaceGame():
             self._asteroid_speed_cycle += 1
             for i in range(len(self._max_speed_range)): 
                 self._max_speed_range[i] += 70
-            print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range}")
+            # print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range}")
 
     def capped_asteroid_spawn_timer(self):
         if self._asteroid_spawn_cycle < 7:
             self._asteroid_spawn_cycle += 1
             self._max_asteroids += 2
-            print(f"Spawn cycle {self._asteroid_spawn_cycle}: Max asteroids = {self._max_asteroids}")
+            # print(f"Spawn cycle {self._asteroid_spawn_cycle}: Max asteroids = {self._max_asteroids}")
 
     def initiate_asteroid_spawning_mechanics(self):
         if self._asteroid_spawn_cycle == 7:
@@ -290,7 +290,7 @@ class Menu():
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
-        self._start_timer = Timer(4, False, False, self.start_game_after_delay)
+        self._start_timer = Timer(8, False, False, self.start_game_after_delay)
 
     def start_game_after_delay(self):
         self._start_game = True
