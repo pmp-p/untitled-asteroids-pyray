@@ -17,7 +17,7 @@ class SpaceGame():
         self._players = [Spaceship()]
         self._game_clock = Clock(game_sprites.get_global_font('slkscr.ttf'))
         self._menu = Menu()
-        self._game_music = game_sprites.get_global_music("game_music.wav")
+        self._game_music = game_sprites.get_global_music("game_music.mp3")
         set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
         
