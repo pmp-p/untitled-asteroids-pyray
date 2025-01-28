@@ -17,6 +17,19 @@ class SpaceGame():
         self._players = [Spaceship()]
         self._game_clock = Clock(game_sprites.get_global_font('slkscr.ttf'))
         self._menu = Menu()
+        self._game_music = game_sprites.get_global_music("game_music.wav")
+        set_music_volume(self._game_music, 0.4)
+        self._is_music_playing = False
+        
+    def start_music(self):
+        if not self._is_music_playing:
+            play_music_stream(self._game_music)
+            self._is_music_playing = True
+
+    def stop_music(self):
+        if self._is_music_playing:
+            stop_music_stream(self._game_music)
+            self._is_music_playing = False
 
     def reset_game(self):
         self._stars.clear()
@@ -38,6 +51,7 @@ class SpaceGame():
         game_over = game_sprites.get_global_sound("game_over.wav")
         set_sound_volume(game_over, 0.2)
         play_sound(game_over)
+        self.stop_music()
 
     def capped_asteroid_speed_timer(self):
         if self._asteroid_speed_cycle < 6:
@@ -211,7 +225,7 @@ class SpaceGame():
                 player_hitbox = Rectangle(player.get_position().x, player.get_position().y, player.get_size().x, player.get_size().y)
                 if check_collision_recs(treasure_hitbox, player_hitbox):
                         collect = game_sprites.get_global_sound("treasure_collect.wav")
-                        set_sound_volume(collect, 0.8)
+                        set_sound_volume(collect, 0.2)
                         play_sound(collect)
                         self._treasure.remove(treasure)
                         player.get_player_points().increase_points(treasure_points[treasure.get_texture()])
@@ -235,6 +249,8 @@ class SpaceGame():
             player.initialize_player_mechanics()
         self._game_clock.run_clock()
         self.initialize_collision_checks()
+        self.start_music()
+        update_music_stream(self._game_music)
     
     def display_tutorial(self):
         tutorial_texture = game_sprites.get_global_texture("tutorial.png")
@@ -333,10 +349,3 @@ class Menu():
 if __name__ == '__main__':
     game_test = SpaceGame()
     game_test.run()
-
-# save game data, but also delete previous game data (create new Spacegame object) (implement leaderboard)
-
-# add menu and game music
-# go back and refractor code
-# go back and comment
-# adjust game diffuclty as need
