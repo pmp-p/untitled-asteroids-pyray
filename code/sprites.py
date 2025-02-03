@@ -59,6 +59,22 @@ class Spaceship(Sprite2D):
         self.generate_ammo()
         self._spaceship_oxygen = OxygenMeter(game_sprites.get_global_font('slkscreb.ttf'))
         self._player_points = Points(game_sprites.get_global_font('slkscreb.ttf'))
+        self._is_frozen = False
+        self._unfreeze_player_timer = Timer(5, False, False, self.unfreeze_player)
+
+    def freeze_player(self):
+        if not self._is_frozen:
+            self._speed = 200
+            self._is_frozen = True
+            self._unfreeze_player_timer.activate()
+            freeze = game_sprites.get_global_sound("freeze_sfx.wav")
+            set_sound_volume(freeze, 0.2)
+            play_sound(freeze)
+            
+    def unfreeze_player(self):
+        if self._is_frozen:
+            self._speed = PLAYER_SPEED
+            self._is_frozen = False
 
     def reset_player(self):
         self._lasers.clear()
@@ -72,6 +88,7 @@ class Spaceship(Sprite2D):
         self._spaceship_oxygen.reset_oxygen()
         self._player_points.reset_points()
         self._pos = Vector2(WINDOW_WIDTH / 2 - 50, WINDOW_HEIGHT / 2)
+        self._is_frozen = False
 
     def get_current_health(self):
         return self._current_hp
@@ -173,13 +190,18 @@ class Spaceship(Sprite2D):
                 self._lasers.remove(laser)
     
     def initialize_player_mechanics(self):
-        self.movement_update(Vector2(int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))), 0, Vector2(), WHITE)
+        if self._is_frozen:
+            self._unfreeze_player_timer.update()
+            self.movement_update(Vector2(int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))), 0, Vector2(), SKYBLUE)
+        else:
+            self.movement_update(Vector2(int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))), 0, Vector2(), WHITE)
         self.shoot_laser()
         self.display_hp()
         self.drain_spaceship_oxygen()
         self.draw_player_points()
         self.display_ammo()
         self.check_window_boundaries()
+        
     
 class Laser(Sprite2D):
     def __init__(self, pos=Vector2(0, 0), speed=LASER_SPEED, size=Vector2(9,54), direction=Vector2(0,-1), texture=game_sprites.get_global_texture('greenlaser.png')):

@@ -1,13 +1,14 @@
 from sprites import *
-
+from weather_api import *
+from random import *
 
 class SpaceGame():
-    def __init__(self):
+    def __init__(self, difficulty_temp, difficulty_wdsp=MAX_ASTEROID_SPEED):
         self._stars = []
         self.make_stars()
         self._asteroids = []
         self._max_asteroids = 6
-        self._max_speed_range = [200,250]
+        self._max_speed_range = difficulty_wdsp
         self._asteroid_spawn_cycle = 0 
         self._asteroid_speed_cycle = 0
         self._asteroid_spawn_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
@@ -20,13 +21,19 @@ class SpaceGame():
         self._game_music = game_sprites.get_global_music("game_music.mp3")
         set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
-        
+        self._game_temperature = difficulty_temp # test with Oymyakon Russia, Perth Australia, Dallas, Texas
+        self._temperature_to_asteroid_chance = {(-float('inf'), -16) : {"normal" : 20, "icy" : 80, "fiery" : 0}, (-15, -1) : 
+        {"normal" : 30, "icy" : 70, "fiery" : 0}, (0, 32) : {"normal" : 40, "icy" : 60, "fiery" : 0}, (33, 49) : 
+        {"normal" : 55, "icy" : 40, "fiery" : 0}, (50, 65) : {"normal" : 70, "icy" : 15, "fiery" : 15}, 
+        (66, 70) : {"normal" : 15, "icy" : 20, "fiery" : 65 }, (71, 79) : {"normal" : 25, "icy" : 0, "fiery" : 75 }, 
+        (76, 200) : {"normal" : 5, "icy" : 0, "fiery" : 95 }}
+
     def start_music(self):
         if not self._is_music_playing:
             play_music_stream(self._game_music)
             self._is_music_playing = True
 
-    def stop_music(self):
+    def stop_music(self): 
         if self._is_music_playing:
             stop_music_stream(self._game_music)
             self._is_music_playing = False
@@ -99,17 +106,42 @@ class SpaceGame():
             if pos.y > WINDOW_HEIGHT:
                 self._treasure.remove(treasure)
 
+    def determine_asteroids_temperature_chance(self):
+        temperature = self._game_temperature
+        chances = {"normal" : 33, "icy" : 33, "fiery" : 34}
+        for temp_range in self._temperature_to_asteroid_chance:
+            if temp_range[0] <= temperature <= temp_range[1]:
+                chances = self._temperature_to_asteroid_chance[temp_range]
+                break
+        return chances
+
     def draw_asteroids(self):
+
+        type_chances = self.determine_asteroids_temperature_chance()
+        asteroid_type = choices(["normal", "icy", "fiery"],weights=[type_chances["normal"], type_chances["icy"], type_chances["fiery"]],k=1)[0]
+
         if len(self._asteroids) < self._max_asteroids:
             random_asteroid_pos = Vector2(randint(-15, WINDOW_WIDTH + 30), randint(-100, -50)) 
             random_asteroid_speed = randint(self._max_speed_range[0], self._max_speed_range[1])
             random_asteroid_direction =  Vector2(randint(-1,1), 1) 
-            select_asteroid = randint(0,4)
-            if select_asteroid > 0:
-                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
-            else:
+            if asteroid_type == "fiery":
                 current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('fiery_meteor.png'))
+            elif asteroid_type == "icy":
+                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('icy_meteor.png'))
+            else: 
+                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
             self._asteroids += [current_asteroid]
+
+
+            #select_asteroid = randint(0,10)
+           # if select_asteroid > 5:
+                #current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
+            #elif select_asteroid > 2:
+                #current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('fiery_meteor.png'))
+            #else:
+               # current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('icy_meteor.png'))
+           # self._asteroids += [current_asteroid]
+           
 
         for asteroid in self._asteroids[:]:
             asteroid.dynamically_rotate()
@@ -162,14 +194,20 @@ class SpaceGame():
                 if check_collision_circle_line(center, radius, v1, v2) or check_collision_circle_line(center, radius, v1, v3) or check_collision_circle_line(center, radius, v2, v3): # check_collision_recs(asteroid_hitbox, player_hitbox):
                     crash = game_sprites.get_global_sound("crash.wav")
                     set_sound_volume(crash, 0.2)
-                    play_sound(crash)
                     self._asteroids.remove(asteroid)
                     player.get_player_points().reset_multiplier()
                     if asteroid.get_texture() ==  game_sprites.get_global_texture('fiery_meteor.png'):
                         for i in range(3):
                             player.take_damage()
-                    else:
+                        play_sound(crash)
+                    elif asteroid.get_texture() ==  game_sprites.get_global_texture('icy_meteor.png'):
+                        player.freeze_player()
+                        # player._unfreeze_player_timer.activate()
                         player.take_damage()
+                    else:
+                        for i in range(2):
+                            player.take_damage()
+                        play_sound(crash)
                     if player._current_hp == 0:
                         self.reset_game() # test game end
                 for laser in player.get_lasers():
@@ -290,7 +328,7 @@ class Menu():
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
-        self._start_timer = Timer(8, False, False, self.start_game_after_delay)
+        self._start_timer = Timer(4, False, False, self.start_game_after_delay)
 
     def start_game_after_delay(self):
         self._start_game = True
@@ -347,5 +385,11 @@ class Menu():
         draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.5)), 200, 0, WHITE)
 
 if __name__ == '__main__':
-    game_test = SpaceGame()
+    user_input = str(input("Enter a city: "))
+    city_data = get_city_temp_wspd(user_input)
+    temp_key = user_input + " temperature"
+    wind_key = user_input + " wind speed"
+    wind_speed_range = [city_data[wind_key] * 100, city_data[wind_key] * 100 + 50]
+
+    game_test = SpaceGame(city_data[temp_key], wind_speed_range)
     game_test.run()
