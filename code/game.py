@@ -116,7 +116,6 @@ class SpaceGame():
         return chances
 
     def draw_asteroids(self):
-
         type_chances = self.determine_asteroids_temperature_chance()
         asteroid_type = choices(["normal", "icy", "fiery"],weights=[type_chances["normal"], type_chances["icy"], type_chances["fiery"]],k=1)[0]
 
@@ -303,12 +302,14 @@ class SpaceGame():
         while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
             clear_background(BG_COLOR)
-            if self._menu._in_menu == True:
+            if self._menu._in_main_menu:
                 self._menu.run_menu()
             elif self._menu._in_death_menu == True:
                 self._menu.run_death_menu()
             elif self._menu._start_game == True:
                 self.initialize_game()
+            elif self._menu._in_leaderboard:
+                self._menu.run_leaderboard_menu()
             else:
                 self.display_loading_screen()
                 self._menu._start_timer.update()
@@ -321,11 +322,12 @@ class SpaceGame():
 class Menu():
     def __init__(self):
         self._buttons = {}
-        self._in_menu = True
+        self._in_main_menu = True
         self._in_death_menu = False
         self._exit_clicked = False
         self._start_game = False
-        self._leaderboard = []
+        self._in_leaderboard = False
+        self._leaderboard = ["1. Player 1, 2932 pts"] #draw this
         self._title = "untitled asteroids game"
         self.create_buttons()
         self._start_timer = Timer(4, False, False, self.start_game_after_delay)
@@ -340,12 +342,15 @@ class Menu():
         self._buttons["main menu"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550 ), 620, 80, "MAIN MENU", game_sprites.get_global_font('slkscreb.ttf'), 60)
     
     def draw_buttons(self):
-        if self._in_menu == True:
+        if self._in_main_menu == True:
             self._buttons["start"].draw_text_rectangle(RED, BLACK)
             self._buttons["stats"].draw_text_rectangle(RED, BLACK)
+            self._buttons["exit"].draw_text_rectangle(RED, BLACK)
         elif self._in_death_menu:
             self._buttons["main menu"].draw_text_rectangle(RED, BLACK)
-        self._buttons["exit"].draw_text_rectangle(RED, BLACK)
+            self._buttons["exit"].draw_text_rectangle(RED, BLACK)
+        elif self._in_leaderboard:
+            self._buttons["main menu"].draw_text_rectangle(RED, BLACK)
 
     def draw_title(self):
         title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, 80, 0)
@@ -358,15 +363,24 @@ class Menu():
         play_sound(button_click)
 
     def check_button_clicks(self):
-        if self._in_menu:
+        if self._in_main_menu:
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
-                self._in_menu = False
+                self._in_main_menu = False
                 self.play_button_click_sfx()
                 self._start_timer.activate()
+            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["stats"].get_rectangle()):
+                self._in_leaderboard = True
+                self._in_main_menu = False
+                self.play_button_click_sfx()
         elif self._in_death_menu:
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
                 self._in_death_menu = False
-                self._in_menu = True
+                self._in_main_menu = True
+                self.play_button_click_sfx()
+        elif self._in_leaderboard:
+            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
+                self._in_main_menu = True
+                self._in_leaderboard = False
                 self.play_button_click_sfx()
         if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
             self._exit_clicked = True
@@ -375,7 +389,11 @@ class Menu():
         self.draw_buttons()
         self.draw_title()
         self.check_button_clicks()     
-        
+
+    def run_leaderboard_menu(self):
+        self.draw_buttons()
+        self.check_button_clicks()
+
     def run_death_menu(self):
         self.draw_buttons()
         self.check_button_clicks()

@@ -1,29 +1,31 @@
 import requests
-import sys
 
 def get_city_temp_wspd(city):
-    # URL of weather api endpoint to collect weather data
     url = "https://cities-temperature.p.rapidapi.com/weather/v1/current"
 
-    headers = {"x-rapidapi-key": "57196037fdmsh90d56e037ea94bep1b9d40jsn595913a15546",
-	"x-rapidapi-host": "cities-temperature.p.rapidapi.com"}
+    headers = {
+        "x-rapidapi-key": "57196037fdmsh90d56e037ea94bep1b9d40jsn595913a15546",
+        "x-rapidapi-host": "cities-temperature.p.rapidapi.com"
+    }
 
-    # string contains the city name you want to look up data for
-    querystring = {"location": str(city)}
+    querystring = {"location": city}
 
-    # make a GET request to the weather api to retreive weather data for a city
-    weather = (requests.get(url, headers=headers, params=querystring)).json()
+    response = requests.get(url, headers=headers, params=querystring)
 
-    # extract only the city temperature and wind speed to be used for program
-    city_weather_data = {}
-    temp = (9/5 * weather["temperature"]) + 32
-    wspd = weather["wind_speed"]
-    city_weather_data[str(city) + " temperature"] = int(temp)
-    city_weather_data[str(city) + " wind speed"] = int(wspd)
+    if response.status_code != 200:
+        return {"error": "Failed to fetch data. Please try again later."}
 
-    return city_weather_data
-    # 0.42 for Oymmyakon
-    # 2.06 for Dallas
-    # 6 for Perth
+    weather = response.json()
+
+    # Check if the response contains valid weather data
+    if not weather or "temperature" not in weather or "wind_speed" not in weather:
+        return {"error": f"'{city}' not found. Check the spelling and try again."}
+
+    return {
+        f"{city} temperature": int((9/5 * weather["temperature"]) + 32),
+        f"{city} wind speed": int(weather["wind_speed"])
+    }
+
 if __name__ == "__main__":
-    print(get_city_temp_wspd("Perth"))
+    city = input("Enter a city: ")
+    print(get_city_temp_wspd(city))
