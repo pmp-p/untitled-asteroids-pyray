@@ -202,7 +202,6 @@ class Spaceship(Sprite2D):
         self.display_ammo()
         self.check_window_boundaries()
         
-    
 class Laser(Sprite2D):
     def __init__(self, pos=Vector2(0, 0), speed=LASER_SPEED, size=Vector2(9,54), direction=Vector2(0,-1), texture=game_sprites.get_global_texture('greenlaser.png')):
         super().__init__(pos, speed, size, direction, texture)
@@ -432,16 +431,21 @@ class Button():
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
         self._hovered_yet = False
 
-    def is_hovered(self):
+    def reposition_button(self, pos):
+        self._pos = pos
+        self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
+        
+    def is_hovered_check(self):
         mouse_pos = get_mouse_position()
         in_rectangle_width = self._pos.x <= mouse_pos.x <= self._pos.x + self._width
         in_rectangle_height = self._pos.y <= mouse_pos.y <= self._pos.y + self._height
         return in_rectangle_width and in_rectangle_height
-    
-    def draw_text_rectangle(self, color1, color2):
+  
+    def draw_button(self, color1, color2, pos):
+        self.reposition_button(pos)
         box_color = color1
         text_color = color2
-        if self.is_hovered():
+        if self.is_hovered_check():
             box_color = GRAY
             text_color = LIGHTGRAY
             if not self._hovered_yet:
