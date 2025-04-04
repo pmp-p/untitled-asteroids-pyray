@@ -1,5 +1,5 @@
-from sprites import *
-from weather_api import *
+from Sprites import *
+from WeatherApi import *
 from random import *
 
 class SpaceGame():
@@ -16,9 +16,9 @@ class SpaceGame():
         self._power_ups = []
         self._treasure = []
         self._player = Spaceship()
-        self._game_clock = Clock(game_sprites.get_global_font('slkscr.ttf'))
+        self._game_clock = Clock(game_assets.get_asset_font('slkscr.ttf'))
         self._menu = Menu()
-        self._game_music = game_sprites.get_global_music("game_music.mp3")
+        self._game_music = game_assets.get_asset_music("game_music.mp3")
         set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
         self._game_temperature = difficulty_temp # test with Oymyakon Russia, Perth Australia, Dallas, Texas
@@ -43,7 +43,7 @@ class SpaceGame():
         random_name = ''.join(choices(self._char_string, k=4))
         score = self._player._player_points.get_current_points()
         time = self._game_clock.get_current_time()
-        if len(self._menu._leaderboard) < 8:
+        if len(self._menu._leaderboard) < 5:
             self._menu._leaderboard.append((random_name, score, time))
         elif score >= self._menu._leaderboard[-1][1]:
             self._menu._leaderboard = self._menu._leaderboard[:-1]
@@ -63,7 +63,7 @@ class SpaceGame():
         self._game_clock.reset_time()
         self._menu._in_death_menu = True
         self._menu._start_game = False
-        game_over = game_sprites.get_global_sound("game_over.wav")
+        game_over = game_assets.get_asset_sound("game_over.wav")
         set_sound_volume(game_over, 0.2)
         play_sound(game_over)
         self.stop_music()
@@ -92,7 +92,7 @@ class SpaceGame():
     def make_stars(self):
         for i in range(50):
             random_star_pos = Vector2(randint(0,WINDOW_WIDTH), randint(0, WINDOW_HEIGHT))
-            self._stars.append(Star(game_sprites.get_global_texture('star.png'), random_star_pos, 0, Vector2(15,15), Vector2(0,0)))
+            self._stars.append(Star(game_assets.get_asset_texture('star.png'), random_star_pos, 0, Vector2(15,15), Vector2(0,0)))
 
     def draw_outer_space(self):
         for star in (self._stars):
@@ -106,7 +106,7 @@ class SpaceGame():
             random_treasure_pos = Vector2(randint(20, WINDOW_WIDTH - 60), randint(-4000, -1000)) 
             treasure_direction =  Vector2(0, 1)
             treasure = Treasure(random_treasure_pos, treasure_speed, treasure_direction)
-            treasure.set_texture(game_sprites.get_global_texture(treasure_variations))
+            treasure.set_texture(game_assets.get_asset_texture(treasure_variations))
             self._treasure += [treasure]
         for treasure in self._treasure[:]:
             treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), WHITE)
@@ -132,9 +132,9 @@ class SpaceGame():
             random_asteroid_speed = randint(self._max_speed_range[0], self._max_speed_range[1])
             random_asteroid_direction =  Vector2(randint(-1,1), 1) 
             if asteroid_type == "fiery":
-                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('fiery_meteor.png'))
+                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('fiery_meteor.png'))
             elif asteroid_type == "icy":
-                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('icy_meteor.png'))
+                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('icy_meteor.png'))
             else: 
                 current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
             self._asteroids += [current_asteroid]
@@ -143,9 +143,9 @@ class SpaceGame():
            # if select_asteroid > 5:
                 #current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
             #elif select_asteroid > 2:
-                #current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('fiery_meteor.png'))
+                #current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('fiery_meteor.png'))
             #else:
-               # current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_sprites.get_global_texture('icy_meteor.png'))
+               # current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('icy_meteor.png'))
            # self._asteroids += [current_asteroid]
         
         for asteroid in self._asteroids[:]:
@@ -196,15 +196,15 @@ class SpaceGame():
             if self._player._spaceship_oxygen.get_current_oxygen_level() == 0:
                 self.reset_game()
             if check_collision_circle_line(center, radius, v1, v2) or check_collision_circle_line(center, radius, v1, v3) or check_collision_circle_line(center, radius, v2, v3): # check_collision_recs(asteroid_hitbox, player_hitbox):
-                crash = game_sprites.get_global_sound("crash.wav")
+                crash = game_assets.get_asset_sound("crash.wav")
                 set_sound_volume(crash, 0.2)
                 self._asteroids.remove(asteroid)
                 self._player.get_player_points().reset_multiplier()
-                if asteroid.get_texture() ==  game_sprites.get_global_texture('fiery_meteor.png'):
+                if asteroid.get_texture() ==  game_assets.get_asset_texture('fiery_meteor.png'):
                     for i in range(3):
                         self._player.take_damage()
                     play_sound(crash)
-                elif asteroid.get_texture() ==  game_sprites.get_global_texture('icy_meteor.png'):
+                elif asteroid.get_texture() ==  game_assets.get_asset_texture('icy_meteor.png'):
                     self._player.freeze_player()
                     # player._unfreeze_player_timer.activate()
                     self._player.take_damage()
@@ -220,7 +220,7 @@ class SpaceGame():
                     self._player._lasers.remove(laser)
                 
     def collect_item(self, item, collect_sfx):
-        sound = game_sprites.get_global_sound(collect_sfx)
+        sound = game_assets.get_asset_sound(collect_sfx)
         set_sound_volume(sound, 0.5)
         play_sound(sound)
         self._power_ups.remove(item)
@@ -250,21 +250,21 @@ class SpaceGame():
                 laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
                 # draw_rectangle_lines_ex(laser_hitbox, 1, GREEN)
                 if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == True and check_collision_recs(power_up_hitbox, laser_hitbox):
-                    explosion = game_sprites.get_global_sound("explosion.wav")
+                    explosion = game_assets.get_asset_sound("explosion.wav")
                     set_sound_volume(explosion, 0.1)
                     play_sound(explosion)
                     powerup.change_lock_status(False)
                     self._player._lasers.remove(laser)
 
     def treasure_collision_check(self):
-        treasure_points = {game_sprites.get_global_texture("iron.png"): 50, game_sprites.get_global_texture("diamond.png"): 200,
-        game_sprites.get_global_texture("emerald.png"): 100, game_sprites.get_global_texture("ruby.png"): 75}
+        treasure_points = {game_assets.get_asset_texture("iron.png"): 50, game_assets.get_asset_texture("diamond.png"): 200,
+        game_assets.get_asset_texture("emerald.png"): 100, game_assets.get_asset_texture("ruby.png"): 75}
         for treasure in self._treasure[:]:
             treasure_hitbox = Rectangle(treasure.get_position().x, treasure.get_position().y, treasure.get_size().x, treasure.get_size().y)
             # draw_rectangle_lines_ex(treasure_hitbox, 1, RED)
             player_hitbox = Rectangle(self._player.get_position().x, self._player.get_position().y, self._player.get_size().x, self._player.get_size().y)
             if check_collision_recs(treasure_hitbox, player_hitbox):
-                collect = game_sprites.get_global_sound("treasure_collect.wav")
+                collect = game_assets.get_asset_sound("treasure_collect.wav")
                 set_sound_volume(collect, 0.2)
                 play_sound(collect)
                 self._treasure.remove(treasure)
@@ -292,7 +292,7 @@ class SpaceGame():
         update_music_stream(self._game_music)
     
     def display_loading_screen(self):
-        loading_texture = game_sprites.get_global_texture("loading_screen.png")
+        loading_texture = game_assets.get_asset_texture("loading_screen.png")
         loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
         loading_texture_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
         draw_texture_pro(loading_texture, loading_texture_source,loading_texture_dest, Vector2(), 0, WHITE)
@@ -310,13 +310,15 @@ class SpaceGame():
                 self._menu.run_death_menu()
             elif self._menu._in_leaderboard:
                 self._menu.run_leaderboard_menu()
+            elif self._menu._in_options:
+                self._menu.run_options_menu()
             elif self._menu._start_game:
                 self.initialize_game()
             else:
                 self.display_loading_screen()
                 self._menu._start_timer.update()
             end_drawing()
-        game_sprites.unload()
+        game_assets.unload()
         close_audio_device()
         close_window()
     
@@ -328,14 +330,11 @@ class Menu():
         self._exit_clicked = False
         self._start_game = False
         self._in_leaderboard = False
+        self._in_options = False
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
         self._start_timer = Timer(4, False, False, self.start_game_after_delay)
-
-    #def print_leaderboard(self):
-        #if (is_key_down(KEY_K)):
-            #print(self._leaderboard)
 
     def score_sort(self, entry):
         return entry[1]
@@ -350,9 +349,9 @@ class Menu():
         place = 1
         for player_data in self._leaderboard:
             player_data = player_data[0] + "    score: " + str(player_data[1]) + "    time: " + str(player_data[2])
-            text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), player_data, 55, 0)
+            text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), player_data, 55, 0)
             centered_txt_width = (WINDOW_WIDTH - text_dimensions.x) / 2
-            draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), str(place) + ". " + player_data, Vector2(centered_txt_width, text_height), 55, 0, YELLOW)
+            draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), str(place) + ". " + player_data, Vector2(centered_txt_width, text_height), 55, 0, YELLOW)
             text_height += 60
             place += 1
 
@@ -360,18 +359,20 @@ class Menu():
         self._start_game = True
 
     def create_buttons(self):
-        self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_sprites.get_global_font('slkscreb.ttf'), 60)
-        self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_sprites.get_global_font('slkscreb.ttf'), 60)
-        self._buttons["exit"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_sprites.get_global_font('slkscreb.ttf'), 60)
-        self._buttons["main menu"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "MAIN MENU", game_sprites.get_global_font('slkscreb.ttf'), 60)
+        self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_assets.get_asset_font('slkscreb.ttf'), 60)
+        self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_assets.get_asset_font('slkscreb.ttf'), 60)
+        self._buttons["exit"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_assets.get_asset_font('slkscreb.ttf'), 60)
+        self._buttons["main menu"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "MAIN MENU", game_assets.get_asset_font('slkscreb.ttf'), 60)
+        self._buttons["options"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "OPTIONS", game_assets.get_asset_font('slkscreb.ttf'), 60)
+        self._buttons["difficulty"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "DIFFICULTY", game_assets.get_asset_font('slkscreb.ttf'), 60)
             
     def draw_title(self):
-        title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, 80, 0)
+        title_text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, 80, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
-        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
+        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
 
     def play_button_click_sfx(self):
-        button_click = game_sprites.get_global_sound("button_click.wav")
+        button_click = game_assets.get_asset_sound("button_click.wav")
         set_sound_volume(button_click, 0.4)
         play_sound(button_click)
 
@@ -385,6 +386,10 @@ class Menu():
                 self._in_leaderboard = True
                 self._in_main_menu = False
                 self.play_button_click_sfx()
+            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["options"].get_rectangle()):
+                self._in_main_menu = False
+                self._in_options = True
+                self.play_button_click_sfx()
         elif self._in_death_menu:
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
                 self._in_death_menu = False
@@ -395,13 +400,19 @@ class Menu():
                 self._in_main_menu = True
                 self._in_leaderboard = False
                 self.play_button_click_sfx()
+        elif self._in_options:
+            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
+                self._in_main_menu = True
+                self._in_options = False
+                self.play_button_click_sfx()
         if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
             self._exit_clicked = True
 
     def run_menu(self):
         self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 450))
         self._buttons["stats"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 550))
-        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 650))
+        self._buttons["options"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 650))
+        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 750))
         self.draw_title()
         self.check_button_clicks()     
 
@@ -415,13 +426,18 @@ class Menu():
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 700, 550))
         self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 + 40, 550))
         self.check_button_clicks()
-        title_text_dimensions = measure_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", 200, 0)
+        title_text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "GAME OVER", 200, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
         centered_title_height = (WINDOW_HEIGHT - title_text_dimensions.y) / 2
-        draw_text_ex(game_sprites.get_global_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.5)), 200, 0, WHITE)
+        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.5)), 200, 0, WHITE)
+
+    def run_options_menu(self):
+        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
+        self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 250))
+        self.check_button_clicks()
 
 if __name__ == '__main__':
-    user_input = "Dallas" # str(input("Enter a city: "))
+    user_input = "Lawrenceville" # str(input("Enter a city: "))
     city_data = get_city_temp_wspd(user_input)
     temp_key = user_input + " temperature"
     wind_key = user_input + " wind speed"

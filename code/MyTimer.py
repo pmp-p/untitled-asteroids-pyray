@@ -1,4 +1,4 @@
-from settings import get_time
+from Settings import get_time
 
 class Timer:
 	def __init__(self, duration: int, repeat = False, autostart = False, func = None):

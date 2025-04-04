@@ -1,7 +1,7 @@
-from settings import *
-from custom_timer import Timer
+from Settings import *
+from MyTimer import Timer
 from random import randint
-from global_textures import *
+from Assets import *
 
 class Sprite2D():
     def __init__(self, pos, speed, size, direction, texture):
@@ -46,7 +46,7 @@ class Sprite2D():
         # draw_rectangle_lines(int(self.get_position().x), int(self.get_position().y), int(self._size.x), int(self._size.y), GREEN )
 
 class Spaceship(Sprite2D):
-    def __init__(self, texture=game_sprites.get_global_texture('player_ship.png'), pos=Vector2(WINDOW_WIDTH / 2 - 50, WINDOW_HEIGHT / 2), speed=PLAYER_SPEED, size=Vector2(112,75), direction=Vector2()):
+    def __init__(self, texture=game_assets.get_asset_texture('green_ship.png'), pos=Vector2(WINDOW_WIDTH / 2 - 50, WINDOW_HEIGHT / 2), speed=PLAYER_SPEED, size=Vector2(112,75), direction=Vector2()):
         super().__init__(pos, speed, size, direction, texture)
         self._lasers = []
         self._health_bar = []
@@ -57,8 +57,8 @@ class Spaceship(Sprite2D):
         self._ammo = 6
         self._max_ammo = 6
         self.generate_ammo()
-        self._spaceship_oxygen = OxygenMeter(game_sprites.get_global_font('slkscreb.ttf'))
-        self._player_points = Points(game_sprites.get_global_font('slkscreb.ttf'))
+        self._spaceship_oxygen = OxygenMeter(game_assets.get_asset_font('slkscreb.ttf'))
+        self._player_points = Points(game_assets.get_asset_font('slkscreb.ttf'))
         self._is_frozen = False
         self._unfreeze_player_timer = Timer(5, False, False, self.unfreeze_player)
 
@@ -67,7 +67,7 @@ class Spaceship(Sprite2D):
             self._speed = 200
             self._is_frozen = True
             self._unfreeze_player_timer.activate()
-            freeze = game_sprites.get_global_sound("freeze_sfx.wav")
+            freeze = game_assets.get_asset_sound("freeze_sfx.wav")
             set_sound_volume(freeze, 0.2)
             play_sound(freeze)
             
@@ -89,6 +89,7 @@ class Spaceship(Sprite2D):
         self._player_points.reset_points()
         self._pos = Vector2(WINDOW_WIDTH / 2 - 50, WINDOW_HEIGHT / 2)
         self._is_frozen = False
+        self._speed = PLAYER_SPEED
 
     def get_current_health(self):
         return self._current_hp
@@ -176,7 +177,7 @@ class Spaceship(Sprite2D):
     def shoot_laser(self):
         if is_key_pressed(KEY_SPACE) and len(self.get_lasers()) < 10:
             if self._ammo > 0:
-                beam = game_sprites.get_global_sound("laser.wav")
+                beam = game_assets.get_asset_sound("laser.wav")
                 set_sound_volume(beam, 0.5)
                 play_sound(beam)
                 laser_align_pos = Vector2(self.get_position().x + self.get_texture().width / 2 - 3, self.get_position().y - 30)
@@ -203,11 +204,11 @@ class Spaceship(Sprite2D):
         self.check_window_boundaries()
         
 class Laser(Sprite2D):
-    def __init__(self, pos=Vector2(0, 0), speed=LASER_SPEED, size=Vector2(9,54), direction=Vector2(0,-1), texture=game_sprites.get_global_texture('greenlaser.png')):
+    def __init__(self, pos=Vector2(0, 0), speed=LASER_SPEED, size=Vector2(9,54), direction=Vector2(0,-1), texture=game_assets.get_asset_texture('green_laser.png')):
         super().__init__(pos, speed, size, direction, texture)
 
 class Asteroid(Sprite2D):
-    def __init__(self, pos, speed, direction, size=Vector2(101, 84), texture = game_sprites.get_global_texture('meteor.png')):
+    def __init__(self, pos, speed, direction, size=Vector2(101, 84), texture = game_assets.get_asset_texture('meteor.png')):
         super().__init__(pos, speed, size, direction, texture)
         self._rotation = randint(0, 90)
 
@@ -230,31 +231,31 @@ class Asteroid(Sprite2D):
         draw_texture_pro(self.get_texture(), asteroid_source, asteroid_dest, asteroid_center, self._rotation, WHITE)
 
 class O2_PowerUP(Sprite2D):
-    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_sprites.get_global_texture('water_tank.png'), is_locked=True):
+    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_assets.get_asset_texture('water_tank.png'), is_locked=True):
         super().__init__(pos, speed, size, direction, texture)
         self._is_locked = is_locked
 
     def change_lock_status(self, update_bool):
         if update_bool:
             self._is_locked = True
-            self._sprite_texture = game_sprites.get_global_texture('water_tank.png')
+            self._sprite_texture = game_assets.get_asset_texture('water_tank.png')
         else:
             self._is_locked = False
-            self._sprite_texture = game_sprites.get_global_texture('uncased_oxygen_tank.png')
+            self._sprite_texture = game_assets.get_asset_texture('water.png')
     
     def get_lock_status(self):
         return self._is_locked
 
 class Ammo_PowerUP(Sprite2D):
-    def __init__(self, pos, speed, direction, size=Vector2(65,65), texture=game_sprites.get_global_texture('laser_powerup.png')):
+    def __init__(self, pos, speed, direction, size=Vector2(65,65), texture=game_assets.get_asset_texture('laser_powerup.png')):
         super().__init__(pos, speed, size, direction, texture)
 
 class HeartCapsule_PowerUP(Sprite2D):
-    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_sprites.get_global_texture('health_up.png')):
+    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_assets.get_asset_texture('health_power_up.png')):
         super().__init__(pos, speed, size, direction, texture)
 
 class Treasure(Sprite2D):
-    def __init__(self, pos, speed, direction, size=Vector2(61, 63), texture=game_sprites.get_global_texture('diamond.png')):
+    def __init__(self, pos, speed, direction, size=Vector2(61, 63), texture=game_assets.get_asset_texture('diamond.png')):
         super().__init__(pos, speed, size, direction, texture)
 
 class Clock(Sprite2D):
@@ -398,7 +399,7 @@ class Star(Sprite2D):
             self.proportionally_increase_size(dt * growth_speed)
             
 class HP(Sprite2D):
-    def __init__(self, pos, speed=0, direction=Vector2(), size=Vector2(30,70), texture = game_sprites.get_global_texture('full_heart_2.png'), is_empty=False):
+    def __init__(self, pos, speed=0, direction=Vector2(), size=Vector2(30,70), texture = game_assets.get_asset_texture('heart_container.png'), is_empty=False):
         super().__init__(pos, speed, size, direction, texture)
         self._is_empty = is_empty
 
@@ -408,13 +409,13 @@ class HP(Sprite2D):
     def switch_heart_texture(self, update_bool):
         if update_bool:
             self._is_empty = True
-            self._sprite_texture = game_sprites.get_global_texture('empty_heart_2.png')
+            self._sprite_texture = game_assets.get_asset_texture('empty_heart_container.png')
         else:
-            self._sprite_texture = game_sprites.get_global_texture('full_heart_2.png') 
+            self._sprite_texture = game_assets.get_asset_texture('heart_container.png') 
             self._is_empty = False
 
 class Ammo(Sprite2D):
-    def __init__(self, pos, speed = 0, direction=Vector2(), size=Vector2(20,60), texture=game_sprites.get_global_texture('greenlaser.png')):
+    def __init__(self, pos, speed = 0, direction=Vector2(), size=Vector2(20,60), texture=game_assets.get_asset_texture('green_laser.png')):
         super().__init__(pos, speed, size, direction, texture)
 
     def draw_laser_ammo(self):
@@ -449,7 +450,7 @@ class Button():
             box_color = GRAY
             text_color = LIGHTGRAY
             if not self._hovered_yet:
-                button_click = game_sprites.get_global_sound("button_hover.wav")
+                button_click = game_assets.get_asset_sound("button_hover.wav")
                 set_sound_volume(button_click, 0.4)
                 play_sound(button_click)
                 self._hovered_yet = True
