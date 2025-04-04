@@ -430,13 +430,14 @@ class Button():
         self._width = width
         self._height = height
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
-        self._hovered_yet = False
+        
 
     def reposition_button(self, pos):
         self._pos = pos
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
         
-    def is_hovered_check(self):
+    def is_hovered(self):
+        # returns true if cursor is hovering over the button
         mouse_pos = get_mouse_position()
         in_rectangle_width = self._pos.x <= mouse_pos.x <= self._pos.x + self._width
         in_rectangle_height = self._pos.y <= mouse_pos.y <= self._pos.y + self._height
@@ -446,7 +447,7 @@ class Button():
         self.reposition_button(pos)
         box_color = color1
         text_color = color2
-        if self.is_hovered_check():
+        if self.is_hovered():
             box_color = GRAY
             text_color = LIGHTGRAY
             if not self._hovered_yet:
