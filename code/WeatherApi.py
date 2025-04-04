@@ -1,7 +1,7 @@
 import requests
 """
 This API parses data from a weather information database. This implementation specifically retreives 
-temperature and wind speed based on the city chosen. 
+temperature and wind speed based on the city chosen.
 """
 def get_city_temp_wspd(city):
     url = "https://cities-temperature.p.rapidapi.com/weather/v1/current"

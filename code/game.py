@@ -1,5 +1,6 @@
 from Sprites import *
 from WeatherApi import *
+from Menu import *
 from random import *
 
 class SpaceGame():
@@ -41,7 +42,7 @@ class SpaceGame():
 
     def reset_game(self):
         random_name = ''.join(choices(self._char_string, k=4))
-        score = self._player._player_points.get_current_points()
+        score = self._player._score_tracker.get_current_points()
         time = self._game_clock.get_current_time()
         if len(self._menu._leaderboard) < 5:
             self._menu._leaderboard.append((random_name, score, time))
@@ -193,7 +194,7 @@ class SpaceGame():
             v2 = Vector2(player_hitbox.x , player_hitbox.y + player_hitbox.height)
             v3 = Vector2(player_hitbox.x + player_hitbox.width, player_hitbox.y + player_hitbox.height)
             #draw_triangle_lines(v1,v2,v3,RED)
-            if self._player._spaceship_oxygen.get_current_oxygen_level() == 0:
+            if self._player._oxygen_meter.get_current_oxygen_level() == 0:
                 self.reset_game()
             if check_collision_circle_line(center, radius, v1, v2) or check_collision_circle_line(center, radius, v1, v3) or check_collision_circle_line(center, radius, v2, v3): # check_collision_recs(asteroid_hitbox, player_hitbox):
                 crash = game_assets.get_asset_sound("crash.wav")
@@ -212,12 +213,12 @@ class SpaceGame():
                     for i in range(2):
                         self._player.take_damage()
                     play_sound(crash)
-                if self._player._current_hp == 0:
+                if self._player._current_health == 0:
                     self.reset_game() # test game end
             for laser in self._player.get_lasers():
                 laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
                 if check_collision_circle_rec(center, radius, laser_hitbox):
-                    self._player._lasers.remove(laser)
+                    self._player._laser_projectiles.remove(laser)
                 
     def collect_item(self, item, collect_sfx):
         sound = game_assets.get_asset_sound(collect_sfx)
@@ -254,7 +255,7 @@ class SpaceGame():
                     set_sound_volume(explosion, 0.1)
                     play_sound(explosion)
                     powerup.change_lock_status(False)
-                    self._player._lasers.remove(laser)
+                    self._player._laser_projectiles.remove(laser)
 
     def treasure_collision_check(self):
         treasure_points = {game_assets.get_asset_texture("iron.png"): 50, game_assets.get_asset_texture("diamond.png"): 200,
@@ -322,121 +323,8 @@ class SpaceGame():
         close_audio_device()
         close_window()
     
-class Menu():
-    def __init__(self):
-        self._buttons = {}
-        self._in_main_menu = True
-        self._in_death_menu = False
-        self._exit_clicked = False
-        self._start_game = False
-        self._in_leaderboard = False
-        self._in_options = False
-        self._leaderboard = []
-        self._title = "untitled asteroids game"
-        self.create_buttons()
-        self._start_timer = Timer(4, False, False, self.start_game_after_delay)
 
-    def score_sort(self, entry):
-        return entry[1]
-    
-    def sort_leaderboard(self):
-        self._leaderboard.sort(key=self.score_sort, reverse=True)
-
-    def draw_leaderboard_stats(self):
-        if len(self._leaderboard) > 0:
-            self.sort_leaderboard()
-        text_height = 120
-        place = 1
-        for player_data in self._leaderboard:
-            player_data = player_data[0] + "    score: " + str(player_data[1]) + "    time: " + str(player_data[2])
-            text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), player_data, 55, 0)
-            centered_txt_width = (WINDOW_WIDTH - text_dimensions.x) / 2
-            draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), str(place) + ". " + player_data, Vector2(centered_txt_width, text_height), 55, 0, YELLOW)
-            text_height += 60
-            place += 1
-
-    def start_game_after_delay(self):
-        self._start_game = True
-
-    def create_buttons(self):
-        self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["exit"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["main menu"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "MAIN MENU", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["options"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "OPTIONS", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["difficulty"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "DIFFICULTY", game_assets.get_asset_font('slkscreb.ttf'), 60)
-            
-    def draw_title(self):
-        title_text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, 80, 0)
-        centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
-        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
-
-    def play_button_click_sfx(self):
-        button_click = game_assets.get_asset_sound("button_click.wav")
-        set_sound_volume(button_click, 0.4)
-        play_sound(button_click)
-
-    def check_button_clicks(self):
-        if self._in_main_menu:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
-                self._in_main_menu = False
-                self.play_button_click_sfx()
-                self._start_timer.activate()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["stats"].get_rectangle()):
-                self._in_leaderboard = True
-                self._in_main_menu = False
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["options"].get_rectangle()):
-                self._in_main_menu = False
-                self._in_options = True
-                self.play_button_click_sfx()
-        elif self._in_death_menu:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._in_death_menu = False
-                self._in_main_menu = True
-                self.play_button_click_sfx()
-        elif self._in_leaderboard:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._in_main_menu = True
-                self._in_leaderboard = False
-                self.play_button_click_sfx()
-        elif self._in_options:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._in_main_menu = True
-                self._in_options = False
-                self.play_button_click_sfx()
-        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
-            self._exit_clicked = True
-
-    def run_menu(self):
-        self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 450))
-        self._buttons["stats"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 550))
-        self._buttons["options"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 650))
-        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 750))
-        self.draw_title()
-        self.check_button_clicks()     
-
-    def run_leaderboard_menu(self):
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
-        self.check_button_clicks()
-        self.draw_leaderboard_stats()
-        #self.print_leaderboard()
-
-    def run_death_menu(self):
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 700, 550))
-        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 + 40, 550))
-        self.check_button_clicks()
-        title_text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "GAME OVER", 200, 0)
-        centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
-        centered_title_height = (WINDOW_HEIGHT - title_text_dimensions.y) / 2
-        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.5)), 200, 0, WHITE)
-
-    def run_options_menu(self):
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
-        self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 250))
-        self.check_button_clicks()
-
-if __name__ == '__main__':
+if __name__ == '__main__': # REMOVE LATER: replace with diffuclty setting by user input in-game
     user_input = "Lawrenceville" # str(input("Enter a city: "))
     city_data = get_city_temp_wspd(user_input)
     temp_key = user_input + " temperature"
