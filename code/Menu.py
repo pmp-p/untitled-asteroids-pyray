@@ -53,6 +53,13 @@ class Menu():
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
         draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
 
+    def draw_difficulty_information(self, city, temp, speed):
+        # draw the city chosen
+        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "City: " + city, Vector2(self._buttons["difficulty"].get_button_position().x , 480), 45, 0, WHITE)
+        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "Temperature: " + temp + " F", Vector2(self._buttons["difficulty"].get_button_position().x, 580), 45, 0, WHITE)
+        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "Speed range: " + speed, Vector2(self._buttons["difficulty"].get_button_position().x, 680), 45, 0, WHITE)
+        
+
     def play_button_click_sfx(self):
         button_click = game_assets.get_asset_sound("button_click.wav")
         set_sound_volume(button_click, 0.4)
@@ -93,9 +100,14 @@ class Menu():
                 self._difficulty_clicked = False
                 self.play_button_click_sfx()
             elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["difficulty"].get_rectangle()):
-                self._difficulty_clicked = True # testing
-                print("DIFFICULTY CLICKED!!!") # testing
-
+                if self._difficulty_clicked != True:
+                    self._difficulty_clicked = True
+                    self.play_button_click_sfx()
+                else:
+                    self._difficulty_clicked = False
+                    self.play_button_click_sfx()
+                # print("DIFFICULTY CLICKED!!!") # testing
+                
     def run_menu(self):
         self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 450))
         self._buttons["stats"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 550))
@@ -122,6 +134,7 @@ class Menu():
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
         self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 250))
         self.check_button_clicks()
+        
 
 class Button():
     """
@@ -136,7 +149,10 @@ class Button():
         self._height = height
         # Create a rectangle representing the button's area, used for hover detection and drawing
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
-        
+    
+    def get_button_position(self):
+        return self._pos
+    
     def reposition_button(self, pos):
         """
         Repositions the button to a new position (Vector2).

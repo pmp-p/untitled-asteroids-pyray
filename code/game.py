@@ -2,17 +2,20 @@ from Sprites import *
 from WeatherApi import *
 from Menu import *
 from random import *
+from InputBox import *
 
 # Handles the game mechanics
 class SpaceGame():
     # game uses a difficulty system: a temperature and asteroid speed is given that affects the type 
     # of asteroids that spawn and their speed (given by a range list)
-    def __init__(self, difficulty_temp=72, difficulty_wdsp=MAX_ASTEROID_SPEED):
+    def __init__(self, city="Default", difficulty_temp=72, difficulty_wdsp=MAX_ASTEROID_SPEED):
         self._stars_list = [] # list of stars to display in the background
         self.make_stars() # initilize the list of stars
         self._asteroids_list = [] # list of asteroids to hold
         self._max_asteroids = 6
         self._max_speed_range = difficulty_wdsp
+        self._game_temperature = difficulty_temp # test with Oymyakon Russia, Perth Australia, Dallas, Texas
+        self._city = city
         # both speed and spawn cycles are using to control the difficulty progression of the game
         self._asteroid_spawn_cycle = 0 # number of spawn cycles (each spawn cycle increases number of asteroids)
         self._asteroid_speed_cycle = 0 # number of speed cycles (each speed cycle increases speed range)
@@ -26,7 +29,6 @@ class SpaceGame():
         self._game_music = game_assets.get_asset_music("game_music.mp3")
         set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
-        self._game_temperature = difficulty_temp # test with Oymyakon Russia, Perth Australia, Dallas, Texas
         # Mapping temperature ranges to asteroid type spawning chances that will be applied to the game
         self._temperature_to_asteroid_chance = {(-float('inf'), -16) : {"normal" : 20, "icy" : 80, "fiery" : 0}, (-15, -1) : 
         {"normal" : 30, "icy" : 70, "fiery" : 0}, (0, 32) : {"normal" : 40, "icy" : 60, "fiery" : 0}, (33, 49) : 
@@ -35,6 +37,8 @@ class SpaceGame():
         (76, 200) : {"normal" : 5, "icy" : 0, "fiery" : 95 }}
         # used to make a random name
         self._char_string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        # be sure to position input box near the difficulty button
+        self._user_input_box = InputBox(Vector2(WINDOW_WIDTH/2 - 300, 365), game_assets.get_asset_font('slkscr.ttf'), 40, 600, 80, 18, RED, WHITE, BLACK)
 
     def start_music(self):
         if not self._is_music_playing:
@@ -311,8 +315,6 @@ class SpaceGame():
         # points assigned for each treasure type
         treasure_points = {game_assets.get_asset_texture("iron.png"): 50, game_assets.get_asset_texture("diamond.png"): 200,
         game_assets.get_asset_texture("emerald.png"): 100, game_assets.get_asset_texture("ruby.png"): 75}
-
-        
         for treasure in self._treasure[:]:
             # make a collision bounding box and a player bounding to check collisions
             treasure_hitbox = Rectangle(treasure.get_position().x, treasure.get_position().y, treasure.get_size().x, treasure.get_size().y)
@@ -361,14 +363,18 @@ class SpaceGame():
         while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
             clear_background(BG_COLOR)
-            if self._menu._in_main_menu:
+            if self._menu._in_main_menu: 
                 self._menu.run_menu()
+                self._user_input_box.reset_input_box()
             elif self._menu._in_death_menu:
                 self._menu.run_death_menu()
             elif self._menu._in_leaderboard:
                 self._menu.run_leaderboard_menu()
             elif self._menu._in_options:
                 self._menu.run_options_menu()
+                self._menu.draw_difficulty_information(self._city, str(self._game_temperature), str(self._max_speed_range))
+                if self._menu._difficulty_clicked: # only display input_box if difficulty button hasn't been clicked already
+                    self._user_input_box.enable_input_box()
             elif self._menu._start_game:
                 self.initialize_game()
             else:
@@ -381,10 +387,19 @@ class SpaceGame():
     
 
 if __name__ == '__main__': # REMOVE LATER: replace with diffuclty setting by user input in-game
+    # test with api
+    """
     user_input = "Lawrenceville" # str(input("Enter a city: "))
     city_data = get_city_temp_wspd(user_input)
     temp_key = user_input + " temperature"
     wind_key = user_input + " wind speed"
     wind_speed_range = [city_data[wind_key] * 100, city_data[wind_key] * 100 + 50]
-    game_test = SpaceGame(city_data[temp_key], wind_speed_range)
+    game_test = SpaceGame(user_input, city_data[temp_key], wind_speed_range)
+    game_test.run() # fix this function, this is the master function that involves the menu
+    """
+    user_input = "Lawrenceville"
+    user_temp = 83
+    user_wind_speed = 4
+    wind_speed_range = [user_wind_speed * 100, user_wind_speed * 100 + 50]
+    game_test = SpaceGame(difficulty_temp=user_temp, difficulty_wdsp=wind_speed_range)
     game_test.run() # fix this function, this is the master function that involves the menu
