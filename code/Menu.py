@@ -118,6 +118,9 @@ class Menu():
         self.check_button_clicks()
 
 class Button():
+    """
+    Every button is just a stylized rectangle object with text
+    """
     def __init__(self, pos, width, height, text, font, font_size):
         self._pos = pos
         self._text = text
@@ -125,24 +128,40 @@ class Button():
         self._font_size = font_size
         self._width = width
         self._height = height
+        # Create a rectangle representing the button's area, used for hover detection and drawing
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
         
 
     def reposition_button(self, pos):
+        """
+        Repositions the button to a new position (Vector2).
+        Updates the button's rectangle to reflect the new position.
+        """
         self._pos = pos
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
         
     def is_hovered(self):
-        # returns true if cursor is hovering over the button
+        """
+        Checks if the mouse is hovering over the button.
+        Returns `True` if the mouse is within the bounds of the button's rectangle, otherwise `False`.
+        """
         mouse_pos = get_mouse_position()
         in_rectangle_width = self._pos.x <= mouse_pos.x <= self._pos.x + self._width
         in_rectangle_height = self._pos.y <= mouse_pos.y <= self._pos.y + self._height
         return in_rectangle_width and in_rectangle_height
   
     def draw_button(self, color1, color2, pos):
+        """
+        Draws the button on the screen, with the ability to change color when hovered.
+        Parameters:
+        - color1: The default color of the button's background.
+        - color2: The default color of the text when the button is not hovered.
+        - pos: The position to which the button should be moved before drawing.
+        """
         self.reposition_button(pos)
         box_color = color1
         text_color = color2
+         # If the mouse is hovering over the button, change the colors and play hover sound.
         if self.is_hovered():
             box_color = GRAY
             text_color = LIGHTGRAY
@@ -150,13 +169,15 @@ class Button():
                 button_click = game_assets.get_asset_sound("button_hover.wav")
                 set_sound_volume(button_click, 0.4)
                 play_sound(button_click)
-                self._hovered_yet = True
+                self._hovered_yet = True 
         else:
-            self._hovered_yet = False
+            self._hovered_yet = False 
         draw_rectangle_pro(self._rectangle, Vector2(0,0), 0, box_color)
+        # Measure text dimensions for the button text so that it can be centered inside the button
         text_dimensions = measure_text_ex(self._font, self._text, self._font_size, 0.0)
         text_width = text_dimensions.x
         text_height = text_dimensions.y
+        # Draw the button text centered within the rectangle.
         draw_text_pro(self._font, self._text, Vector2(self._pos.x + self._rectangle.width / 2 - text_width/2, 
         self._pos.y + self._rectangle.height / 2 - text_height/2), Vector2(0,0), 0, self._font_size, 0.0, text_color)
         draw_rectangle_lines_ex(self._rectangle, 5.0, WHITE)
