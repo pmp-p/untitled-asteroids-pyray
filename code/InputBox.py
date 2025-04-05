@@ -37,6 +37,7 @@ class InputBox:
         self._input_box_height = height
         self._input_box_rectangle = Rectangle(self._input_box_pos.x, self._input_box_pos.y, self._input_box_width, self._input_box_height)
         self._accepted_characters = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+        self._enter_is_pressed = False # used by game.py class to know if get request for city data should be made
         
         
 
@@ -77,10 +78,11 @@ class InputBox:
                 # reset the input box UI and save text after hitting enter
             if is_key_pressed(KEY_ENTER):
                 self._text_to_save = self._input_box_text
+                self._enter_is_pressed = True
                 if len(self._text_to_save) > 0: # only consider reformatting for strings of atleast 1 character
                     self.adjust_saved_text() # so that only the first character is capitalized and the rest is lower case
-                self._input_box_text = ""
-                print(self._text_to_save) # for testing
+                 
+                
     
     def get_saved_text(self):
         return self._text_to_save
@@ -118,6 +120,7 @@ class InputBox:
     def reset_input_box(self):
         self._input_box_text = ""
         self._text_to_save = ""
+        self._enter_is_pressed = False
 
 if __name__ == "__main__":
 

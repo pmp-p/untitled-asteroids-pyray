@@ -76,7 +76,7 @@ class SpaceGame():
         self.make_stars()
         self._asteroids_list.clear()
         self._max_asteroids = 6
-        self._max_speed_range_default = [200,250]
+        self._max_speed_range_custom = self._max_speed_range_default 
         self._asteroid_spawn_cycle = 0
         self._asteroid_speed_cycle = 0
         self._asteroid_spawn_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
@@ -152,7 +152,7 @@ class SpaceGame():
 
     def determine_asteroids_temperature_chance(self):
         # get the current game_temperature instance variable
-        temperature = self._game_temperature_default
+        temperature = self._game_temperature_custom
        # Default asteroid spawn distribution if temperature doesn't match any range
         chances = {"normal" : 33, "icy" : 33, "fiery" : 34}
         for temp_range in self._temperature_to_asteroid_chance:
@@ -364,9 +364,9 @@ class SpaceGame():
 
     # API integration
     def change_game_difficulty(self, city): # city is the user input variable stored in self._text_to_save of the InputBox when pressing enter after typing
-        if (if what we want to return is returned by the get request):
+        city_data = get_city_temp_wspd(city)
+        if "temperature" in city_data and "windspeed" in city_data:
             # A correct return from the get_city_temp_wdsp looks like: {'temperature': 42, 'windspeed': 2} for some city
-            city_data = get_city_temp_wspd(city)
             wind_speed_range = [city_data["windspeed"] * 100, city_data["windspeed"] * 100 + 50] # create some arbrituary range based on the city windspeed
             self._city_custom = city
             self._game_temperature_custom = city_data["temperature"] # temperature returned
@@ -376,7 +376,6 @@ class SpaceGame():
             self._game_temperature_custom =  self._game_temperature_default
             self._max_speed_range_custom = self._max_speed_range_default
     
-
     def run(self):
         while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
@@ -393,6 +392,10 @@ class SpaceGame():
                 self._menu.draw_difficulty_information(self._city_custom, str(self._game_temperature_custom), str(self._max_speed_range_custom))
                 if self._menu._difficulty_clicked: # only display input_box if difficulty button hasn't been clicked already
                     self._user_input_box.enable_input_box()
+                    if self._user_input_box._enter_is_pressed:
+                        city_typed = self._user_input_box._text_to_save
+                        self.change_game_difficulty(city_typed)
+                        self._user_input_box.reset_input_box() # reset _text_to_save and _input_text ui, as well as enter_is_pressed
             elif self._menu._start_game:
                 self.initialize_game()
             else:
