@@ -33,11 +33,22 @@ class SpaceGame():
         set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
         # Mapping temperature ranges to asteroid type spawning chances that will be applied to the game
-        self._temperature_to_asteroid_chance = {(-float('inf'), -16) : {"normal" : 20, "icy" : 80, "fiery" : 0}, (-15, -1) : 
-        {"normal" : 30, "icy" : 70, "fiery" : 0}, (0, 32) : {"normal" : 40, "icy" : 60, "fiery" : 0}, (33, 49) : 
-        {"normal" : 55, "icy" : 40, "fiery" : 0}, (50, 65) : {"normal" : 70, "icy" : 15, "fiery" : 15}, 
-        (66, 70) : {"normal" : 15, "icy" : 20, "fiery" : 65 }, (71, 79) : {"normal" : 25, "icy" : 0, "fiery" : 75 }, 
-        (76, 200) : {"normal" : 5, "icy" : 0, "fiery" : 95 }}
+        self._temperature_to_asteroid_chance = {
+        (-float('inf'), -20) : {"normal" : 0, "icy" : 100, "fiery" : 0},  
+        (-19, 0) : {"normal" : 5, "icy" : 95, "fiery" : 0},             
+        (1, 10) : {"normal" : 20, "icy" : 80, "fiery" : 0},             
+        (11, 20) : {"normal" : 25, "icy" : 75, "fiery" : 0},           
+        (21, 30) : {"normal" : 30, "icy" : 70, "fiery" : 0},          
+        (31, 40) : {"normal" : 35, "icy" : 65, "fiery" : 0},            
+        (41, 50) : {"normal" : 45, "icy" : 45, "fiery" : 10},             
+        (51, 60) : {"normal" : 45, "icy" : 40, "fiery" : 15},             
+        (61, 70) : {"normal" : 20, "icy" : 10, "fiery" : 70},              
+        (71, 80) : {"normal" : 20, "icy" : 0, "fiery" : 80},               
+        (81, 90) : {"normal" : 5, "icy" : 0, "fiery" : 95},               
+        (91, 100) : {"normal" : 0, "icy" : 0, "fiery" : 100},              
+        (100, 200) : {"normal" : 0, "icy" : 0, "fiery" : 100},             
+        }
+
         # used to make a random name
         self._char_string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
         # be sure to position input box near the difficulty button
