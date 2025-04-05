@@ -8,10 +8,11 @@ class Menu():
         self._buttons = {}
         self._in_main_menu = True
         self._in_death_menu = False
-        self._exit_clicked = False
         self._start_game = False
         self._in_leaderboard = False
         self._in_options = False
+        self._exit_clicked = False
+        self._difficulty_clicked = False
         self._leaderboard = []
         self._title = "untitled asteroids game"
         self.create_buttons()
@@ -71,11 +72,15 @@ class Menu():
                 self._in_main_menu = False
                 self._in_options = True
                 self.play_button_click_sfx()
+            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
+                self._exit_clicked = True
         elif self._in_death_menu:
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
                 self._in_death_menu = False
                 self._in_main_menu = True
                 self.play_button_click_sfx()
+            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
+                self._exit_clicked = True
         elif self._in_leaderboard:
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
                 self._in_main_menu = True
@@ -85,9 +90,11 @@ class Menu():
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
                 self._in_main_menu = True
                 self._in_options = False
+                self._difficulty_clicked = False
                 self.play_button_click_sfx()
-        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
-            self._exit_clicked = True
+            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["difficulty"].get_rectangle()):
+                self._difficulty_clicked = True # testing
+                print("DIFFICULTY CLICKED!!!") # testing
 
     def run_menu(self):
         self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 450))
@@ -101,8 +108,7 @@ class Menu():
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
         self.check_button_clicks()
         self.draw_leaderboard_stats()
-        #self.print_leaderboard()
-
+        
     def run_death_menu(self):
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 700, 550))
         self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 + 40, 550))
@@ -131,7 +137,6 @@ class Button():
         # Create a rectangle representing the button's area, used for hover detection and drawing
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
         
-
     def reposition_button(self, pos):
         """
         Repositions the button to a new position (Vector2).
@@ -158,6 +163,8 @@ class Button():
         - color2: The default color of the text when the button is not hovered.
         - pos: The position to which the button should be moved before drawing.
         """
+        # buttons are reposition (for the specific instance) 
+        # every time I draw a button
         self.reposition_button(pos)
         box_color = color1
         text_color = color2
