@@ -8,14 +8,17 @@ from InputBox import *
 class SpaceGame():
     # game uses a difficulty system: a temperature and asteroid speed is given that affects the type 
     # of asteroids that spawn and their speed (given by a range list)
-    def __init__(self, city="Default", difficulty_temp=72, difficulty_wdsp=MAX_ASTEROID_SPEED):
+    def __init__(self, city="Default", difficulty_temp=65, difficulty_wdsp=MAX_ASTEROID_SPEED):
         self._stars_list = [] # list of stars to display in the background
         self.make_stars() # initilize the list of stars
         self._asteroids_list = [] # list of asteroids to hold
         self._max_asteroids = 6
-        self._max_speed_range = difficulty_wdsp
-        self._game_temperature = difficulty_temp # test with Oymyakon Russia, Perth Australia, Dallas, Texas
-        self._city = city
+        self._game_temperature_custom = difficulty_temp # custom temperature to be set using user input
+        self._max_speed_range_custom =  difficulty_wdsp # custom speed to be set using user input
+        self._city_custom = city # custom sity to be set using user input
+        self._max_speed_range_default = MAX_ASTEROID_SPEED # defualts to use for reseting
+        self._game_temperature_default = 65 # defaults to use for resetting
+        self._city_default = city
         # both speed and spawn cycles are using to control the difficulty progression of the game
         self._asteroid_spawn_cycle = 0 # number of spawn cycles (each spawn cycle increases number of asteroids)
         self._asteroid_speed_cycle = 0 # number of speed cycles (each speed cycle increases speed range)
@@ -73,7 +76,7 @@ class SpaceGame():
         self.make_stars()
         self._asteroids_list.clear()
         self._max_asteroids = 6
-        self._max_speed_range = [200,250]
+        self._max_speed_range_default = [200,250]
         self._asteroid_spawn_cycle = 0
         self._asteroid_speed_cycle = 0
         self._asteroid_spawn_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
@@ -96,9 +99,9 @@ class SpaceGame():
         if self._asteroid_speed_cycle < 6:
             self._asteroid_speed_cycle += 1
             # updates the low end and the high end of the speed range by 70 for each speed cycle increase
-            for i in range(len(self._max_speed_range)): 
-                self._max_speed_range[i] += 70
-            # print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range}")
+            for i in range(len(self._max_speed_range_default)): 
+                self._max_speed_range_default[i] += 70
+            # print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range_default}")
 
     def capped_asteroid_spawn_timer(self):
         # For a certain number of times, increase the max asteroids on screen by 2
@@ -149,7 +152,7 @@ class SpaceGame():
 
     def determine_asteroids_temperature_chance(self):
         # get the current game_temperature instance variable
-        temperature = self._game_temperature
+        temperature = self._game_temperature_default
        # Default asteroid spawn distribution if temperature doesn't match any range
         chances = {"normal" : 33, "icy" : 33, "fiery" : 34}
         for temp_range in self._temperature_to_asteroid_chance:
@@ -168,7 +171,7 @@ class SpaceGame():
 
         if len(self._asteroids_list) < self._max_asteroids:
             random_asteroid_pos = Vector2(randint(-15, WINDOW_WIDTH + 30), randint(-100, -50)) 
-            random_asteroid_speed = randint(self._max_speed_range[0], self._max_speed_range[1])
+            random_asteroid_speed = randint(self._max_speed_range_default[0], self._max_speed_range_default[1])
             random_asteroid_direction =  Vector2(randint(-1,1), 1) 
             # different skins of the asteroid based on what type
             if asteroid_type == "fiery":
@@ -359,6 +362,21 @@ class SpaceGame():
     def should_exit_menu_status(self):
         return self._menu._exit_clicked
 
+    # API integration
+    def change_game_difficulty(self, city): # city is the user input variable stored in self._text_to_save of the InputBox when pressing enter after typing
+        if (if what we want to return is returned by the get request):
+            # A correct return from the get_city_temp_wdsp looks like: {'temperature': 42, 'windspeed': 2} for some city
+            city_data = get_city_temp_wspd(city)
+            wind_speed_range = [city_data["windspeed"] * 100, city_data["windspeed"] * 100 + 50] # create some arbrituary range based on the city windspeed
+            self._city_custom = city
+            self._game_temperature_custom = city_data["temperature"] # temperature returned
+            self._max_speed_range_custom = wind_speed_range # speed range returned
+        else:
+            self._city_custom = self._city_default
+            self._game_temperature_custom =  self._game_temperature_default
+            self._max_speed_range_custom = self._max_speed_range_default
+    
+
     def run(self):
         while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
@@ -372,7 +390,7 @@ class SpaceGame():
                 self._menu.run_leaderboard_menu()
             elif self._menu._in_options:
                 self._menu.run_options_menu()
-                self._menu.draw_difficulty_information(self._city, str(self._game_temperature), str(self._max_speed_range))
+                self._menu.draw_difficulty_information(self._city_custom, str(self._game_temperature_custom), str(self._max_speed_range_custom))
                 if self._menu._difficulty_clicked: # only display input_box if difficulty button hasn't been clicked already
                     self._user_input_box.enable_input_box()
             elif self._menu._start_game:
@@ -397,9 +415,5 @@ if __name__ == '__main__': # REMOVE LATER: replace with diffuclty setting by use
     game_test = SpaceGame(user_input, city_data[temp_key], wind_speed_range)
     game_test.run() # fix this function, this is the master function that involves the menu
     """
-    user_input = "Lawrenceville"
-    user_temp = 83
-    user_wind_speed = 4
-    wind_speed_range = [user_wind_speed * 100, user_wind_speed * 100 + 50]
-    game_test = SpaceGame(difficulty_temp=user_temp, difficulty_wdsp=wind_speed_range)
-    game_test.run() # fix this function, this is the master function that involves the menu
+    game_test = SpaceGame()
+    game_test.run() 
