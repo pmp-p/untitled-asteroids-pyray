@@ -76,6 +76,11 @@ class SpaceGame():
         # Input box positioned near difficulty button for city input
         self._user_input_box = InputBox(Vector2(WINDOW_WIDTH/2 - 300, 365), game_assets.get_asset_font('slkscr.ttf'), 40, 600, 80, 18, RED, WHITE, BLACK)
 
+        # Game Screen Transitioning
+        self._screens = {"main_menu" : self.handle_main_menu , "death_menu" : self.handle_death_menu, 
+                       "leaderboard" : self.handle_leaderboard_menu, "options" : self.handle_options_menu, 
+                       "start_game" : self.handle_start_game, "loading_screen" : self.handle_loading_screen}
+
     def start_music(self):
         """Starts the game music if it's not already playing."""
         if not self._is_music_playing:
@@ -772,24 +777,17 @@ class SpaceGame():
             begin_drawing()
             clear_background(BG_COLOR)
             
-            current_state = self._menu._menu_state_stack.top()
-
             # Every new menu screen to add will have a current_state string associated with it
             # this current_state is used to determine what new menu to now run
             # To make a new menu screen, create another handle method
-            if current_state == "main_menu":
-                self.handle_main_menu()
-            elif current_state == "death_menu":
-                self.handle_death_menu()
-            elif current_state == "leaderboard":
-                self.handle_leaderboard_menu()
-            elif current_state == "options":
-                self.handle_options_menu()
-            elif current_state == "start_game":
-                self.handle_start_game()
-            # State stack is empty, so display loading screen
-            elif current_state == "loading_screen":
-                self.handle_loading_screen()
+            current_state = self._menu._menu_state_stack.top()
+            
+            # Menu screen to run based on current game state
+            if current_state in self._screens:
+                self._screens[current_state]()
+            else:
+                print(current_state + " not recognized.")
+
             end_drawing()
 
         # Close the game
