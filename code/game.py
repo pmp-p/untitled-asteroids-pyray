@@ -166,6 +166,7 @@ class SpaceGame():
         self._player.reset_player()
         self.set_to_death_screen()
         self.play_game_over_sfx()
+        self._game_clock.reset_time()
              
     def capped_asteroid_speed_timer(self):
         """
