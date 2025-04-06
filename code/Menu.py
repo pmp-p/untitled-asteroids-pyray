@@ -142,7 +142,7 @@ class Menu():
                 else:
                     self._difficulty_clicked = False
                     self.play_button_click_sfx()
-                # print("DIFFICULTY CLICKED!!!") # testing
+                
                 
     def run_menu(self):
         """
