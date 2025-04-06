@@ -18,14 +18,10 @@ class Menu():
         self.create_buttons()
         self._start_timer = Timer(4, False, False, self.start_game_after_delay)
         self._menu_state_stack = DoublyLinkedStack()
-        """
-        Used for old menu system (check_button_blicks in Menu.py + run in Game.py)
-        self._in_main_menu = True
-        self._in_death_menu = False
-        self._start_game = False
-        self._in_leaderboard = False
-        self._in_options = False
-        """
+        
+        # Game screen button events tied to each menu state
+        self._menu_event_handlings = {"main_menu" : self.main_menu_buttons_handling , "death_menu" : self.death_menu_buttons_handling, 
+                       "leaderboard" : self.leaderboard_buttons_handling, "options" : self.options_buttons_handling} 
 
     def score_sort(self, entry):
         """
@@ -105,122 +101,65 @@ class Menu():
         button_click = game_assets.get_asset_sound("button_click.wav")
         set_sound_volume(button_click, 0.4)
         play_sound(button_click)
-
-    def check_button_clicks(self):
-        """
-        Checks for mouse button clicks and handles the logic for each menu state.
-        Changes states based on button clicks (start, stats, options, exit, etc.).
-        """
-
-        """
-        Note about efficiency:
-        This run method relies on several boolean flags (_in_main_menu, _in_death_menu) and 
-        uses if-elif chains to check and manage which state of the menu should be drawn. As game logic grows and more menus or 
-        states are added, I have to introduce more flags and conditions, while also ensuring that the increasingly complex 
-        boolean logic doesn't lead to errors. Overall, the code becomes longer, harder to read, and more difficult to extend each time 
-        I want to add a new menu screen. Managing more conditions to switch between them also becomes cumbersome. Handling 
-        backtracking—returning to the previous menu state while restoring the booleans to their original state—becomes annoying. 
-        Transitions between menu states are manually handled by altering multiple flags at once, which can result in error-prone 
-        and hard-to-follow code when there are many menus, submenus, and conditions to account for.thod relies on several boolean flags 
-        (_in_main_menu, _in_death_menu) and uses if-elif chains to check and manage which state of the menu should be drawn. As game 
-        logic grows and more menus or states are added, I have to introduce more flags and conditions, while also ensuring that the 
-        increasingly complex boolean logic doesn't lead to errors. Overall, the code becomes longer, harder to read, and more 
-        difficult to extend each time I want to add a new menu screen. Managing more conditions to switch between them also becomes 
-        cumbersome. Handling backtracking—returning to the previous menu state while restoring the booleans to their original state—becomes annoying. 
-        Transitions between menu states are manually handled by altering multiple flags at once, which can result in error-prone and hard-to-follow code 
-        when there are many menus, submenus, and conditions to account for.
-        """
-        if self._in_main_menu:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
-                self._in_main_menu = False
-                self.play_button_click_sfx()
-                self._start_timer.activate()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["stats"].get_rectangle()):
-                self._in_leaderboard = True
-                self._in_main_menu = False
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["options"].get_rectangle()):
-                self._in_main_menu = False
-                self._in_options = True
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
-                self._exit_clicked = True
-        elif self._in_death_menu:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._in_death_menu = False
-                self._in_main_menu = True
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
-                self._exit_clicked = True
-        elif self._in_leaderboard:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._in_main_menu = True
-                self._in_leaderboard = False
-                self.play_button_click_sfx()
-        elif self._in_options:
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._in_main_menu = True
-                self._in_options = False
-                self._difficulty_clicked = False
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["difficulty"].get_rectangle()):
-                if self._difficulty_clicked != True:
-                    self._difficulty_clicked = True
-                    self.play_button_click_sfx()
-                else:
-                    self._difficulty_clicked = False
-                    self.play_button_click_sfx()
-    
+            
     def check_button_clicks_optimized(self):
         """
         Checks for mouse button clicks and handles the logic for each menu state.
         Changes states based on button clicks (start, stats, options, exit, etc.).
-        Uses DoublylinkedList
+        Uses DoublylinkedList.
         """
 
+        # call handling method based on the current_state
         current_state = self._menu_state_stack.top()
+        self._menu_event_handlings[current_state]()
 
-        if current_state == "main_menu":
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
+    def main_menu_buttons_handling(self):
+        """Check clicks for buttons on main menu."""
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
                 # Pop but dont push start game screen yet, until timer has finished, then push menu and start to recalibrate
                 self._menu_state_stack.push("loading_screen")
                 self.play_button_click_sfx()
                 self._start_timer.activate()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["stats"].get_rectangle()):
-                self._menu_state_stack.push("leaderboard")
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["options"].get_rectangle()):
-                self._menu_state_stack.push("options")
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
-                self._exit_clicked = True
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["stats"].get_rectangle()):
+            self._menu_state_stack.push("leaderboard")
+            self.play_button_click_sfx()
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["options"].get_rectangle()):
+            self._menu_state_stack.push("options")
+            self.play_button_click_sfx()
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
+            self._exit_clicked = True
 
-        elif current_state == "death_menu":
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._menu_state_stack.pop() # go to main menu
-                self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
-                self._exit_clicked = True
-        elif current_state == "leaderboard":
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._menu_state_stack.pop()
-                self._menu_state_stack.push("main_menu")
-                self.play_button_click_sfx()
-
-        elif current_state == "options":
-            if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
+    def options_buttons_handling(self):
+        """Check clicks for buttons on options menu."""
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
                 self._menu_state_stack.pop()  # Go back to the main menu
                 self._menu_state_stack.push("main_menu")
                 self._difficulty_clicked = False
                 self.play_button_click_sfx()
-            elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["difficulty"].get_rectangle()):
-                if self._difficulty_clicked != True:
-                    self._difficulty_clicked = True
-                    self.play_button_click_sfx()
-                else:
-                    self._difficulty_clicked = False
-                    self.play_button_click_sfx()
-                             
+
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["difficulty"].get_rectangle()):
+            if self._difficulty_clicked != True:
+                self._difficulty_clicked = True
+                self.play_button_click_sfx()
+            else:
+                self._difficulty_clicked = False
+                self.play_button_click_sfx()
+        
+    def leaderboard_buttons_handling(self):
+        """Check clicks for buttons on leaderboard menu."""
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
+                self._menu_state_stack.pop()
+                self._menu_state_stack.push("main_menu")
+                self.play_button_click_sfx()
+
+    def death_menu_buttons_handling(self):
+        """Check clicks for buttons on death menu."""
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
+                self._menu_state_stack.pop() # go to main menu
+                self.play_button_click_sfx()
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
+                self._exit_clicked = True
+
     def run_menu(self):
         """
         Runs the main menu by drawing buttons and handling button click checks.
