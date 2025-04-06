@@ -14,7 +14,7 @@ class SpaceGame():
     real life cities. Colder temperatures spawn more icy asteroids, hotter temperatures spawn 
     fiery ones.
     """
-    
+
     def __init__(self, city="Default", difficulty_temp=65, difficulty_wdsp=MAX_ASTEROID_SPEED):
         
         # Creates the outerspace game background
@@ -93,7 +93,37 @@ class SpaceGame():
         if self._is_music_playing:
             stop_music_stream(self._game_music)
             self._is_music_playing = False
+
+    def play_game_over_sfx(self):
+        """Play a game over jingle."""
+        game_over = game_assets.get_asset_sound("game_over.wav")
+        set_sound_volume(game_over, 0.2)
+        play_sound(game_over)
+        self.stop_music()
+
+    def play_damage_sfx(self):
+        crash = game_assets.get_asset_sound("crash.wav")
+        set_sound_volume(crash, 0.2)
+        play_sound(crash)
+
+    def _play_treasure_collect_sfx(self):
+        """
+        Plays the treasure collection sound.
+        """
+        collect = game_assets.get_asset_sound("treasure_collect.wav")
+        set_sound_volume(collect, 0.2)
+        play_sound(collect)
+
+    def collect_item(self, item, collect_sfx):
+        """Helper function to handle power-up collection effects and audio."""
+        self.play_collection_sfx(collect_sfx)
+        self._power_ups.remove(item)
     
+    def play_collection_sfx(self, collect_sfx):
+        sound = game_assets.get_asset_sound(collect_sfx)
+        set_sound_volume(sound, 0.5)
+        play_sound(sound)
+
     def update_leaderboard_list(self):
         """Save player score and time lasted to leaderboard."""
         random_name = ''.join(choices(self._char_string, k=4)) 
@@ -135,13 +165,6 @@ class SpaceGame():
         """Clears all powerups and treasure objects."""
         self._power_ups.clear()
         self._treasure.clear()
-
-    def play_game_over_sfx(self):
-        """Play a game over jingle."""
-        game_over = game_assets.get_asset_sound("game_over.wav")
-        set_sound_volume(game_over, 0.2)
-        play_sound(game_over)
-        self.stop_music()
 
     def set_to_death_screen(self):
         """Update menu state flags to set the screen to the death screen."""
@@ -222,6 +245,38 @@ class SpaceGame():
             star.dynamically_grow()
             star.movement_update(Vector2(0,0), 0, Vector2(0, 0), WHITE)
 
+    def draw_treasure(self):
+        """
+        Spawns treasure with value-weighted randomness.
+        Common items (iron) appear more frequently than rare items (diamonds).
+        Treasures fall vertically through space.
+        """
+        self.create_treasure()
+        self.handle_treasure_deletion()
+
+    def draw_asteroids(self):
+        """
+        Spawns and manages asteroids with type probabilities determined
+        by temperature. Different asteroid types imply unique behaviors:
+        fiery (more damage), icy (freezing effect), and normal.
+        """
+        self.create_asteroids()
+        self.handle_asteroid_deletion()
+
+    def draw_power_ups(self):
+        """
+        Spawns power-ups with weighted probabilities based on usefulness.
+        Each power-up type has unique spawn locations and movement patterns:
+        - O2: spawns from top, moves down
+        - Ammo: spawns from left, moves right
+        - Health: spawns from right, moves left
+        The varied item movement patterns require careful player movement to collect 
+        power ups. Powerups are deleted when they leave the screen.
+        """
+        
+        self.create_power_up()
+        self.handle_power_up_deletion()
+
     def create_treasure(self):
         """
         Adds treasure if there isn't already one on the screen.
@@ -236,59 +291,6 @@ class SpaceGame():
             treasure.set_texture(game_assets.get_asset_texture(treasure_variations))
             # Add to treasure list for spawning
             self._treasure += [treasure]
-
-    def handle_treasure_deletion(self):
-        """
-        Updates the position of each treasure as it falls and removes it if it falls off the screen.
-        """
-        for treasure in self._treasure[:]:
-            # remove treasure objects as they exit the sides of the screens
-            treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), WHITE)
-            pos = treasure.get_position()
-            if pos.y > WINDOW_HEIGHT:
-                self._treasure.remove(treasure)
-
-    def draw_treasure(self):
-        """
-        Spawns treasure with value-weighted randomness.
-        Common items (iron) appear more frequently than rare items (diamonds).
-        Treasures fall vertically through space.
-        """
-        self.create_treasure()
-        self.handle_treasure_deletion()
-        
-    def determine_asteroids_temperature_chance(self):
-        """
-        Maps current temperature to asteroid type probabilities.
-        Ries real-world weather data to gameplay, helping create 
-        varied difficulty based on chosen location. Returns
-        the distribution for the game to use.
-        """
-        temperature = self._game_temperature_custom
-       
-        # Default distribution if no matching temperature range
-        chances = {"normal" : 33, "icy" : 33, "fiery" : 34}
-
-        for temp_range in self._temperature_to_asteroid_chance:
-            # Check if the temperature falls within any of the defined ranges and update the chances accordingly
-            if temp_range[0] <= temperature <= temp_range[1]:
-                chances = self._temperature_to_asteroid_chance[temp_range]
-                break
-        return chances
-
-    def handle_asteroid_deletion(self):
-        """
-        Updates the position of each asteroid as it falls
-        and removes it if it falls off the screen.
-        """
-        for asteroid in self._asteroids_list[:]:
-            asteroid.dynamically_rotate()
-
-            # Update asteroid position
-            asteroid.project_asteroid()
-            pos = asteroid.get_position()
-            if pos.y > WINDOW_HEIGHT or (pos.x < -15 or pos.x > WINDOW_WIDTH + 30):
-                self._asteroids_list.remove(asteroid)
 
     def create_single_asteroid(self):
         """Creates a single asteroid to add to asteroid list."""
@@ -319,15 +321,6 @@ class SpaceGame():
         if len(self._asteroids_list) < self._max_asteroids:
             self.create_single_asteroid()
             
-    def draw_asteroids(self):
-        """
-        Spawns and manages asteroids with type probabilities determined
-        by temperature. Different asteroid types imply unique behaviors:
-        fiery (more damage), icy (freezing effect), and normal.
-        """
-        self.create_asteroids()
-        self.handle_asteroid_deletion()
-    
     def create_power_up(self):
         """
         Adds a power-up to the game, ensuring that:
@@ -353,6 +346,31 @@ class SpaceGame():
         if len(self._power_ups) < 1 and not any(isinstance(pwrup, self._power_up_stats[select_pwrup]["class"]) for pwrup in self._power_ups):
             select_pwrup_stats = self._power_up_stats[select_pwrup]
             self._power_ups.append(select_pwrup_stats["class"](select_pwrup_stats["pos"], pwrup_speed, select_pwrup_stats["direction"]))
+    
+    def handle_treasure_deletion(self):
+        """
+        Updates the position of each treasure as it falls and removes it if it falls off the screen.
+        """
+        for treasure in self._treasure[:]:
+            # remove treasure objects as they exit the sides of the screens
+            treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), WHITE)
+            pos = treasure.get_position()
+            if pos.y > WINDOW_HEIGHT:
+                self._treasure.remove(treasure)
+
+    def handle_asteroid_deletion(self):
+        """
+        Updates the position of each asteroid as it falls
+        and removes it if it falls off the screen.
+        """
+        for asteroid in self._asteroids_list[:]:
+            asteroid.dynamically_rotate()
+
+            # Update asteroid position
+            asteroid.project_asteroid()
+            pos = asteroid.get_position()
+            if pos.y > WINDOW_HEIGHT or (pos.x < -15 or pos.x > WINDOW_WIDTH + 30):
+                self._asteroids_list.remove(asteroid)
 
     def handle_power_up_deletion(self):
         """
@@ -374,34 +392,24 @@ class SpaceGame():
                 if pos.x < -15:
                     self._power_ups.remove(power_up)
         
-    def draw_power_ups(self):
+    def determine_asteroids_temperature_chance(self):
         """
-        Spawns power-ups with weighted probabilities based on usefulness.
-        Each power-up type has unique spawn locations and movement patterns:
-        - O2: spawns from top, moves down
-        - Ammo: spawns from left, moves right
-        - Health: spawns from right, moves left
-        The varied item movement patterns require careful player movement to collect 
-        power ups. Powerups are deleted when they leave the screen.
+        Maps current temperature to asteroid type probabilities.
+        Ries real-world weather data to gameplay, helping create 
+        varied difficulty based on chosen location. Returns
+        the distribution for the game to use.
         """
-        
-        self.create_power_up()
-        self.handle_power_up_deletion()
-    
-    def collect_item(self, item, collect_sfx):
-        """Helper function to handle power-up collection effects and audio."""
-        self.play_collection_sfx(collect_sfx)
-        self._power_ups.remove(item)
-    
-    def play_collection_sfx(self, collect_sfx):
-        sound = game_assets.get_asset_sound(collect_sfx)
-        set_sound_volume(sound, 0.5)
-        play_sound(sound)
+        temperature = self._game_temperature_custom
+       
+        # Default distribution if no matching temperature range
+        chances = {"normal" : 33, "icy" : 33, "fiery" : 34}
 
-    def play_damage_sfx(self):
-        crash = game_assets.get_asset_sound("crash.wav")
-        set_sound_volume(crash, 0.2)
-        play_sound(crash)
+        for temp_range in self._temperature_to_asteroid_chance:
+            # Check if the temperature falls within any of the defined ranges and update the chances accordingly
+            if temp_range[0] <= temperature <= temp_range[1]:
+                chances = self._temperature_to_asteroid_chance[temp_range]
+                break
+        return chances
 
     def deal_player_damage(self, texture):
         """
@@ -511,46 +519,6 @@ class SpaceGame():
             if check_collision_circle_rec(center, radius, laser_hitbox):
                 self._player._laser_projectiles.remove(laser)
 
-    def asteroid_collision_check(self):
-        """
-        Handles collision detection between asteroids, player, and lasers.
-        Uses circle-triangle collision for more accurate hit detection.
-        Different asteroid types cause different effects on player on collision:
-        - Fiery: Higher damage (3 hearts)
-        - Icy: Freezes player temporarily + moderate damage
-        - Normal: Standard damage (2 hearts)
-        If asteroids collide with the lasers, delete the laser, NOT the asteroid.
-        """
-        
-        for asteroid in self._asteroids_list:
-            self.check_asteroid_player_collision(asteroid)
-            self.check_asteroid_laser_collision(asteroid)
-
-    def increase_player_stats(self, powerup):
-        """
-        Depending on the type of powerup upon collect, either
-        increase ammo, health, or oxygen, award points and increase score multiplier. 
-        Remove powerup from the powerup list.
-        """
-        if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == False:
-            self._player.get_oxygen_meter().increase_oxygen()
-            self.collect_item(powerup, "bubble.wav")
-            self._player.get_player_points().increase_points(50)
-            self._player.get_player_points().increase_multiplier(.1)
-            
-        # Ammo and health can be collected directly
-        elif isinstance(powerup, Ammo_PowerUP):
-            self._player.increase_ammo()
-            self.collect_item(powerup, "ammo_collect.wav")
-            self._player.get_player_points().increase_points(50)
-            self._player.get_player_points().increase_multiplier(.1)
-
-        elif isinstance(powerup, HeartCapsule_PowerUP):
-            self._player.increase_health()
-            self.collect_item(powerup, "heart_collect.wav")
-            self._player.get_player_points().increase_points(50)
-            self._player.get_player_points().increase_multiplier(.1)
-
     def check_player_powerup_collision(self, powerup):
         """
         Checks if the powerup collides with the player. Uses A
@@ -588,19 +556,21 @@ class SpaceGame():
                     powerup.change_lock_status(False)
                     self._player._laser_projectiles.remove(laser)
 
-    def create_power_up_hitbox(self, powerup):
+    def asteroid_collision_check(self):
         """
-        Creates a rectangular collision box for an powerup. 
-        Returns the Rectangle object used for the powerup.
+        Handles collision detection between asteroids, player, and lasers.
+        Uses circle-triangle collision for more accurate hit detection.
+        Different asteroid types cause different effects on player on collision:
+        - Fiery: Higher damage (3 hearts)
+        - Icy: Freezes player temporarily + moderate damage
+        - Normal: Standard damage (2 hearts)
+        If asteroids collide with the lasers, delete the laser, NOT the asteroid.
         """
-        power_up_hitbox = Rectangle(
-                powerup.get_position().x, 
-                powerup.get_position().y, 
-                powerup.get_size().x, 
-                powerup.get_size().y
-            )
-        return power_up_hitbox
-    
+        
+        for asteroid in self._asteroids_list:
+            self.check_asteroid_player_collision(asteroid)
+            self.check_asteroid_laser_collision(asteroid)
+
     def powerup_collision_check(self):
         """
         Manages collisions between player and power-ups, and laser interactions
@@ -615,13 +585,6 @@ class SpaceGame():
             self.check_player_powerup_collision(powerup)
             self.check_laser_O2_powerup_collision(powerup)
 
-    def create_treasure_hitbox(self, treasure):
-        """
-        Creates and returns a hitbox (Rectangle) for a given treasure object.
-        """
-        treasure_hitbox = Rectangle(treasure.get_position().x, treasure.get_position().y, treasure.get_size().x, treasure.get_size().y)
-        return treasure_hitbox
-    
     def treasure_collision_check(self):
         """
         Handles player-treasure collisions. When player
@@ -636,9 +599,54 @@ class SpaceGame():
             player_hitbox = self.create_player_hitbox()
 
             if check_collision_recs(treasure_hitbox, player_hitbox):
-                self.handle_treasure_collision(treasure, treasure_points)
+                self.increase_player_points(treasure, treasure_points)
 
-    def handle_treasure_collision(self, treasure, treasure_points):
+    def increase_player_stats(self, powerup):
+        """
+        Depending on the type of powerup upon collect, either
+        increase ammo, health, or oxygen, award points and increase score multiplier. 
+        Remove powerup from the powerup list.
+        """
+        if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == False:
+            self._player.get_oxygen_meter().increase_oxygen()
+            self.collect_item(powerup, "bubble.wav")
+            self._player.get_player_points().increase_points(50)
+            self._player.get_player_points().increase_multiplier(.1)
+            
+        # Ammo and health can be collected directly
+        elif isinstance(powerup, Ammo_PowerUP):
+            self._player.increase_ammo()
+            self.collect_item(powerup, "ammo_collect.wav")
+            self._player.get_player_points().increase_points(50)
+            self._player.get_player_points().increase_multiplier(.1)
+
+        elif isinstance(powerup, HeartCapsule_PowerUP):
+            self._player.increase_health()
+            self.collect_item(powerup, "heart_collect.wav")
+            self._player.get_player_points().increase_points(50)
+            self._player.get_player_points().increase_multiplier(.1)
+
+    def create_power_up_hitbox(self, powerup):
+        """
+        Creates a rectangular collision box for an powerup. 
+        Returns the Rectangle object used for the powerup.
+        """
+        power_up_hitbox = Rectangle(
+                powerup.get_position().x, 
+                powerup.get_position().y, 
+                powerup.get_size().x, 
+                powerup.get_size().y
+            )
+        return power_up_hitbox
+    
+    def create_treasure_hitbox(self, treasure):
+        """
+        Creates and returns a hitbox (Rectangle) for a given treasure object.
+        """
+        treasure_hitbox = Rectangle(treasure.get_position().x, treasure.get_position().y, treasure.get_size().x, treasure.get_size().y)
+        return treasure_hitbox
+    
+    def increase_player_points(self, treasure, treasure_points):
         """
         Handles the actions when a treasure is collected, plays the collection sound.
         removes the treasure, and increases the player's points and player's score multiplier.
@@ -649,14 +657,6 @@ class SpaceGame():
         self._player.get_player_points().increase_points(treasure_points[treasure_texture])
         self._player.get_player_points().increase_multiplier(.1)
         
-    def _play_treasure_collect_sfx(self):
-        """
-        Plays the treasure collection sound.
-        """
-        collect = game_assets.get_asset_sound("treasure_collect.wav")
-        set_sound_volume(collect, 0.2)
-        play_sound(collect)
-
     def initialize_collision_checks(self):
         """Runs all collision detection systems each frame."""
         self.asteroid_collision_check()
@@ -680,17 +680,6 @@ class SpaceGame():
         self.start_music()
         update_music_stream(self._game_music)
     
-    def handle_loading_screen(self):
-        """
-        Displays loading screen while game resources initialize.
-        Repeatedly updates start_timer in the mean time.
-        """
-        loading_texture = game_assets.get_asset_texture("loading_screen.png")
-        loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
-        loading_texture_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
-        draw_texture_pro(loading_texture, loading_texture_source,loading_texture_dest, Vector2(), 0, WHITE)
-        self._menu._start_timer.update()
-
     def should_exit_menu_status(self):
         """Checks if user has clicked exit button."""
         return self._menu._exit_clicked
@@ -787,6 +776,17 @@ class SpaceGame():
         """
         self.initialize_game()
         self.check_player_death()
+
+    def handle_loading_screen(self):
+        """
+        Displays loading screen while game resources initialize.
+        Repeatedly updates start_timer in the mean time.
+        """
+        loading_texture = game_assets.get_asset_texture("loading_screen.png")
+        loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
+        loading_texture_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+        draw_texture_pro(loading_texture, loading_texture_source,loading_texture_dest, Vector2(), 0, WHITE)
+        self._menu._start_timer.update()
 
     def cleanup_asteroids_game(self):
         """

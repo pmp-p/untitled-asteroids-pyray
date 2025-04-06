@@ -180,8 +180,7 @@ class Menu():
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
         self.draw_leaderboard_stats()
-        
-        
+          
     def run_death_menu(self):
         """
         Runs the death menu, drawing 'main menu' and 'exit' buttons, and displaying 'GAME OVER' text.
@@ -205,7 +204,6 @@ class Menu():
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
         
-
 class Button():
     """
     Every button is a stylized rectangle object with text that can be clicked and interacted with.
