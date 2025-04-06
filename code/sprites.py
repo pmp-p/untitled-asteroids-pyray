@@ -386,10 +386,9 @@ class OxygenMeter(Sprite2D):
             color = WHITE
         elif self.get_current_oxygen_level() >= 35:
             color = YELLOW
-        elif self.get_current_oxygen_level():
+        elif self.get_current_oxygen_level() < 35:
             color = RED
         draw_text_ex(self._font, str(self.get_current_oxygen_level()), self.get_position(), OXYGEN_FONT_SIZE, 10, color)
-        # print(self._current_oxygen_level)
 
     def deplete_oxygen(self):
         if self.get_current_oxygen_level() > 0:

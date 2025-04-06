@@ -9,49 +9,67 @@ class Node:
         self.next = None
 
 class DoublyLinkedStack:
+    """
+    Head will always reference the most recently added node (top of the stack)
+    """
     def __init__(self):
-        # self.head will always reference the most recently added node of the stack
         self.head = None
 
     def push(self, data): 
-        # adds an item to the top of the stack
+        """
+        Add an item to the top of the stack.
+        If the stack is empty, create a new node and set it as top of the stack.
+        Otherwise, add a new node at the top and adjust the links.
+        """
         if self.head == None:
-            # if the stack is empty, create a new node and set it as top of the stack
             new_node = Node(data)
             self.head = new_node
         else:
-            # create a new node to be the top of the stack
+            # If the stack isn't empty, the new node becomes the top
             new_node = Node(data)
-            # create a link between the previous head and the current new node
-            # 'save' a copy of the old self.head by letting new_nodes next node reference self.head
+            # Set the current head's last pointer to the new node
             self.head.last = new_node
+            # Link the new node to the current head
             new_node.next = self.head
             self.head = new_node
 
     def pop(self):
-        # remove the most recently added item and return it 
+        """
+        Remove the most recently added item from the stack and return it.
+        If the stack is empty, return None.
+        """
+         # Stack is empty
         if self.head == None:
             return None
-        elif self.head.next == None:
-            top_element = self.head.data
+        
+        top_element = self.head.data
+        # More than one item in the stack
+        if self.head.next == None:
             self.head = None
             return top_element
+        
+        # Only one item in the stack
         else:
-            top_element = self.head.data
             next_head = self.head.next
             next_head.last = None
             self.head = next_head
             return top_element
         
     def top(self): 
-        # return the top element, none if list is empty
+        """
+        Return the top item of the stack without removing it.
+        Return None if the stack is empty.
+        """
         if self.head == None:
             return None
         return self.head.data
         
     def isEmpty(self):
-        # return true if stack is empty
-        return self.num_items == 0
+        """
+        Check if the stack is empty.
+        Return True if empty, False otherwise.
+        """
+        return self.head == None
     
 if __name__ == "__main__":
     doubly_linked_stack_test = DoublyLinkedStack()

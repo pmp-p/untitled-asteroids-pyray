@@ -4,6 +4,10 @@ from MyTimer import *
 from Assets import *
 
 class Menu():
+    """
+    Menu class that handles the user interface, button interactions, 
+    and transitions between different menu states (main menu, options, leaderboard, etc.).
+    """
     def __init__(self):
         self._buttons = {}
         self._in_main_menu = True
@@ -19,12 +23,24 @@ class Menu():
         self._start_timer = Timer(4, False, False, self.start_game_after_delay)
 
     def score_sort(self, entry):
+        """
+        Sort helper function used to sort leaderboard entries by score.
+        Takes in entry, a tuple containing player data (name, score, time).
+        Returns int, The score of the player.
+        """
         return entry[1]
     
     def sort_leaderboard(self):
+        """
+        Sort the leaderboard by score in descending order.
+        """
         self._leaderboard.sort(key=self.score_sort, reverse=True)
 
     def draw_leaderboard_stats(self):
+        """
+        Draws the leaderboard stats (player name, score, and time) on the screen.
+        It sorts the leaderboard before displaying it.
+        """
         if len(self._leaderboard) > 0:
             self.sort_leaderboard()
         text_height = 120
@@ -38,9 +54,15 @@ class Menu():
             place += 1
 
     def start_game_after_delay(self):
+        """
+        This function is called after a timer delay to start the game.
+        """
         self._start_game = True
 
     def create_buttons(self):
+        """
+        Creates all buttons for the menu with their positions, sizes, and text.
+        """
         self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_assets.get_asset_font('slkscreb.ttf'), 60)
         self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_assets.get_asset_font('slkscreb.ttf'), 60)
         self._buttons["exit"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_assets.get_asset_font('slkscreb.ttf'), 60)
@@ -49,23 +71,37 @@ class Menu():
         self._buttons["difficulty"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "DIFFICULTY", game_assets.get_asset_font('slkscreb.ttf'), 60)
             
     def draw_title(self):
+        """
+        Draws the title of the game in the center of the screen.
+        """
         title_text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, 80, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
         draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
 
     def draw_difficulty_information(self, city, temp, speed):
-        # draw the city chosen
+        """
+        Displays difficulty settings (city, temperature, and speed range) in the options menu.
+        city (str): The name of the selected city.
+        temp (str): The temperature in Fahrenheit.
+        speed (str): The speed range selected.
+        """
         draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "City: " + city, Vector2(self._buttons["difficulty"].get_button_position().x , 480), 45, 0, WHITE)
         draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "Temperature: " + temp + " F", Vector2(self._buttons["difficulty"].get_button_position().x, 580), 45, 0, WHITE)
         draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "Speed range: " + speed, Vector2(self._buttons["difficulty"].get_button_position().x, 680), 45, 0, WHITE)
         
-
     def play_button_click_sfx(self):
+        """
+        Plays a sound effect when a button is clicked.
+        """
         button_click = game_assets.get_asset_sound("button_click.wav")
         set_sound_volume(button_click, 0.4)
         play_sound(button_click)
 
     def check_button_clicks(self):
+        """
+        Checks for mouse button clicks and handles the logic for each menu state.
+        Changes states based on button clicks (start, stats, options, exit, etc.).
+        """
         if self._in_main_menu:
             if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
                 self._in_main_menu = False
@@ -109,6 +145,9 @@ class Menu():
                 # print("DIFFICULTY CLICKED!!!") # testing
                 
     def run_menu(self):
+        """
+        Runs the main menu by drawing buttons and handling button click checks.
+        """
         self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 450))
         self._buttons["stats"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 550))
         self._buttons["options"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 650))
@@ -117,11 +156,17 @@ class Menu():
         self.check_button_clicks()     
 
     def run_leaderboard_menu(self):
+        """
+        Runs the leaderboard menu by drawing the 'main menu' button and displaying leaderboard stats.
+        """
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
         self.check_button_clicks()
         self.draw_leaderboard_stats()
         
     def run_death_menu(self):
+        """
+        Runs the death menu, drawing 'main menu' and 'exit' buttons, and displaying 'GAME OVER' text.
+        """
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 700, 550))
         self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 + 40, 550))
         self.check_button_clicks()
@@ -131,6 +176,10 @@ class Menu():
         draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.5)), 200, 0, WHITE)
 
     def run_options_menu(self):
+        """
+        This function runs the options menu by drawing buttons and checking for button clicks.
+        It allows the player to go back to the main menu or access difficulty settings.
+        """
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
         self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 250))
         self.check_button_clicks()
@@ -138,7 +187,8 @@ class Menu():
 
 class Button():
     """
-    Every button is just a stylized rectangle object with text
+    Every button is a stylized rectangle object with text that can be clicked and interacted with.
+    It includes features like hover effects, repositioning, and drawing to the screen.
     """
     def __init__(self, pos, width, height, text, font, font_size):
         self._pos = pos
@@ -149,8 +199,12 @@ class Button():
         self._height = height
         # Create a rectangle representing the button's area, used for hover detection and drawing
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
+        self._hovered_yet = False 
     
     def get_button_position(self):
+        """
+        Returns the current position of the button.
+        """
         return self._pos
     
     def reposition_button(self, pos):
@@ -163,8 +217,8 @@ class Button():
         
     def is_hovered(self):
         """
-        Checks if the mouse is hovering over the button.
-        Returns `True` if the mouse is within the bounds of the button's rectangle, otherwise `False`.
+        Checks if the mouse cursor is hovering over the button.
+        Returns True if the mouse cursor is inside the button's rectangle, otherwise False.
         """
         mouse_pos = get_mouse_position()
         in_rectangle_width = self._pos.x <= mouse_pos.x <= self._pos.x + self._width
@@ -173,37 +227,74 @@ class Button():
   
     def draw_button(self, color1, color2, pos):
         """
-        Draws the button on the screen, with the ability to change color when hovered.
-        Parameters:
-        - color1: The default color of the button's background.
-        - color2: The default color of the text when the button is not hovered.
-        - pos: The position to which the button should be moved before drawing.
+        Draws the button, including hover effects. Changes color on hover.
         """
-        # buttons are reposition (for the specific instance) 
-        # every time I draw a button
+        # Update the button position
         self.reposition_button(pos)
-        box_color = color1
-        text_color = color2
-         # If the mouse is hovering over the button, change the colors and play hover sound.
-        if self.is_hovered():
-            box_color = GRAY
-            text_color = LIGHTGRAY
-            if not self._hovered_yet:
-                button_click = game_assets.get_asset_sound("button_hover.wav")
-                set_sound_volume(button_click, 0.4)
-                play_sound(button_click)
-                self._hovered_yet = True 
-        else:
-            self._hovered_yet = False 
-        draw_rectangle_pro(self._rectangle, Vector2(0,0), 0, box_color)
-        # Measure text dimensions for the button text so that it can be centered inside the button
-        text_dimensions = measure_text_ex(self._font, self._text, self._font_size, 0.0)
-        text_width = text_dimensions.x
-        text_height = text_dimensions.y
-        # Draw the button text centered within the rectangle.
-        draw_text_pro(self._font, self._text, Vector2(self._pos.x + self._rectangle.width / 2 - text_width/2, 
-        self._pos.y + self._rectangle.height / 2 - text_height/2), Vector2(0,0), 0, self._font_size, 0.0, text_color)
-        draw_rectangle_lines_ex(self._rectangle, 5.0, WHITE)
+
+        # Set the button colors based on hover status
+        box_color, text_color = self._get_button_colors(color1, color2)
+
+        # Draw the button's background
+        self._draw_button_background(box_color)
+
+        # Measure text and draw the button text
+        self._draw_button_text(text_color)
+
+        # Draw the button's border
+        self._draw_button_border()
         
+    def _get_button_colors(self, color1, color2):
+        """
+        Determines the button colors based on the hover state.
+        """
+        # Default button colors
+        box_color, text_color = color1, color2
+
+        # If the button is hovered, change the colors
+        if self.is_hovered():
+            box_color, text_color = GRAY, LIGHTGRAY
+            if not self._hovered_yet:
+                self._play_hover_sound()
+                self._hovered_yet = True
+        else:
+            self._hovered_yet = False
+
+        return box_color, text_color
+    
+    def _play_hover_sound(self):
+        """
+        Plays the hover sound when the mouse enters the button.
+        """
+        button_click = game_assets.get_asset_sound("button_hover.wav")
+        set_sound_volume(button_click, 0.4)
+        play_sound(button_click)
+
+    def _draw_button_background(self, box_color):
+        """
+        Draws the button background with the specified color.
+        """
+        draw_rectangle_pro(self._rectangle, Vector2(0, 0), 0, box_color)
+
+    def _draw_button_text(self, text_color):
+        """
+        Draws the button's text centered within the button.
+        """
+        text_dimensions = measure_text_ex(self._font, self._text, self._font_size, 0.0)
+        text_width, text_height = text_dimensions.x, text_dimensions.y
+        draw_text_pro(self._font, self._text,
+        Vector2(self._pos.x + self._rectangle.width / 2 - text_width / 2,
+        self._pos.y + self._rectangle.height / 2 - text_height / 2),
+        Vector2(0, 0), 0, self._font_size, 0.0, text_color)
+
+    def _draw_button_border(self):
+        """
+        Draws the border of the button.
+        """
+        draw_rectangle_lines_ex(self._rectangle, 5.0, WHITE)
+    
     def get_rectangle(self):
+        """
+        Returns the button's rectangle for collision detection (e.g., for clicks).
+        """
         return self._rectangle

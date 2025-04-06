@@ -4,156 +4,227 @@ from Menu import *
 from random import *
 from InputBox import *
 
-# Handles the game mechanics
+
 class SpaceGame():
-    # game uses a difficulty system: a temperature and asteroid speed is given that affects the type 
-    # of asteroids that spawn and their speed (given by a range list)
+    """
+    SpaceGame() handles game mechanics. It manages game states, difficulty progression,
+    spawning/despawning of asteroids/treasure/powerups, music, and weather-based mechanics.
+    The game's difficulty get's increasingly difficult as the game runs; SpaceGame() 
+    uses an API to adapt difficulty based on temperature and wind speed data of
+    real life cities. Colder temperatures spawn more icy asteroids, hotter temperatures spawn 
+    fiery ones.
+    """
+    
     def __init__(self, city="Default", difficulty_temp=65, difficulty_wdsp=MAX_ASTEROID_SPEED):
-        self._stars_list = [] # list of stars to display in the background
-        self.make_stars() # initilize the list of stars
-        self._asteroids_list = [] # list of asteroids to hold
-        self._max_asteroids = 6
-        self._game_temperature_custom = difficulty_temp # custom temperature to be set using user input
-        self._max_speed_range_custom =  difficulty_wdsp # custom speed to be set using user input
-        self._city_custom = city # custom sity to be set using user input
-        self._max_speed_range_default = MAX_ASTEROID_SPEED # defualts to use for reseting
-        self._game_temperature_default = 65 # defaults to use for resetting
+        
+        # Creates the outerspace game background
+        self._stars_list = [] 
+        self.make_stars()
+        
+        # Weather-based difficulty parameters
+        self._game_temperature_custom = difficulty_temp 
+        self._max_speed_range_custom =  difficulty_wdsp 
+        self._city_custom = city
+
+        # Default difficulty parameters as a failsafe
+        self._max_speed_range_default = MAX_ASTEROID_SPEED 
+        self._game_temperature_default = 65 
         self._city_default = city
-        # both speed and spawn cycles are using to control the difficulty progression of the game
-        self._asteroid_spawn_cycle = 0 # number of spawn cycles (each spawn cycle increases number of asteroids)
-        self._asteroid_speed_cycle = 0 # number of speed cycles (each speed cycle increases speed range)
-        self._asteroid_spawn_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer) # timer to increase spawn every few seconds
-        self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer) # timer to increase speed range every few seconds
+
+        # Progressive difficulty spawning and speed range difficulty cycles
+        self._asteroid_spawning_level = 0 
+        self._asteroid_speed_level = 0 
+        self._asteroid_spawn_increase_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer) 
+        self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer) 
+
+        # Game entity storage
+        self._asteroids_list = [] 
+        self._max_asteroids = 6
         self._power_ups = [] # list of powerup objects
         self._treasure = [] # list of treasure objects
+
+        # Core game component objects
         self._player = Spaceship()
         self._game_clock = Clock(game_assets.get_asset_font('slkscr.ttf'))
         self._menu = Menu() # integrates menu system used by the game
+
+        # Audio management
         self._game_music = game_assets.get_asset_music("game_music.mp3")
         set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
-        # Mapping temperature ranges to asteroid type spawning chances that will be applied to the game
-        self._temperature_to_asteroid_chance = {
-        (-float('inf'), -20) : {"normal" : 0, "icy" : 100, "fiery" : 0},  
-        (-19, 0) : {"normal" : 5, "icy" : 95, "fiery" : 0},             
-        (1, 10) : {"normal" : 20, "icy" : 80, "fiery" : 0},             
-        (11, 20) : {"normal" : 25, "icy" : 75, "fiery" : 0},           
-        (21, 30) : {"normal" : 30, "icy" : 70, "fiery" : 0},          
-        (31, 40) : {"normal" : 35, "icy" : 65, "fiery" : 0},            
-        (41, 50) : {"normal" : 45, "icy" : 45, "fiery" : 10},             
-        (51, 60) : {"normal" : 45, "icy" : 40, "fiery" : 15},             
-        (61, 70) : {"normal" : 20, "icy" : 10, "fiery" : 70},              
-        (71, 80) : {"normal" : 20, "icy" : 0, "fiery" : 80},               
-        (81, 90) : {"normal" : 5, "icy" : 0, "fiery" : 95},               
-        (91, 100) : {"normal" : 0, "icy" : 0, "fiery" : 100},              
-        (100, 200) : {"normal" : 0, "icy" : 0, "fiery" : 100},             
-        }
 
-        # used to make a random name
+        # Temperature to asteroid type mapping - influences game dynamics based on real-world weather
+        self._temperature_to_asteroid_chance = {
+        (-float('inf'), 5) : {"normal" : 0, "icy" : 100, "fiery" : 0},             
+        (6, 14) : {"normal" : 20, "icy" : 80, "fiery" : 0},
+        (15, 23) : {"normal" : 40, "icy" : 60, "fiery" : 0},
+        (24, 32) : {"normal" : 45, "icy" : 55, "fiery" : 0},         
+        (33, 40) : {"normal" : 60, "icy" : 40, "fiery" : 0},            
+        (41, 50) : {"normal" : 75, "icy" : 25, "fiery" : 0},             
+        (51, 60) : {"normal" : 85, "icy" : 15, "fiery" : 0},             
+        (61, 65) : {"normal" : 75, "icy" : 0, "fiery" : 25},
+        (66, 70) : {"normal" : 65, "icy" : 0, "fiery" : 35},              
+        (71, 76) : {"normal" : 30, "icy" : 0, "fiery" : 70},
+        (77, 81) : {"normal" : 20, "icy" : 0, "fiery" : 80},
+        (82, 90) : {"normal" : 0, "icy" : 0, "fiery" : 100},               
+        (91, 200) : {"normal" : 0, "icy" : 0, "fiery" : 100},                           
+        }
+        
+        # Used for random name generation for leaderboard entries
         self._char_string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
-        # be sure to position input box near the difficulty button
+        
+        # Input box positioned near difficulty button for city input
         self._user_input_box = InputBox(Vector2(WINDOW_WIDTH/2 - 300, 365), game_assets.get_asset_font('slkscr.ttf'), 40, 600, 80, 18, RED, WHITE, BLACK)
 
     def start_music(self):
+        """Starts the game music if it's not already playing."""
         if not self._is_music_playing:
             play_music_stream(self._game_music)
             self._is_music_playing = True
 
-    def stop_music(self): 
+    def stop_music(self):
+        """Stops the game music if it's currently playing."""
         if self._is_music_playing:
             stop_music_stream(self._game_music)
             self._is_music_playing = False
     
-    # Resets the game state (e.g., score, time, and objects)
-    def reset_game(self):
-        # the score and time lasted are stored along with a randomly generated name
+    def update_leaderboard_list(self):
+        """Save player score and time lasted to leaderboard."""
         random_name = ''.join(choices(self._char_string, k=4)) 
         score = self._player._score_tracker.get_current_points()
         time = self._game_clock.get_current_time()
-        # in the leaderboard menu of the game menu class, add the users data
-        # new score can simply be added to the end of the leaderboard if its less than 5 players
+        self.add_to_leaderboard_list(random_name, score, time)
+
+    def add_to_leaderboard_list(self, random_name, score, time):
+        """Append player data to leaderboard list appropriately."""
         if len(self._menu._leaderboard) < 5:
             self._menu._leaderboard.append((random_name, score, time))
-        # if there are already 5 entries on the leaderboard, only add 
+
+        # Maintains a top-5 leaderboard based on score
         elif score >= self._menu._leaderboard[-1][1]:
-            # this assumes leaderboard is sorted already
-            # remove the last element through list slicing
-            # add the new data to the end
-            # note: a function in the menu class with resort as necessary
             self._menu._leaderboard = self._menu._leaderboard[:-1]
             self._menu._leaderboard.append((random_name, score, time))
-        # reset stars and asteroid list, and reset spawn rates and cycles
+
+    def reset_background(self):
+        """Reset the outerspace background."""
         self._stars_list.clear()
         self.make_stars()
+
+    def reset_asteroids(self):
+        """Clears the asteroids on screen and resets asteroid spawn cap."""
         self._asteroids_list.clear()
         self._max_asteroids = 6
+
+    def reset_difficulty(self):
+        """Reset the asteroid spawn and speed difficulty levels."""
         self._max_speed_range_custom = self._max_speed_range_default 
-        self._asteroid_spawn_cycle = 0
-        self._asteroid_speed_cycle = 0
-        self._asteroid_spawn_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
+        self._asteroid_spawning_level = 0
+        self._asteroid_speed_level = 0
+
+        # Recalibrate the timing of spawn difficulty increase before the speed difficulty increase
+        self._asteroid_spawn_increase_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
         self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer)
-        # clear powerup and treasure list
+
+    def clear_collectibles(self):
+        """Clears all powerups and treasure objects."""
         self._power_ups.clear()
         self._treasure.clear()
-        # reset player start 
-        self._player.reset_player()
-        self._game_clock.reset_time()
-        # player should now be on death screen, where they can either exit or go to main menu
-        self._menu._in_death_menu = True
-        self._menu._start_game = False
+
+    def play_game_over_sfx(self):
+        """Play a game over jingle."""
         game_over = game_assets.get_asset_sound("game_over.wav")
         set_sound_volume(game_over, 0.2)
         play_sound(game_over)
         self.stop_music()
-       
+
+    def set_to_death_screen(self):
+        """Update menu state flags to set the screen to the death screen."""
+        self._menu._in_death_menu = True
+        self._menu._start_game = False
+
+    def reset_game(self):
+        """
+        Resets the game state after player death, updates leaderboard,
+        and returns to the death menu. Maintains a top-5 leaderboard
+        based on score. Reset players data, clear all asteroids and collectibles that spawned, 
+        reset to the game's starting difficulty.
+        """
+        self.update_leaderboard_list()
+        self.reset_background()
+        self.reset_asteroids()
+        self.reset_difficulty()
+        self.clear_collectibles()
+        self._player.reset_player()
+        self.set_to_death_screen()
+        self.play_game_over_sfx()
+             
     def capped_asteroid_speed_timer(self):
-        if self._asteroid_speed_cycle < 6:
-            self._asteroid_speed_cycle += 1
-            # updates the low end and the high end of the speed range by 70 for each speed cycle increase
-            for i in range(len(self._max_speed_range_default)): 
-                self._max_speed_range_default[i] += 70
-            # print(f"Speed cycle {self._asteroid_speed_cycle}: Max asteroids = {self._max_speed_range_default}")
-
+        """
+        Increases asteroid level over time up to a cap of 6 levels.
+        Each level adds 70 speed units to both lower and upper bounds,
+        creating a steady difficulty curve as the game progresses.
+        """
+        if self._asteroid_speed_level < 6:
+            self._asteroid_speed_level += 1
+            # Increase both min and max speed values by 70 units per level
+            self._max_speed_range_custom[0] += 70
+            self._max_speed_range_custom[1] += 70
+                       
     def capped_asteroid_spawn_timer(self):
-        # For a certain number of times, increase the max asteroids on screen by 2
-        if self._asteroid_spawn_cycle < 7:
-            self._asteroid_spawn_cycle += 1
+        """
+        Increases maximum asteroids level on screen over time up to a cap
+        of 7 levels. Each level adds 2 more possible asteroids,
+        gradually increasing game difficulty.
+        """
+        if self._asteroid_spawning_level < 7:
+            self._asteroid_spawning_level += 1
             self._max_asteroids += 2
-            # print(f"Spawn cycle {self._asteroid_spawn_cycle}: Max asteroids = {self._max_asteroids}")
-
+            
     def initiate_asteroid_spawning_mechanics(self):
-        # only begin increasing asteroid speeds after the spawn cycle increases have completed
-        if self._asteroid_spawn_cycle == 7:
+        """
+        Controls the difficulty progression system. First increases asteroid count,
+        then transitions to increasing asteroid speed after count reaches maximum.
+        This creates a two-phase difficulty curve.
+        """
+        # Only start increasing speed after max spawn level is reached
+        if self._asteroid_spawning_level == 7:
             self._asteroid_speed_increase_timer.active = True
             self._asteroid_speed_increase_timer.update()
         else:
-            self._asteroid_spawn_timer.active = True
-            self._asteroid_spawn_timer.update()
+            self._asteroid_spawn_increase_timer.active = True
+            self._asteroid_spawn_increase_timer.update()
             
     def make_stars(self):
+        """Generates stars at random positions"""
         for i in range(50):
             random_star_pos = Vector2(randint(0,WINDOW_WIDTH), randint(0, WINDOW_HEIGHT))
             self._stars_list.append(Star(game_assets.get_asset_texture('star.png'), random_star_pos, 0, Vector2(15,15), Vector2(0,0)))
 
     def draw_outer_space(self):
-        # draws all the twinkling stars in the background
+        """Manages the twinkling stars background effect."""
         for star in (self._stars_list):
             star.dynamically_grow()
             star.movement_update(Vector2(0,0), 0, Vector2(0, 0), WHITE)
 
-    def draw_treasure(self):
-        # choose a random treasure texture
+    def create_treasure(self):
+        """
+        Adds treasure if there isn't already one on the screen.
+        The treasure is selected with weighted randomness to favor common items.
+        """
         treasure_variations = choice(['diamond.png', 'emerald.png', 'emerald.png', 'ruby.png', 'iron.png', 'iron.png', 'iron.png', 'iron.png', 'emerald.png', 'ruby.png', 'iron.png'])
         treasure_speed = 200
-
-        # only allow one treasure object to be on the screen at one time
         if len(self._treasure) < 1:
             random_treasure_pos = Vector2(randint(20, WINDOW_WIDTH - 60), randint(-4000, -1000)) 
             treasure_direction =  Vector2(0, 1)
-            # create a treasure object with a random texture, position and direction
             treasure = Treasure(random_treasure_pos, treasure_speed, treasure_direction)
             treasure.set_texture(game_assets.get_asset_texture(treasure_variations))
+            # Add to treasure list for spawning
             self._treasure += [treasure]
+
+    def handle_treasure_deletion(self):
+        """
+        Updates the position of each treasure as it falls and removes it if it falls off the screen.
+        """
         for treasure in self._treasure[:]:
             # remove treasure objects as they exit the sides of the screens
             treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), WHITE)
@@ -161,67 +232,122 @@ class SpaceGame():
             if pos.y > WINDOW_HEIGHT:
                 self._treasure.remove(treasure)
 
+    def draw_treasure(self):
+        """
+        Spawns treasure with value-weighted randomness.
+        Common items (iron) appear more frequently than rare items (diamonds).
+        Treasures fall vertically through space.
+        """
+        self.create_treasure()
+        self.handle_treasure_deletion()
+        
     def determine_asteroids_temperature_chance(self):
-        # get the current game_temperature instance variable
+        """
+        Maps current temperature to asteroid type probabilities.
+        Ries real-world weather data to gameplay, helping create 
+        varied difficulty based on chosen location. Returns
+        the distribution for the game to use.
+        """
         temperature = self._game_temperature_custom
-       # Default asteroid spawn distribution if temperature doesn't match any range
+       
+        # Default distribution if no matching temperature range
         chances = {"normal" : 33, "icy" : 33, "fiery" : 34}
+
         for temp_range in self._temperature_to_asteroid_chance:
-            # look through each key and check if the temperature is within any one the rnages
+            # Check if the temperature falls within any of the defined ranges and update the chances accordingly
             if temp_range[0] <= temperature <= temp_range[1]:
-                # If a matching range is found, update the chances accordingly
                 chances = self._temperature_to_asteroid_chance[temp_range]
                 break
         return chances
 
-    def draw_asteroids(self):
-        # Determine the type chances based on the current temperature conditions
-        type_chances = self.determine_asteroids_temperature_chance()
-        # Select an asteroid type based on the determined chances
-        asteroid_type = choices(["normal", "icy", "fiery"],weights=[type_chances["normal"], type_chances["icy"], type_chances["fiery"]],k=1)[0]
-
-        if len(self._asteroids_list) < self._max_asteroids:
-            random_asteroid_pos = Vector2(randint(-15, WINDOW_WIDTH + 30), randint(-100, -50)) 
-            random_asteroid_speed = randint(self._max_speed_range_default[0], self._max_speed_range_default[1])
-            random_asteroid_direction =  Vector2(randint(-1,1), 1) 
-            # different skins of the asteroid based on what type
-            if asteroid_type == "fiery":
-                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('fiery_meteor.png'))
-            elif asteroid_type == "icy":
-                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('icy_meteor.png'))
-            else: 
-                current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
-            self._asteroids_list += [current_asteroid]
-        
-        # update the position of each asteroid on the screen, and remove those that go off screen
+    def handle_asteroid_deletion(self):
+        """
+        Updates the position of each asteroid as it falls
+        and removes it if it falls off the screen.
+        """
         for asteroid in self._asteroids_list[:]:
             asteroid.dynamically_rotate()
-            asteroid.project_asteroid() 
-        
+
+            # Update asteroid position
+            asteroid.project_asteroid()
             pos = asteroid.get_position()
             if pos.y > WINDOW_HEIGHT or (pos.x < -15 or pos.x > WINDOW_WIDTH + 30):
                 self._asteroids_list.remove(asteroid)
+
+    def create_single_asteroid(self):
+        """Creates a single asteroid to add to asteroid list."""
+        random_asteroid_pos = Vector2(randint(-15, WINDOW_WIDTH + 30), randint(-100, -50)) 
+        random_asteroid_speed = randint(self._max_speed_range_custom[0], self._max_speed_range_custom[1])
+        random_asteroid_direction =  Vector2(randint(-1,1), 1) 
+
+        # Get asteroid_type distributions
+        type_chances = self.determine_asteroids_temperature_chance()
+
+        # Weighted selection of asteroid type
+        asteroid_type = choices(["normal", "icy", "fiery"],weights=[type_chances["normal"], 
+        type_chances["icy"], type_chances["fiery"]],k=1)[0]
+
+        # Create asteroid based on determined type
+        if asteroid_type == "fiery":
+            current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('fiery_meteor.png'))
+        elif asteroid_type == "icy":
+            current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction, Vector2(101, 84), game_assets.get_asset_texture('icy_meteor.png'))
+        else: 
+            current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
+        self._asteroids_list += [current_asteroid]
+
+    def create_asteroids(self):
+        """
+        Adds asteroids as long as max hasn't been reached yet.
+        """
+        if len(self._asteroids_list) < self._max_asteroids:
+            self.create_single_asteroid()
+            
+    def draw_asteroids(self):
+        """
+        Spawns and manages asteroids with type probabilities determined
+        by temperature. Different asteroid types imply unique behaviors:
+        fiery (more damage), icy (freezing effect), and normal.
+        """
+        self.create_asteroids()
+        self.handle_asteroid_deletion()
     
-    def draw_power_ups(self):
+    def create_power_up(self):
+        """
+        Adds a power-up to the game, ensuring that:
+        - Only one power-up of each type is active at a time.
+        - The power-up is selected based on weighted randomness (favoring more common items).
+        - The selected power-up has its own spawn position and movement direction.
+        Power-ups can be:
+        - O2: Oxygen power-up, moves down from the top of the screen.
+        - Ammo: Ammunition power-up, moves from left to right.
+        - HP: Health power-up, moves from right to left.
+        This method handles the creation and addition of a new power-up to the game.
+    """
         select_pwrup = choice(["O2", "O2", "O2", "O2", "O2", "HP", "HP", "HP", "Ammo", "Ammo", "Ammo", "Ammo", "Ammo"])
         pwrup_speed = 300
 
-        # based on the powerup choice, use a dictionary to 
-        # determine the type of powerup object to spawn, as well as the specified direction
+        # Based on the powerup type, have a spawn rate, position and direction of movement, and class
         self._power_up_stats = {"O2" : {"class" : O2_PowerUP, "rarity" : 13, "pos" : Vector2(randint(20, WINDOW_WIDTH - 60), 
         randint(-1500, -500)), "direction" : Vector2(0,1)}, "Ammo" :{"class" : Ammo_PowerUP, "rarity" : 4, "pos" : Vector2(randint(-3000, -500), 
         randint(20, WINDOW_HEIGHT - 60)), "direction" : Vector2(1,0)}, "HP" : {"class" : HeartCapsule_PowerUP, "rarity" : 1, 
         "pos" : Vector2(randint(WINDOW_WIDTH, 3000), randint(20, WINDOW_HEIGHT - 60)), "direction" : Vector2(-1,0)}}
-        
+
+        # Ensure only one power-up of the selected type is on screen at a time
         if len(self._power_ups) < 1 and not any(isinstance(pwrup, self._power_up_stats[select_pwrup]["class"]) for pwrup in self._power_ups):
             select_pwrup_stats = self._power_up_stats[select_pwrup]
             self._power_ups.append(select_pwrup_stats["class"](select_pwrup_stats["pos"], pwrup_speed, select_pwrup_stats["direction"]))
 
-        # check when powerups leave the screen and remove as necessary
-        # O2 Power ups fall downwards, Ammo moves right, Hearts move left
+    def handle_power_up_deletion(self):
+        """
+        Updates the position of each power differently based on type.
+        remove powerup if it goes off the screen.
+        """
         for power_up in self._power_ups[:]:
+            # Note: Movement update of each power_up is initilized differently to change movement
             power_up.movement_update(power_up.get_direction(), 0, Vector2(0, 0), WHITE)
             pos = power_up.get_position()
+
             if isinstance(power_up, O2_PowerUP):
                 if pos.y > WINDOW_HEIGHT:
                     self._power_ups.remove(power_up)
@@ -231,125 +357,298 @@ class SpaceGame():
             elif isinstance(power_up, HeartCapsule_PowerUP):
                 if pos.x < -15:
                     self._power_ups.remove(power_up)
-
-    # handles asteroid collisions with player and lasers 
-    def asteroid_collision_check(self):
-         for asteroid in self._asteroids_list:
-            # create an asteroid bounding circle and player bounding triangle for checking collisions
-            asteroid_hitbox = Rectangle(asteroid.get_position().x - asteroid._sprite_texture.width / 2, asteroid.get_position().y - asteroid._sprite_texture.width / 2, asteroid.get_size().x, asteroid.get_size().y)
-            center = Vector2(int(asteroid.get_position().x), int(asteroid.get_position().y))
-            radius = asteroid_hitbox.width / 2
-            player_hitbox = Rectangle(self._player.get_position().x, self._player.get_position().y, self._player.get_size().x, self._player.get_size().y)
-            v1 = Vector2(player_hitbox.x + player_hitbox.width/2, player_hitbox.y - 8)
-            v2 = Vector2(player_hitbox.x , player_hitbox.y + player_hitbox.height)
-            v3 = Vector2(player_hitbox.x + player_hitbox.width, player_hitbox.y + player_hitbox.height)
-            #draw_circle_lines(int(center.x), int(center.y), radius, PURPLE) for debugging (asteroid collision circles)
-            #draw_triangle_lines(v1,v2,v3,RED) for debugging (player collision triangle)
-
-            # end game if player oxygen meter reaches zero
-            if self._player._oxygen_meter.get_current_oxygen_level() == 0:
-                self.reset_game()
-
-            # check if asteroid type object collides with player
-            if check_collision_circle_line(center, radius, v1, v2) or check_collision_circle_line(center, radius, v1, v3) or check_collision_circle_line(center, radius, v2, v3): # check_collision_recs(asteroid_hitbox, player_hitbox):
-                crash = game_assets.get_asset_sound("crash.wav")
-                set_sound_volume(crash, 0.2)
-                self._asteroids_list.remove(asteroid)
-                # resets the player points when hit by asteroid and depending on asteroid type take a certain amount of damage
-
-                self._player.get_player_points().reset_multiplier()
-                if asteroid.get_texture() ==  game_assets.get_asset_texture('fiery_meteor.png'):
-                    for i in range(3):
-                        self._player.take_damage()
-                    play_sound(crash)
-                elif asteroid.get_texture() ==  game_assets.get_asset_texture('icy_meteor.png'):
-                    self._player.freeze_player()
-                    # player._unfreeze_player_timer.activate()
-                    self._player.take_damage()
-                else:
-                    for i in range(2):
-                        self._player.take_damage()
-                    play_sound(crash)
-                if self._player._current_health == 0:
-                    self.reset_game() # test game end
-
-            # destroy lasers upon contact with asteroids and remove from the screen 
-            for laser in self._player.get_lasers():
-                laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
-                if check_collision_circle_rec(center, radius, laser_hitbox):
-                    self._player._laser_projectiles.remove(laser)
-                
+        
+    def draw_power_ups(self):
+        """
+        Spawns power-ups with weighted probabilities based on usefulness.
+        Each power-up type has unique spawn locations and movement patterns:
+        - O2: spawns from top, moves down
+        - Ammo: spawns from left, moves right
+        - Health: spawns from right, moves left
+        The varied item movement patterns require careful player movement to collect 
+        power ups. Powerups are deleted when they leave the screen.
+        """
+        
+        self.create_power_up()
+        self.handle_power_up_deletion()
+    
     def collect_item(self, item, collect_sfx):
+        """Helper function to handle power-up collection effects and audio."""
+        self.play_collection_sfx(collect_sfx)
+        self._power_ups.remove(item)
+    
+    def play_collection_sfx(self, collect_sfx):
         sound = game_assets.get_asset_sound(collect_sfx)
         set_sound_volume(sound, 0.5)
         play_sound(sound)
-        self._power_ups.remove(item)
 
-    def powerup_collision_check(self):
-        for powerup in self._power_ups:
-            # create bounding box for both powerup and player to check collisions
-            power_up_hitbox = Rectangle(powerup.get_position().x, powerup.get_position().y, powerup.get_size().x, powerup.get_size().y)
-            player_hitbox = Rectangle(self._player.get_position().x, self._player.get_position().y, self._player.get_size().x, self._player.get_size().y)
-            # draw_rectangle_lines_ex(power_up_hitbox, 1, RED) (for debugging powerup hitbox)
+    def play_damage_sfx(self):
+        crash = game_assets.get_asset_sound("crash.wav")
+        set_sound_volume(crash, 0.2)
+        play_sound(crash)
 
-            # handles behavior for collisions, different player stats are effected based on the 
-            # type (or texture) of the powerup
+    def deal_player_damage(self, texture):
+        """
+        Damage player based on asteroid texture.
+        Reset score multiplier for player.
+        """
+        # Fiery meteors deal triple damage
+        if texture == game_assets.get_asset_texture('fiery_meteor.png'):
+            for i in range(3):
+                self._player.take_damage()
+            self.play_damage_sfx()
 
-            if check_collision_recs(power_up_hitbox, player_hitbox):
-                # O2 powerups can only be collective if they have been unlocked after
-                # being shot by laser
-                if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == False:
-                    self._player.get_oxygen_meter().increase_oxygen()
-                    self.collect_item(powerup, "bubble.wav")
-                    self._player.get_player_points().increase_points(50)
-                    self._player.get_player_points().increase_multiplier(.1)
-                elif isinstance(powerup, Ammo_PowerUP):
-                    self._player.increase_ammo()
-                    self.collect_item(powerup, "ammo_collect.wav")
-                    self._player.get_player_points().increase_points(50)
-                    self._player.get_player_points().increase_multiplier(.1)
-                elif isinstance(powerup, HeartCapsule_PowerUP):
-                    self._player.increase_health()
-                    self.collect_item(powerup, "heart_collect.wav")
-                    self._player.get_player_points().increase_points(50)
-                    self._player.get_player_points().increase_multiplier(.1)
+        # Icy meteors freeze player and deal single damage
+        elif texture == game_assets.get_asset_texture('icy_meteor.png'):
+            self._player.freeze_player()
+            self._player.take_damage()
 
-            # handle behavior for lasers shooting and unlocking an O2 powerup
-            for laser in self._player.get_lasers():
-                laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
-                # draw_rectangle_lines_ex(laser_hitbox, 1, GREEN)
-                if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == True and check_collision_recs(power_up_hitbox, laser_hitbox):
+        # Normal meteors deal double damage
+        else:
+            for i in range(2):
+                self._player.take_damage()
+            self.play_damage_sfx()
+
+    def check_player_death(self):
+        """
+        End the game if player runs out of oxygen or dies from 
+        getting hit by asteroids. Reset the game if necessary
+        """
+        if self._player._oxygen_meter.get_current_oxygen_level() == 0 or self._player._current_health == 0 :
+                self.reset_game()
+           
+    def create_asteroid_hitbox(self, asteroid):
+        """
+        Creates a rectangular collision box for an asteroid. 
+        Returns the Rectangle object used for the hitbox.
+        """
+        asteroid_hitbox = Rectangle(
+                asteroid.get_position().x - asteroid._sprite_texture.width / 2, 
+                asteroid.get_position().y - asteroid._sprite_texture.width / 2, 
+                asteroid.get_size().x, 
+                asteroid.get_size().y)
+        return asteroid_hitbox
+    
+    def create_player_hitbox(self):
+        """
+        Creates a rectangular collision box for an player. 
+        Returns the Rectangle object used for the hitbox.
+        """
+        player_hitbox = Rectangle(
+                self._player.get_position().x, 
+                self._player.get_position().y, 
+                self._player.get_size().x, 
+                self._player.get_size().y
+            )
+        return player_hitbox
+    
+    def get_player_triangle_data(self, player):
+        """
+        Returns the vertices of the triangular spaceship as a tuple. 
+        Tuple is used to track the vertices needed to simulate a triangle collision box.
+        """
+        player_hitbox = self.create_player_hitbox()
+        v1 = Vector2(player_hitbox.x + player_hitbox.width/2, player_hitbox.y - 8)
+        v2 = Vector2(player_hitbox.x, player_hitbox.y + player_hitbox.height)
+        v3 = Vector2(player_hitbox.x + player_hitbox.width, player_hitbox.y + player_hitbox.height)
+        return (v1,v2,v3)
+        
+    def get_asteroid_cicle_data(self, asteroid):
+        """
+        Returns the center and radius of asteroid as a tuple. 
+        Tuple is used to track the radius and center
+        needed to simulate a circular collision box.
+        """
+        center = Vector2(int(asteroid.get_position().x), int(asteroid.get_position().y))
+        radius = asteroid.get_size().x / 2
+        return (center, radius)
+        
+    def check_asteroid_player_collision(self, asteroid):
+        """
+        Checks if the asteroid collides with the player. Uses A
+        circle hitbox detection for the asteroid with any side of the player triangular hitbox sides.
+        Hit by regular asteroid: player damage.
+        hit by icy asteroid: deal some damage and freeze player for a period of time.
+        Hit by firey asteroid: extra player damage.
+        For every hit, reset score multiplier for the player and
+        remove asteroid from the asteroid list.
+        """
+        center, radius = self.get_asteroid_cicle_data(asteroid)
+
+        # Vertices for the player hitbox triangle sides
+        v1, v2, v3 = self.get_player_triangle_data(self._player)
+
+        # Triangle-circle collision detection for player-asteroid hit
+        if check_collision_circle_line(center, radius, v1, v2) or check_collision_circle_line(center, radius, v1, v3) or check_collision_circle_line(center, radius, v2, v3):  
+            self._player.get_player_points().reset_multiplier()
+            self.deal_player_damage(asteroid.get_texture())
+            self._asteroids_list.remove(asteroid)
+
+    def check_asteroid_laser_collision(self, asteroid):
+        """
+        Checks if any of the player's lasers collide with the asteroid. 
+        If so, the laser is destroyed.
+        """
+        center, radius = self.get_asteroid_cicle_data(asteroid)
+        for laser in self._player.get_lasers():
+            laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
+            if check_collision_circle_rec(center, radius, laser_hitbox):
+                self._player._laser_projectiles.remove(laser)
+
+    def asteroid_collision_check(self):
+        """
+        Handles collision detection between asteroids, player, and lasers.
+        Uses circle-triangle collision for more accurate hit detection.
+        Different asteroid types cause different effects on player on collision:
+        - Fiery: Higher damage (3 hearts)
+        - Icy: Freezes player temporarily + moderate damage
+        - Normal: Standard damage (2 hearts)
+        If asteroids collide with the lasers, delete the laser, NOT the asteroid.
+        """
+        
+        for asteroid in self._asteroids_list:
+            self.check_asteroid_player_collision(asteroid)
+            self.check_asteroid_laser_collision(asteroid)
+
+    def increase_player_stats(self, powerup):
+        """
+        Depending on the type of powerup upon collect, either
+        increase ammo, health, or oxygen, award points and increase score multiplier. 
+        Remove powerup from the powerup list.
+        """
+        if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == False:
+            self._player.get_oxygen_meter().increase_oxygen()
+            self.collect_item(powerup, "bubble.wav")
+            self._player.get_player_points().increase_points(50)
+            self._player.get_player_points().increase_multiplier(.1)
+            
+        # Ammo and health can be collected directly
+        elif isinstance(powerup, Ammo_PowerUP):
+            self._player.increase_ammo()
+            self.collect_item(powerup, "ammo_collect.wav")
+            self._player.get_player_points().increase_points(50)
+            self._player.get_player_points().increase_multiplier(.1)
+
+        elif isinstance(powerup, HeartCapsule_PowerUP):
+            self._player.increase_health()
+            self.collect_item(powerup, "heart_collect.wav")
+            self._player.get_player_points().increase_points(50)
+            self._player.get_player_points().increase_multiplier(.1)
+
+    def check_player_powerup_collision(self, powerup):
+        """
+        Checks if the powerup collides with the player. Uses A
+        rectangular hitbox detection for both player and powerup.
+        Collected uncased O2 powerup: refuel oxygen
+        Collected heart powerup: add one heart to player
+        Collected ammo powerup: increase player laser ammo by 1
+        """
+
+        # Takes a parameter since powerups vary by size
+        power_up_hitbox = self.create_power_up_hitbox(powerup)
+
+        player_hitbox = self.create_player_hitbox()
+
+        if check_collision_recs(power_up_hitbox, player_hitbox):
+                # O2 requires unlocking first (shoot to unlock
+                self.increase_player_stats(powerup)
+    
+    def check_laser_O2_powerup_collision(self, powerup):
+        """
+        Checks if any of the player's lasers collide with the cased O2 Powerup. 
+        If so, the laser is destroyed and the O2 Powerup is unlocked for the player
+        to collect the oxygen. 
+        """
+        # Create player hitboxes for collision detection
+        power_up_hitbox = self.create_power_up_hitbox(powerup)
+        for laser in self._player.get_lasers():
+            laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
+
+            if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == True and check_collision_recs(power_up_hitbox, laser_hitbox):
                     explosion = game_assets.get_asset_sound("explosion.wav")
                     set_sound_volume(explosion, 0.1)
                     play_sound(explosion)
+                    # So that player can now collect oxygen bubble
                     powerup.change_lock_status(False)
                     self._player._laser_projectiles.remove(laser)
 
+    def create_power_up_hitbox(self, powerup):
+        """
+        Creates a rectangular collision box for an powerup. 
+        Returns the Rectangle object used for the powerup.
+        """
+        power_up_hitbox = Rectangle(
+                powerup.get_position().x, 
+                powerup.get_position().y, 
+                powerup.get_size().x, 
+                powerup.get_size().y
+            )
+        return power_up_hitbox
+    
+    def powerup_collision_check(self):
+        """
+        Manages collisions between player and power-ups, and laser interactions
+        with locked O2 power-ups. Each power-up has unique collection mechanics:
+        - O2: Must be unlocked by shooting first
+        - Ammo: Direct collection
+        - Health: Direct collection
+        This causes the player to have to make strategic decisions around oxygen management.
+        """
+
+        for powerup in self._power_ups:
+            self.check_player_powerup_collision(powerup)
+            self.check_laser_O2_powerup_collision(powerup)
+
+    def create_treasure_hitbox(self, treasure):
+        """
+        Creates and returns a hitbox (Rectangle) for a given treasure object.
+        """
+        treasure_hitbox = Rectangle(treasure.get_position().x, treasure.get_position().y, treasure.get_size().x, treasure.get_size().y)
+        return treasure_hitbox
+    
     def treasure_collision_check(self):
-        # points assigned for each treasure type
+        """
+        Handles player-treasure collisions. When player
+        collides with treasure, they add the treasures point value to
+        their school. Different treasures have different point values, with rarer items worth more points.
+        All treasures increase the score multiplier equally.
+        """
         treasure_points = {game_assets.get_asset_texture("iron.png"): 50, game_assets.get_asset_texture("diamond.png"): 200,
         game_assets.get_asset_texture("emerald.png"): 100, game_assets.get_asset_texture("ruby.png"): 75}
         for treasure in self._treasure[:]:
-            # make a collision bounding box and a player bounding to check collisions
-            treasure_hitbox = Rectangle(treasure.get_position().x, treasure.get_position().y, treasure.get_size().x, treasure.get_size().y)
-            player_hitbox = Rectangle(self._player.get_position().x, self._player.get_position().y, self._player.get_size().x, self._player.get_size().y)
-            # draw_rectangle_lines_ex(treasure_hitbox, 1, RED) for debugging
+            treasure_hitbox = self.create_treasure_hitbox(treasure)
+            player_hitbox = self.create_player_hitbox()
+
             if check_collision_recs(treasure_hitbox, player_hitbox):
-                # if there's a collision, play a collect sfx, remove treasure, and increase 
-                # player points and score multiplier
-                collect = game_assets.get_asset_sound("treasure_collect.wav")
-                set_sound_volume(collect, 0.2)
-                play_sound(collect)
-                self._treasure.remove(treasure)
-                self._player.get_player_points().increase_points(treasure_points[treasure.get_texture()])
-                self._player.get_player_points().increase_multiplier(.1)
-                        
+                self.handle_treasure_collision(treasure, treasure_points)
+
+    def handle_treasure_collision(self, treasure, treasure_points):
+        """
+        Handles the actions when a treasure is collected, plays the collection sound.
+        removes the treasure, and increases the player's points and player's score multiplier.
+        """
+        self._play_treasure_collect_sfx()
+        self._treasure.remove(treasure)
+        treasure_texture = treasure.get_texture()
+        self._player.get_player_points().increase_points(treasure_points[treasure_texture])
+        self._player.get_player_points().increase_multiplier(.1)
+        
+    def _play_treasure_collect_sfx(self):
+        """
+        Plays the treasure collection sound.
+        """
+        collect = game_assets.get_asset_sound("treasure_collect.wav")
+        set_sound_volume(collect, 0.2)
+        play_sound(collect)
+
     def initialize_collision_checks(self):
+        """Runs all collision detection systems each frame."""
         self.asteroid_collision_check()
         self.powerup_collision_check()
         self.treasure_collision_check()
 
     def spawn_obstacles_collectibles(self):
+        """Manages the spawning of all game elements."""
         self.initiate_asteroid_spawning_mechanics()
         self.draw_asteroids()
         self.draw_power_ups()
@@ -357,6 +656,7 @@ class SpaceGame():
         self.draw_outer_space()
 
     def initialize_game(self):
+        """Main game loop content - updates all game elements each frame."""
         self.spawn_obstacles_collectibles()
         self._player.initialize_player_mechanics()
         self._game_clock.run_clock()
@@ -364,62 +664,123 @@ class SpaceGame():
         self.start_music()
         update_music_stream(self._game_music)
     
-    def display_loading_screen(self):
+    def handle_loading_screen(self):
+        """
+        Displays loading screen while game resources initialize.
+        Repeatedly updates start_timer in the mean time.
+        """
         loading_texture = game_assets.get_asset_texture("loading_screen.png")
         loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
         loading_texture_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
         draw_texture_pro(loading_texture, loading_texture_source,loading_texture_dest, Vector2(), 0, WHITE)
+        self._menu._start_timer.update()
 
     def should_exit_menu_status(self):
+        """Checks if user has clicked exit button."""
         return self._menu._exit_clicked
 
-    # API integration
-    def change_game_difficulty(self, city): # city is the user input variable stored in self._text_to_save of the InputBox when pressing enter after typing
+    def change_game_difficulty(self, city):
+        """
+        Weather API integration that modifies game difficulty based on
+        real-world weather data. Temperature affects asteroid types,
+        while wind speed affects asteroid movement speed.
+        
+        Falls back to defaults if city data cannot be retrieved.
+        """ 
         city_data = get_city_temp_wspd(city)
         if "temperature" in city_data and "windspeed" in city_data:
-            # A correct return from the get_city_temp_wdsp looks like: {'temperature': 42, 'windspeed': 2} for some city
-            wind_speed_range = [city_data["windspeed"] * 100, city_data["windspeed"] * 100 + 50] # create some arbrituary range based on the city windspeed
+
+           # Scale wind speed to appropriate game speed range
+            wind_speed_range = [city_data["windspeed"] * 100 + 1, city_data["windspeed"] * 100 + 50] 
             self._city_custom = city
-            self._game_temperature_custom = city_data["temperature"] # temperature returned
-            self._max_speed_range_custom = wind_speed_range # speed range returned
+            self._game_temperature_custom = city_data["temperature"] 
+            self._max_speed_range_custom = wind_speed_range
+
         else:
+            # Fallback to defaults if API call fails
             self._city_custom = self._city_default
             self._game_temperature_custom =  self._game_temperature_default
             self._max_speed_range_custom = self._max_speed_range_default
     
     def run(self):
+        """
+        Main game loop that handles menu navigation, game state transitions,
+        and drawing appropriate buttons based on game state.
+        """
+        
+        # State machine for game menu navigation
         while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
             clear_background(BG_COLOR)
-            if self._menu._in_main_menu: 
-                self._menu.run_menu()
-                self._user_input_box.reset_input_box()
+            if self._menu._in_main_menu:
+                self.handle_main_menu()
             elif self._menu._in_death_menu:
-                self._menu.run_death_menu()
+                self.handle_death_menu()
             elif self._menu._in_leaderboard:
-                self._menu.run_leaderboard_menu()
+                self.handle_leaderboard_menu()
             elif self._menu._in_options:
-                self._menu.run_options_menu()
-                self._menu.draw_difficulty_information(self._city_custom, str(self._game_temperature_custom), str(self._max_speed_range_custom))
-                if self._menu._difficulty_clicked: # only display input_box if difficulty button hasn't been clicked already
-                    self._user_input_box.enable_input_box()
-                    if self._user_input_box._enter_is_pressed:
-                        city_typed = self._user_input_box._text_to_save
-                        self.change_game_difficulty(city_typed)
-                        self._user_input_box.reset_input_box() # reset _text_to_save and _input_text ui, as well as enter_is_pressed
+                self.handle_options_menu()
             elif self._menu._start_game:
-                self.initialize_game()
+                self.handle_start_game()
             else:
-                self.display_loading_screen()
-                self._menu._start_timer.update()
+                self.handle_loading_screen()
             end_drawing()
+        # Close the game 
+        self.cleanup_asteroids_game()
+
+    def handle_main_menu(self):
+        """
+        Handles the main menu logic, including drawing the menu and resetting the input box.
+        """
+        self._menu.run_menu()
+        self._user_input_box.reset_input_box()
+
+    def handle_death_menu(self):
+        """
+        Handles the death menu logic, drawing the death screen.
+        """
+        self._menu.run_death_menu()
+
+    def handle_leaderboard_menu(self):
+        """
+        Handles the leaderboard menu logic, drawing the leaderboard.
+        """
+        self._menu.run_leaderboard_menu()
+
+    def handle_options_menu(self):
+        """
+        Handles the options menu, including drawing difficulty information and handling user input for difficulty.
+        """
+        self._menu.run_options_menu()
+        self._menu.draw_difficulty_information(self._city_custom, str(self._game_temperature_custom), str(self._max_speed_range_custom))
+
+        if self._menu._difficulty_clicked:
+            # Only display the input box if the difficulty button hasn't been clicked
+            self._user_input_box.enable_input_box()
+            if self._user_input_box._enter_is_pressed:
+                city_typed = self._user_input_box._text_to_save
+                self.change_game_difficulty(city_typed)
+                self._user_input_box.reset_input_box()
+
+    def handle_start_game(self):
+        """
+        Initializes the game, checks player death, and manages the start of the game.
+        """
+        self.initialize_game()
+        self.check_player_death()
+
+    def cleanup_asteroids_game(self):
+        """
+        Performs cleanup when the game loop ends: 
+        unload assets and close the window.
+        """
         game_assets.unload()
         close_audio_device()
         close_window()
-    
 
-if __name__ == '__main__': # REMOVE LATER: replace with diffuclty setting by user input in-game
-    # test with api
+
+if __name__ == '__main__': 
+    
     """
     user_input = "Lawrenceville" # str(input("Enter a city: "))
     city_data = get_city_temp_wspd(user_input)

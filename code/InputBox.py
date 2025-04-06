@@ -5,21 +5,14 @@ from Assets import game_assets
 
 class InputBox:
     """
-    A rectangle that acts as a text box. 
+    A text box that allows user input with various customization options.
     
     Features:
-    - You can change the color for the rectangle borders, interior, as well as the text. 
-    - The input box tracks whether your mouse is hoving over the box, and will highlight it if so. 
-    - You can only type if your mouse is hoving over the box
-    - A maximum character limit will be given
-    - Input is stored after you press enter (box will exit out of type mode if you press enter, or dont hover over the space)
-    - You can choose to hide box after input has been saved
-    - Input box can be placed anywhere and can be resized
-    - typing backspace will remove the last character
-    - sound is placed after a letter is typed/deleted
-    - x icon will be placed to the left/right for the user to exit out of the input box w/o pressing enter
-    
-    Note: with the menu class, the self._difficulty_clicked will be used to show whether box should be shown
+    - Allows text input when mouse hovers over it.
+    - Supports character limit, backspace, and enter functionality.
+    - Can be resized, repositioned, and styled.
+    - Displays text or a placeholder ("Enter City") when empty.
+    - Tracks mouse hover and input events to show visual changes.
     """
     def __init__(self, pos, font, font_size, width, height, character_limit, border_color, interior_color, text_color):
         self._input_box_pos = pos
@@ -27,20 +20,18 @@ class InputBox:
         self._border_color = border_color
         self._interior_color = interior_color
         self._text_color = text_color
-        self._mouse_is_hovering = False # To track if the mouse is hovering over the input box
-        self._is_enabled = False # used by the game.py class and menu class, if difficulty button clicked twice remove box UI
-        self._input_box_text = "" # Text input to be displayed on the input box UI
-        self._text_to_save = ""  # The text to be saved when the user presses Enter
+        self._mouse_is_hovering = False 
+        self._is_enabled = False 
+        self._input_box_text = "" 
+        self._text_to_save = ""  
         self._input_box_font = font
         self._input_box_font_size = font_size
         self._input_box_width = width
         self._input_box_height = height
         self._input_box_rectangle = Rectangle(self._input_box_pos.x, self._input_box_pos.y, self._input_box_width, self._input_box_height)
         self._accepted_characters = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-        self._enter_is_pressed = False # used by game.py class to know if get request for city data should be made
+        self._enter_is_pressed = False
         
-        
-
     def draw_input_box(self):
         """
         Draw the input box rectangle on the screen with appropriate border and color,
@@ -54,6 +45,9 @@ class InputBox:
             draw_rectangle_lines_ex(self._input_box_rectangle, 10, self._border_color)
     
     def mouse_in_input_box(self):
+        """
+        Checks if the mouse is hovering inside the input box.
+        """
         mouse_pos = get_mouse_position()
         in_rectangle_width = self._input_box_pos.x <= mouse_pos.x <= self._input_box_pos.x + self._input_box_width
         in_rectangle_height = self._input_box_pos.y <= mouse_pos.y <= self._input_box_pos.y + self._input_box_height
@@ -68,41 +62,50 @@ class InputBox:
         else:
             self._mouse_is_hovering = False
         
-        if self._mouse_is_hovering:  # If the mouse is hovering, allow typing
-            user_character = chr(get_char_pressed()) # convert unicode to char
+        if self._mouse_is_hovering:  # Allow typing if the mouse is hovering
+            user_character = chr(get_char_pressed()) # Convert unicode to character
             if user_character in self._accepted_characters and len(self._input_box_text) <= self._character_limit:
-                self._input_box_text += user_character # add character to be displayed on input box UI
-                # delete the last character by saving a new copy of the input string with the end sliced off
+                self._input_box_text += user_character 
             if is_key_pressed(KEY_BACKSPACE) and len(self._input_box_text) > 0:
                 self._input_box_text = self._input_box_text[:-1]
                 # reset the input box UI and save text after hitting enter
             if is_key_pressed(KEY_ENTER):
                 self._text_to_save = self._input_box_text
                 self._enter_is_pressed = True
-                if len(self._text_to_save) > 0: # only consider reformatting for strings of atleast 1 character
-                    self.adjust_saved_text() # so that only the first character is capitalized and the rest is lower case
+                if len(self._text_to_save) > 0: # Ensure text has at least one character
+                    self.adjust_saved_text() # Format the text for saving
                  
                 
     
     def get_saved_text(self):
+        """
+        Returns the text that was saved after pressing enter.
+        """
         return self._text_to_save
 
-    # written in order to have a standardized text format to be saved after hitting enter, for the API's use
     def adjust_saved_text(self):
-        self._text_to_save = self._text_to_save.lower() # convert all characters to lowercase
+        """
+        Adjusts the saved text to have only the first character capitalized and the rest in lowercase.
+        This is done for standardized input formatting.
+        """
+        self._text_to_save = self._text_to_save.lower() 
         first_character = self._text_to_save[0]
-        # after getting first_character make it upper case and save it as the new first character
+
+        # Capitalize the first character
         first_character = first_character.upper() 
         self._text_to_save = first_character + self._text_to_save[1:]
 
     def draw_text_input_UI(self):
-        # Check if the input box is empty and set the appropriate text
+        """
+        Draws the current input text (or placeholder if empty) inside the input box.
+        Text is centered inside the box.
+        """
         if len(self._input_box_text) == 0:
-            display_text = "Enter City"
+            display_text = "Enter City" # Placeholder text
         else:
             display_text = self._input_box_text
 
-        # Measure the text dimensions (for both placeholder and input text)
+        # Measure text dimensions for correct centering
         text_dimensions = measure_text_ex(self._input_box_font, display_text, self._input_box_font_size, 0)
         text_width = text_dimensions.x
         text_height = text_dimensions.y
@@ -113,11 +116,17 @@ class InputBox:
 
 
     def enable_input_box(self):
+        """
+        Enables and draws the input box, processes user input, and displays text.
+        """
         self.draw_input_box()
         self.handle_input()
         self.draw_text_input_UI()
 
     def reset_input_box(self):
+        """
+        Resets the input box text and state after the input has been saved.
+        """
         self._input_box_text = ""
         self._text_to_save = ""
         self._enter_is_pressed = False
