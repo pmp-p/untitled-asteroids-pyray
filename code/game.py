@@ -139,9 +139,18 @@ class SpaceGame():
 
     def set_to_death_screen(self):
         """Update menu state flags to set the screen to the death screen."""
+
+        """
+        Old system
         self._menu._in_death_menu = True
         self._menu._start_game = False
+        """
 
+        # pop the current state (which was start game)
+        # push the death menu state
+        self._menu._menu_state_stack.pop()
+        self._menu._menu_state_stack.push("death_menu")
+        
     def reset_game(self):
         """
         Resets the game state after player death, updates leaderboard,
@@ -707,6 +716,25 @@ class SpaceGame():
         Main game loop that handles menu navigation, game state transitions,
         and drawing appropriate buttons based on game state.
         """
+
+        """
+        Note about efficiency:
+        This run method relies on several boolean flags (_in_main_menu, _in_death_menu) and 
+        uses if-elif chains to check and manage which state of the menu should be drawn. As game logic grows and more menus or 
+        states are added, I have to introduce more flags and conditions, while also ensuring that the increasingly complex 
+        boolean logic doesn't lead to errors. Overall, the code becomes longer, harder to read, and more difficult to extend each time 
+        I want to add a new menu screen. Managing more conditions to switch between them also becomes cumbersome. Handling 
+        backtracking—returning to the previous menu state while restoring the booleans to their original state—becomes annoying. 
+        Transitions between menu states are manually handled by altering multiple flags at once, which can result in error-prone 
+        and hard-to-follow code when there are many menus, submenus, and conditions to account for.thod relies on several boolean flags 
+        (_in_main_menu, _in_death_menu) and uses if-elif chains to check and manage which state of the menu should be drawn. As game 
+        logic grows and more menus or states are added, I have to introduce more flags and conditions, while also ensuring that the 
+        increasingly complex boolean logic doesn't lead to errors. Overall, the code becomes longer, harder to read, and more 
+        difficult to extend each time I want to add a new menu screen. Managing more conditions to switch between them also becomes 
+        cumbersome. Handling backtracking—returning to the previous menu state while restoring the booleans to their original state—becomes annoying. 
+        Transitions between menu states are manually handled by altering multiple flags at once, which can result in error-prone and hard-to-follow code 
+        when there are many menus, submenus, and conditions to account for.
+        """
         
         # State machine for game menu navigation
         while not window_should_close() and not self.should_exit_menu_status():
@@ -726,6 +754,44 @@ class SpaceGame():
                 self.handle_loading_screen()
             end_drawing()
         # Close the game 
+        self.cleanup_asteroids_game()
+
+    def run_optimized(self):
+        """
+        Main game loop that handles menu navigation, game state transitions,
+        and drawing appropriate buttons based on game state. 
+        Uses DoublyLinkedStack data structure for better efficiency.
+
+        """
+        
+        # Initialize with the main menu state
+        self._menu._menu_state_stack.push("main_menu")
+        
+        while not window_should_close() and not self.should_exit_menu_status():
+            begin_drawing()
+            clear_background(BG_COLOR)
+            
+            current_state = self._menu._menu_state_stack.top()
+
+            # Every new menu screen to add will have a current_state string associated with it
+            # this current_state is used to determine what new menu to now run
+            # To make a new menu screen, create another handle method
+            if current_state == "main_menu":
+                self.handle_main_menu()
+            elif current_state == "death_menu":
+                self.handle_death_menu()
+            elif current_state == "leaderboard":
+                self.handle_leaderboard_menu()
+            elif current_state == "options":
+                self.handle_options_menu()
+            elif current_state == "start_game":
+                self.handle_start_game()
+            # State stack is empty, so display loading screen
+            elif current_state == "loading_screen":
+                self.handle_loading_screen()
+            end_drawing()
+
+        # Close the game
         self.cleanup_asteroids_game()
 
     def handle_main_menu(self):
@@ -791,4 +857,4 @@ if __name__ == '__main__':
     game_test.run() # fix this function, this is the master function that involves the menu
     """
     game_test = SpaceGame()
-    game_test.run() 
+    game_test.run_optimized() 
