@@ -258,9 +258,13 @@ class SpaceGame():
         """
         Spawns and manages asteroids with type probabilities determined
         by temperature. Different asteroid types imply unique behaviors:
-        fiery (more damage), icy (freezing effect), and normal.
+        fiery (more damage), icy (freezing effect), and normal. 
+        Asteroids rotate as they move across screen
         """
         self.create_asteroids()
+        for asteroid in self._asteroids_list[:]:
+            asteroid.dynamically_rotate()
+            asteroid.project_asteroid()
         self.handle_asteroid_deletion()
 
     def draw_power_ups(self):
@@ -293,7 +297,7 @@ class SpaceGame():
             self._treasure += [treasure]
 
     def create_single_asteroid(self):
-        """Creates a single asteroid to add to asteroid list."""
+        """Creates a single asteroid to add to asteroid list. """
         random_asteroid_pos = Vector2(randint(-15, WINDOW_WIDTH + 30), randint(-100, -50)) 
         random_asteroid_speed = randint(self._max_speed_range_custom[0], self._max_speed_range_custom[1])
         random_asteroid_direction =  Vector2(randint(-1,1), 1) 
@@ -316,7 +320,7 @@ class SpaceGame():
 
     def create_asteroids(self):
         """
-        Adds asteroids as long as max hasn't been reached yet.
+        Adds asteroid as long as max hasn't been reached yet. 
         """
         if len(self._asteroids_list) < self._max_asteroids:
             self.create_single_asteroid()
@@ -364,10 +368,8 @@ class SpaceGame():
         and removes it if it falls off the screen.
         """
         for asteroid in self._asteroids_list[:]:
-            asteroid.dynamically_rotate()
 
             # Update asteroid position
-            asteroid.project_asteroid()
             pos = asteroid.get_position()
             if pos.y > WINDOW_HEIGHT or (pos.x < -15 or pos.x > WINDOW_WIDTH + 30):
                 self._asteroids_list.remove(asteroid)
