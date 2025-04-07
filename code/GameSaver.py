@@ -4,7 +4,8 @@ import os
 
 """
 Data to be saved is game difficulty (which uses city, city temperature
-and city windspeed), as well as the game's leaderboard.
+and city windspeed), as well as the game's leaderboard. At first, these 
+are the defaults to use before any save file has been used.
 """
 saved_data = {
             "Game Leaderboard" : [],

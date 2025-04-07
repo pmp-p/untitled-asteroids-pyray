@@ -16,7 +16,7 @@ class SpaceGame():
     fiery ones.
     """
 
-    def __init__(self, city="Default", difficulty_temp=65, difficulty_wdsp=MAX_ASTEROID_SPEED):
+    def __init__(self, city="Default", difficulty_temp=65, difficulty_wdsp=load_gamesave_file()["City wind speed range"]):
         
         # Creates the outerspace game background
         self._stars_list = [] 
@@ -28,6 +28,7 @@ class SpaceGame():
         self._city_custom = load_gamesave_file()["City selected"]
 
         # Default difficulty parameters as a failsafe
+        # Based on the city, there is a default speed rand to use
         self._max_speed_range_default = difficulty_wdsp
         self._game_temperature_default = difficulty_temp
         self._city_default = city
@@ -153,8 +154,13 @@ class SpaceGame():
         self._max_asteroids = 6
 
     def reset_difficulty(self):
-        """Reset the asteroid spawn and speed difficulty levels."""
-        self._max_speed_range_custom = self._max_speed_range_default 
+        """
+        Reset the asteroid spawn and speed difficulty levels.
+        Set the speed range diffcult to the base speed dependent on the city.
+        """
+        print(self._max_speed_range_default, self._max_speed_range_custom)
+        self._max_speed_range_custom = self._max_speed_range_default
+        print(self._max_speed_range_default, self._max_speed_range_custom)
         self._asteroid_spawning_level = 0
         self._asteroid_speed_level = 0
 
@@ -703,6 +709,7 @@ class SpaceGame():
             self._city_custom = city
             self._game_temperature_custom = city_data["temperature"] 
             self._max_speed_range_custom = wind_speed_range
+            self._max_speed_range_default = wind_speed_range
 
         else:
             # Fallback to defaults if API call fails
@@ -787,10 +794,11 @@ class SpaceGame():
             saved_data = erase_game_save_file()
 
             # Reset games leaderboard, and city data displays in-game as well
-            self._game_temperature_custom = saved_data["City temperature"]
-            self._max_speed_range_custom =  saved_data["City wind speed range"]
-            self._city_custom = saved_data["City selected"]
-            self._menu._leaderboard = saved_data["Game Leaderboard"]
+            self._game_temperature_custom = 65
+            self._max_speed_range_custom =  [200, 250]
+            self._max_speed_range_deault = [200, 250]
+            self._city_custom = "Default"
+            self._menu._leaderboard = []
 
             print(self._menu._leaderboard)
 
