@@ -11,9 +11,11 @@ class Node:
 class DoublyLinkedStack:
     """
     Head will always reference the most recently added node (top of the stack)
+    Tail will always reference the first in node (bottom of stack)
     """
     def __init__(self):
         self.head = None
+        self.tail = None
 
     def push(self, data): 
         """
@@ -24,13 +26,17 @@ class DoublyLinkedStack:
         if self.head == None:
             new_node = Node(data)
             self.head = new_node
+            self.last = new_node
         else:
             # If the stack isn't empty, the new node becomes the top
             new_node = Node(data)
-            # Set the current head's last pointer to the new node
-            self.head.last = new_node
+
             # Link the new node to the current head
             new_node.next = self.head
+
+            # Set the current head's last pointer to the new node
+            self.head.last = new_node
+
             self.head = new_node
 
     def pop(self):
@@ -43,12 +49,14 @@ class DoublyLinkedStack:
             return None
         
         top_element = self.head.data
-        # More than one item in the stack
+
+        # Only one item in the stack
         if self.head.next == None:
             self.head = None
+            self.tail = None
             return top_element
         
-        # Only one item in the stack
+        # More than one item in the stack
         else:
             next_head = self.head.next
             next_head.last = None
@@ -78,9 +86,9 @@ if __name__ == "__main__":
     doubly_linked_stack_test.pop()
     doubly_linked_stack_test.pop()
     doubly_linked_stack_test.pop()
-    doubly_linked_stack_test.pop()
-    doubly_linked_stack_test.pop()
-    doubly_linked_stack_test.pop()
+    print(doubly_linked_stack_test.pop())
+    print(doubly_linked_stack_test.pop())
+    print(doubly_linked_stack_test.pop())
     doubly_linked_stack_test.push(1)
     doubly_linked_stack_test.push(2)
     doubly_linked_stack_test.push(3)

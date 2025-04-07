@@ -795,6 +795,7 @@ class SpaceGame():
             print(self._menu._leaderboard)
 
             self._menu._erase_file_clicked = False
+            
     def handle_start_game(self):
         """
         Initializes the game, checks player death, and manages the start of the game.

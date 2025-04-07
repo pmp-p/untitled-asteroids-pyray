@@ -26,6 +26,7 @@ class Menu():
         # Game screen button events tied to each menu state
         self._menu_event_handlings = {"main_menu" : self.main_menu_buttons_handling , "death_menu" : self.death_menu_buttons_handling, 
                        "leaderboard" : self.leaderboard_buttons_handling, "options" : self.options_buttons_handling} 
+        
 
     def score_sort(self, entry):
         """
