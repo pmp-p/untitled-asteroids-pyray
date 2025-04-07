@@ -13,6 +13,7 @@ class Menu():
     def __init__(self):
         self._buttons = {}
         self._difficulty_clicked = False
+        self._erase_file_clicked = False
         self._exit_clicked = False
 
         # Load the saved leaderboard data
@@ -77,6 +78,7 @@ class Menu():
         self._buttons["main menu"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "MAIN MENU", game_assets.get_asset_font('slkscreb.ttf'), 60)
         self._buttons["options"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "OPTIONS", game_assets.get_asset_font('slkscreb.ttf'), 60)
         self._buttons["difficulty"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "DIFFICULTY", game_assets.get_asset_font('slkscreb.ttf'), 60)
+        self._buttons["erase file"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 200, 50, "ERASE SAVE", game_assets.get_asset_font('slkscreb.ttf'), 20)
             
     def draw_title(self):
         """
@@ -138,6 +140,7 @@ class Menu():
                 self._menu_state_stack.pop()  # Go back to the main menu
                 self._menu_state_stack.push("main_menu")
                 self._difficulty_clicked = False
+                self._erase_file_clicked = False
                 self.play_button_click_sfx()
 
         elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["difficulty"].get_rectangle()):
@@ -147,6 +150,12 @@ class Menu():
             else:
                 self._difficulty_clicked = False
                 self.play_button_click_sfx()
+        
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["erase file"].get_rectangle()):
+            if self._erase_file_clicked != True:
+                self._erase_file_clicked = True
+                self.play_button_click_sfx()
+            
         
     def leaderboard_buttons_handling(self):
         """Check clicks for buttons on leaderboard menu."""
@@ -204,6 +213,7 @@ class Menu():
         """
         self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
         self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 250))
+        self._buttons["erase file"].draw_button(RED, BLACK, Vector2(1600, 980))
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
         

@@ -7,11 +7,11 @@ Data to be saved is game difficulty (which uses city, city temperature
 and city windspeed), as well as the game's leaderboard.
 """
 saved_data = {
-    "Game Leaderboard" : None,
-    "City selected" : None,
-    "City temperature" : None,
-    "City wind speed range" : None
-}
+            "Game Leaderboard" : [],
+            "City selected" : "Default",
+            "City temperature" : 65,
+            "City wind speed range" : [200,250]
+        }
 
 
 def save_game_data_file(data_dictionary):
@@ -52,13 +52,10 @@ def load_gamesave_file():
 
 def erase_game_save_file():
     """
-    Erases all data in the 'saved_data' dictionary by setting each key's value to None.
-    After updating the dictionary, it saves the empty data with the save_file function
+    Erases all data in the 'saved_data' dictionary by setting each key's value to the defaults. Returns the fresh dictionary.
     """
-    for key in saved_data:
-        saved_data[key] = None
-    save_game_data_file(saved_data)
-
+    fresh_data = {"Game Leaderboard" : [],"City selected" : "Default","City temperature" : 65,"City wind speed range" : [200,250]}
+    return fresh_data
 
 
 

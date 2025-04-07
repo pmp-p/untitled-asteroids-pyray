@@ -767,7 +767,7 @@ class SpaceGame():
 
     def handle_options_menu(self):
         """
-        Handles the options menu, including drawing difficulty information and handling user input for difficulty.
+        Handles the options menu, including drawing difficulty information and handling user input for difficulty and whether to erase data.
         """
         self._menu.run_options_menu()
         self._menu.draw_difficulty_information(self._city_custom, str(self._game_temperature_custom), str(self._max_speed_range_custom))
@@ -780,6 +780,21 @@ class SpaceGame():
                 self.change_game_difficulty(city_typed)
                 self._user_input_box.reset_input_box()
 
+        # Erase save data upon button click
+        if self._menu._erase_file_clicked:
+            print("Data erased")
+
+            saved_data = erase_game_save_file()
+
+            # Reset games leaderboard, and city data displays in-game as well
+            self._game_temperature_custom = saved_data["City temperature"]
+            self._max_speed_range_custom =  saved_data["City wind speed range"]
+            self._city_custom = saved_data["City selected"]
+            self._menu._leaderboard = saved_data["Game Leaderboard"]
+
+            print(self._menu._leaderboard)
+
+            self._menu._erase_file_clicked = False
     def handle_start_game(self):
         """
         Initializes the game, checks player death, and manages the start of the game.
