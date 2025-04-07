@@ -1,0 +1,65 @@
+import json
+import os
+
+
+"""
+Data to be saved is game difficulty (which uses city, city temperature
+and city windspeed), as well as the game's leaderboard.
+"""
+saved_data = {
+    "Game Leaderboard" : None,
+    "City selected" : None,
+    "City temperature" : None,
+    "City wind speed range" : None
+}
+
+
+def save_game_data_file(data_dictionary):
+    """
+    Saves the provided dictionary to a file in JSON format inside the SavedGameData folder.
+    data_dictionary is the data you want the game to save. If save data file doesn't
+    exist, it will create one, and write the provided dictionary to a file
+    called player_data.txt. If a file already exists its data will be overridden.
+    """
+
+    folder_path = "SavedGameData"
+    file_name = "player_data.txt"
+    save_file_path = os.path.join(folder_path, file_name)
+    with open(save_file_path, 'w') as game_save_file:
+        json.dump(data_dictionary, game_save_file)
+
+def load_gamesave_file():
+    """
+    Loads the game data from the 'player_data.txt' file located in the 
+    'SavedGameData' folder. The function reads the JSON data from the file, 
+    and returns the resulting dictionary. If a file hasn't been made, return defaults
+    """
+    folder_path = "SavedGameData"
+    file_name = "player_data.txt"
+    save_file_path = os.path.join(folder_path, file_name)
+    if os.path.exists(save_file_path):
+        with open(save_file_path) as game_save_file:
+            return json.load(game_save_file)
+    else:
+        saved_data = {
+            "Game Leaderboard" : [],
+            "City selected" : "Default",
+            "City temperature" : 65,
+            "City wind speed range" : [200,250]
+        }
+        return saved_data
+
+
+def erase_game_save_file():
+    """
+    Erases all data in the 'saved_data' dictionary by setting each key's value to None.
+    After updating the dictionary, it saves the empty data with the save_file function
+    """
+    for key in saved_data:
+        saved_data[key] = None
+    save_game_data_file(saved_data)
+
+
+
+
+

@@ -3,6 +3,7 @@ from raylib import *
 from MyTimer import *
 from Assets import *
 from DoublyLinkedStack import *
+from GameSaver import *
 
 class Menu():
     """
@@ -13,7 +14,9 @@ class Menu():
         self._buttons = {}
         self._difficulty_clicked = False
         self._exit_clicked = False
-        self._leaderboard = []
+
+        # Load the saved leaderboard data
+        self._leaderboard = load_gamesave_file()["Game Leaderboard"]
         self._title = "untitled asteroids game"
         self.create_buttons()
         self._start_timer = Timer(4, False, False, self.start_game_after_delay)

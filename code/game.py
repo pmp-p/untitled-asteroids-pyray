@@ -3,6 +3,7 @@ from WeatherApi import *
 from Menu import *
 from random import *
 from InputBox import *
+from GameSaver import *
 
 
 class SpaceGame():
@@ -22,13 +23,13 @@ class SpaceGame():
         self.make_stars()
         
         # Weather-based difficulty parameters
-        self._game_temperature_custom = difficulty_temp 
-        self._max_speed_range_custom =  difficulty_wdsp 
-        self._city_custom = city
+        self._game_temperature_custom = load_gamesave_file()["City temperature"]
+        self._max_speed_range_custom =  load_gamesave_file()["City wind speed range"]
+        self._city_custom = load_gamesave_file()["City selected"]
 
         # Default difficulty parameters as a failsafe
-        self._max_speed_range_default = MAX_ASTEROID_SPEED 
-        self._game_temperature_default = 65 
+        self._max_speed_range_default = difficulty_wdsp
+        self._game_temperature_default = difficulty_temp
         self._city_default = city
 
         # Progressive difficulty spawning and speed range difficulty cycles
@@ -734,6 +735,13 @@ class SpaceGame():
                 print(current_state + " not recognized.")
 
             end_drawing()
+
+        # store the games data to be saved (city data, player leaderboard)
+        saved_data["Game Leaderboard"] = self._menu._leaderboard
+        saved_data["City selected"] = self._city_custom
+        saved_data["City temperature"] = self._game_temperature_custom
+        saved_data["City wind speed range"] = self._max_speed_range_custom
+        save_game_data_file(saved_data)
 
         # Close the game
         self.cleanup_asteroids_game()
