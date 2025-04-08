@@ -57,6 +57,13 @@ Then install:
 python3 -m pip install setuptools
 python3 -m pip install raylib==5.5.0.0
 
+Then clone:
+
+git clone (link of this repo)
+Go to the project directory
+Run!
+
+
 ## Game Controls
 
 ## Project structure
