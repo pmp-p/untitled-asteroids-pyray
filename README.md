@@ -131,9 +131,7 @@ The codebase is organized into several modules:
 * Memory management was a concern when it came to figuring out how to infinitely drawn powers while player is alive. There would need to be a system to keep track of the list of asteroids, power ups, and treasure leaving the screen as well as one deletion as the objects left the game screen. I used lists to keep track of the maximum objects that can be spawned as well as iterate through the game objects currently drawn on screen to determine whether to delete any.
 * Learned how to properly install Python with functions like pip and pyinstaller, as well as how to properly set python to Path system environment variable so that python can be typed in the terminal regardless of what folder you are in. Had to learn in order to use pip for installing dependencies/modules
 
-## Credits
-
-## How i figured out how to run (IGNORE THIS)
+### How i figured out how to run (IGNORE THIS)
 
 1. Installed Python3 if it is not already installed
 
@@ -164,6 +162,8 @@ The codebase is organized into several modules:
 6. Inside the folder code type
    * python Game.py
    * or type python3 Game.py
+
+## Credits
 
 Sprite Assets:
 
