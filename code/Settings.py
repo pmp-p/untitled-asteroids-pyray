@@ -1,7 +1,6 @@
 from pyray import *
 from raylib import *
-from random import randint, uniform, choice
-from os.path import join
+
 
 WINDOW_WIDTH, WINDOW_HEIGHT = 1920, 1080
 BG_COLOR = BLACK # (15,10,25,255)

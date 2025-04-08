@@ -4,7 +4,7 @@ from Menu import *
 from random import *
 from InputBox import *
 from GameSaver import *
-
+from GameSaver import saved_data
 
 class SpaceGame():
     """
@@ -749,6 +749,7 @@ class SpaceGame():
         saved_data["City temperature"] = self._game_temperature_custom
         saved_data["City wind speed range"] = self._max_speed_range_custom
         save_game_data_file(saved_data)
+        
 
         # Close the game
         self.cleanup_asteroids_game()
@@ -789,18 +790,12 @@ class SpaceGame():
 
         # Erase save data upon button click
         if self._menu._erase_file_clicked:
-            print("Data erased")
-
-            saved_data = erase_game_save_file()
-
             # Reset games leaderboard, and city data displays in-game as well
             self._game_temperature_custom = 65
             self._max_speed_range_custom =  [200, 250]
-            self._max_speed_range_deault = [200, 250]
+            self._max_speed_range_default = [200, 250]
             self._city_custom = "Default"
             self._menu._leaderboard = []
-
-            print(self._menu._leaderboard)
 
             self._menu._erase_file_clicked = False
             
@@ -830,7 +825,6 @@ class SpaceGame():
         game_assets.unload()
         close_audio_device()
         close_window()
-
 
 if __name__ == '__main__': 
     game_test = SpaceGame()
