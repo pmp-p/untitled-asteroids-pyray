@@ -30,6 +30,8 @@ Asteroid Speed: Over time, the speed range of asteroids increases in a set numbe
 
 #### Weather API Usage
 
+https://rapidapi.com/oktamovshohjahon/api/weather-api138/playground/apiendpoint_acb2971f-25d4-4a29-b5d6-87b9f3f8131b
+
 A weather API collects temperature and wind speed information for a city entered by the player through the Difficulty button in the options menu. The temperature is used to modify the distribution of asteroid types, simulating weather-impact on asteroid spawning. The wind speed influences the default speed at which asteroids spawn.
 
 #### Save/Load Feature
