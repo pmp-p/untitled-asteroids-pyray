@@ -6,41 +6,29 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 * Knowledge of Object-Oriented Programming, Inheritance, File Processing, Data Strutures, and Game-Loop logic
 * Raylib package installed on your computer (see To Run the Game Below)
-* Python3, with pip
+* Python (installed with pip)
 * Knowledge of utilizing API's
 * Requests module is installed (For the Weather API)
 
 ## To run/setup this program in terminal
 
-1. Installed Python3 if it is not already installed
+1. Installed Python if it is not already installed
 
-   * You can type, python3 --version, in terminal to see the version number if it exists. The version used to implement this program was Python 3.13.2 on Windows for reference.
-   
-   * If not, install the latest version of python here for your operating system: https://www.python.org/downloads/
+   * You can type, python --version, in terminal to see the version number if it exists. 
 
-   * Be sure to add pip as an optional feature to download, and add Python to Path System Environment Variable.
+2. Install the raylib package (installing raylib installs the raylib/pyray modules). Make sure python has been installed with pip
 
-   * Find the file folder of where the python.exe version is installed. To add Python3, simply make a copy of the python.exe file and rename it to python3.
+   * pip install raylib
+     
+3. If requests module insInstall the requests module (for the Weather API). 
 
-2. Install the latest version of pip if it isn't installed already
-
-   * python3 -m pip install --upgrade pip
-
-3. Install the raylib package (installing raylib installs the raylib/pyray modules)
-
-   * python3 -m pip install setuptools
-   * python3 -m pip install raylib==5.5.0.0
-
-4. Install the requests module (for the Weather API) 
-
-   * python.exe -m pip install requests
-   * Note that this installs the module globally*
+   * pip install requests
 
 5. Git clone this repository
    
 6. Inside the folder code type
    * python Game.py
-   * or type python3 Game.py
+   * replace "python' with whatever .exe file you had installed for python
 
 
 ## Core Gameplay
