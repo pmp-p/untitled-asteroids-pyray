@@ -2,6 +2,11 @@
 
 A retro-styled Asteroids game clone where you survive as long as possible avoiding asteroids while collecting powerups to keep you alive and treasure to increase your score. 
 
+## Prequisities
+
+* Knowledge of Object-Oriented Programming, Inheritance, File Opening, Data Strutures
+* PyRay/RayLib libraries install on your computer (see To Run Below)
+  
 ## Core Gameplay
 
 This game utilizes a state stack system to manage various game screens, enabling smooth transitions between menus and gameplay. The core gameplay loop activates when the game enters the Gameplay state. The game involves avoiding randomly spawning asteroids, collecting treasures, and managing resources, with a progressive difficulty system that adapts as the player survives.
@@ -34,3 +39,29 @@ The game includes a save/load feature that allows players to save their difficul
 Upon death, the player’s time survived and points are recorded in a leaderboard, which tracks the top 5 players. This leaderboard allows players to compete for the highest scores and longest survival times.
 
 ## To Run
+
+This program uses the RayLib/PyRay libraries for graphics. To run the program, first install these libraries to your computer.
+
+https://pypi.org/project/raylib/
+
+First, make sure latest pip is installed:
+
+python3 -m pip install --upgrade pip
+
+Then install:
+
+python3 -m pip install setuptools
+python3 -m pip install raylib==5.5.0.0
+
+## Game Controls
+
+## Project structure
+
+## ScreenShots
+
+## Author's Note
+
+## Credits
+
+## Liscencing
+
