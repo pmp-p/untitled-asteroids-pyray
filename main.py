@@ -5,7 +5,6 @@ from random import *
 from InputBox import *
 from GameSaver import *
 from GameSaver import saved_data
-import sys
 import asyncio
 
 """
@@ -51,32 +50,16 @@ def load_every_game_asset():
 
        game_assets.get_asset_music("game_music.mp3")
 
-       # Platform-specific sound loading
-       if sys.platform == "emscripten":
-              # If running in a browser (Emscripten), use .ogg files
-              game_assets.get_asset_sound("ammo_collect.ogg")
-              game_assets.get_asset_sound("bubble.ogg")
-              game_assets.get_asset_sound("button_click.ogg")
-              game_assets.get_asset_sound("crash.ogg")
-              game_assets.get_asset_sound("explosion.ogg")
-              game_assets.get_asset_sound("freeze_sfx.ogg")
-              game_assets.get_asset_sound("game_over.ogg")
-              game_assets.get_asset_sound("heart_collect.ogg")
-              game_assets.get_asset_sound("laser.ogg")
-              game_assets.get_asset_sound("treasure_collect.ogg")
-       else:
-              # For native environments, use .wav files
-              game_assets.get_asset_sound("ammo_collect.wav")
-              game_assets.get_asset_sound("bubble.wav")
-              game_assets.get_asset_sound("button_click.wav")
-              game_assets.get_asset_sound("crash.wav")
-              game_assets.get_asset_sound("explosion.wav")
-              game_assets.get_asset_sound("freeze_sfx.wav")
-              game_assets.get_asset_sound("game_over.wav")
-              game_assets.get_asset_sound("heart_collect.wav")
-              game_assets.get_asset_sound("laser.wav")
-              game_assets.get_asset_sound("treasure_collect.wav")
-              
+       game_assets.get_asset_sound("ammo_collect.wav")
+       game_assets.get_asset_sound("bubble.wav")
+       game_assets.get_asset_sound("button_click.wav")
+       game_assets.get_asset_sound("crash.wav")
+       game_assets.get_asset_sound("explosion.wav")
+       game_assets.get_asset_sound("freeze_sfx.wav")
+       game_assets.get_asset_sound("game_over.wav")
+       game_assets.get_asset_sound("heart_collect.wav")
+       game_assets.get_asset_sound("laser.wav")
+       game_assets.get_asset_sound("treasure_collect.wav")
 
 # load all game assets now to prevent lag at runtime or network errors
 load_every_game_asset()
