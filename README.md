@@ -7,7 +7,8 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 * Knowledge of Object-Oriented Programming, Inheritance, File Processing, Data Strutures, and Game-Loop logic
 * PyRay/RayLib libraries installed on your computer (see To Run the Game Below)
 * Python installed
-* Requests module is installed (to use the API)
+* Knowledge of utilizing API's
+* Requests module is installed (For the Weather API)
   
 ## Core Gameplay
 
