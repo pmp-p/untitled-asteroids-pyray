@@ -10,7 +10,7 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 * Knowledge of utilizing API's
 * Requests module is installed (For the Weather API)
 
-## To run/setup this program in terminal
+## To run program in terminal
 
 1. Installed Python if it is not already installed
 
