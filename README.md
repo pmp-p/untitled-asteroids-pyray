@@ -101,12 +101,12 @@ Sprite Assets:
 
 ### Pixabay Content License (https://pixabay.com/service/license-summary/)
 
-https://pixabay.com/sound-effects/retro-coin-4-236671/
-https://pixabay.com/sound-effects/coin-recieved-230517/ 
-https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/ 
-https://pixabay.com/sound-effects/mag-in-82094/
-https://pixabay.com/sound-effects/lighter-click-271118/
-https://pixabay.com/sound-effects/menu-button-88360/
-https://pixabay.com/sound-effects/siren-alert-96052/
-https://pixabay.com/sound-effects/breaking-glass-84819/ 
+* https://pixabay.com/sound-effects/retro-coin-4-236671/
+* https://pixabay.com/sound-effects/coin-recieved-230517/ 
+* https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/ 
+* https://pixabay.com/sound-effects/mag-in-82094/
+* https://pixabay.com/sound-effects/lighter-click-271118/
+* https://pixabay.com/sound-effects/menu-button-88360/
+* https://pixabay.com/sound-effects/siren-alert-96052/
+* https://pixabay.com/sound-effects/breaking-glass-84819/ 
 
