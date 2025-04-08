@@ -42,18 +42,25 @@ The game includes a save/load feature that allows players to save their difficul
 
 Upon death, the player’s time survived and points are recorded in a leaderboard, which tracks the top 5 players. This leaderboard allows players to compete for the highest scores and longest survival times.
 
-## To Run
+## To Run the Game
 
-This program uses the RayLib/PyRay libraries for graphics. To run the program, first install these libraries to your computer.
+This program uses the RayLib/PyRay libraries for graphics. To run the program, first ensure that PyRay/RayLib have been installed. In addition, ensure that request module is also installed.
 
-https://pypi.org/project/raylib/
+1. Clone the Repository to your local machine using the following command typed in the terminal:
 
+git clone repository_url (replace repository_url with the URL of this repository)
 
-Then clone:
+2. Change directory to the new repository in the folder by typing: 
 
-git clone (link of this repo)
+cd repo (replace repo with the folder name of the repository itself)
 
+3. Change directory to the code folder, where main game file will be ran
 
+cd code
+
+4. Type the following command into the terminal
+
+python Game.py
 
 ## Game Controls
 
