@@ -66,8 +66,8 @@ Run!
 
 ## Game Controls
 
-Move Player - Arrow Keys
-Shoot Asteroid - Spacebar
+* Move Player - Arrow Keys
+* Shoot Asteroid - Spacebar
 
 ## Project structure
 
