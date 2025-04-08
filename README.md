@@ -4,12 +4,22 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 ## Core Gameplay
 
-The game uses a state stack system to determine what menu screen should be displayed, while also allowing smooth transitions between menu screens and the game play itself. 
-If the program's current state is gameplay, the core gameplay loop will begins. 
+This game utilizes a state stack system to manage various game screens, enabling smooth transitions between menus and gameplay. The core gameplay loop activates when the game enters the Gameplay state. The game involves avoiding randomly spawning asteroids, collecting treasures, and managing resources, with a progressive difficulty system that adapts as the player survives. 
 
-Asteroids will randomly spawn from the top of the screen and will be deleted upon exiting the edges of the game window. The asteroids will spawn with different types: Normal (normal damage done to player upon collision), Icy (less damage done to the player, but player freezes for a brief period of time), and Fiery (more damage done to the player). If the player loses all health, the game loop ends and the player is sent to the death screen menu state.
+### Asteroids
+Asteroids spawn randomly from the top of the screen and are deleted upon exiting the edges of the game window. Asteroids come in three types: Normal (Deals regular damage to the player upon collision), Icy (Deals less damage but freezes the player for a brief period), Fiery (Deals more damage to the player)
 
-While avoiding the asteroids, the player can collect treasure to increase their score. The player can also collect powerups to increase their stats (collect ammo to refill their ammo capacity, recover health by collecting hearts, and recover oxygen by shooting an oxygen tank and collecting the oxygen bubble.). As the player collects these objects while avoiding getting hit by asteroids, the score multiplier increases. The score mulitplier is stacked with the score of each item to increase points gained. THe score multipleir resets when the player gets hit once.
+### Player
+
+While avoiding asteroids, the player can collect various items; Treasure increases the player's score, Ammo refills the player's ammo capacity, Health packs restore player health, and Oxygen tanks can be shot to collect the resulting oxygen bubble to. Player oxygen drains over time and the player must manage ammo to collect enough oxygen bubbles to survive. The player's score multiplier also increases as they collect treasures and power-ups while avoiding asteroid collisions. However, the multiplier resets if the player is hit by an asteroid.
+
+### Difficulty Progression
+
+The game features a dynamic difficulty system that adjusts based on the player’s survival time: 
+
+Asteroid Frequency: Initially, asteroids spawn at regular intervals. As the player survives, the number of asteroids increases.
+
+Asteroid Speed: Over time, the speed range of asteroids increases in a set number of intervals, making the game more challenging.
 
 There is a difficulty progression system as the player survives. First, the asteroids begin spawning at regular intervals at greater amounts each internal. Then, the speed range of the asteroids increase for a set number of intervals. 
 
@@ -17,6 +27,6 @@ A weather API is used to collect temperature and windspeed information for a cit
 
 When the player dies, time survived along with points is stored in a leaderboard and is sorted to have 5 players tracked up to. 
 
-The game uses a save/load feature to save the difficulty setting of the game (temperature and windspeed) as well 
+The game uses a save/load feature to save the difficulty setting of the game (temperature and windspeed) as well.
 
 
