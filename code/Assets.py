@@ -24,6 +24,7 @@ class Assets:
             return self._assets[key]
         else:
             # Load the texture if it's not already loaded
+            # Note: all abspath does is get rid of .. (which stands for relative path)
             base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../images/" + key)) 
             self._assets[key] = load_texture(base_path)
             return self._assets[key]
