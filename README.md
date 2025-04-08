@@ -5,10 +5,10 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 ## Prequisities/Libraries needed
 
 * Knowledge of Object-Oriented Programming, Inheritance, File Processing, Data Strutures, and Game-Loop logic
-* Raylib package installed on your computer (see To Run the Game Below)
+* Raylib package installed on your computer 
 * Python (installed with pip)
 * Knowledge of utilizing API's
-* Requests module is installed (For the Weather API)
+* Requests module is installed 
 
 ## To run the program in your terminal:
 
