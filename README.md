@@ -21,12 +21,16 @@ Asteroid Frequency: Initially, asteroids spawn at regular intervals. As the play
 
 Asteroid Speed: Over time, the speed range of asteroids increases in a set number of intervals, making the game more challenging.
 
-There is a difficulty progression system as the player survives. First, the asteroids begin spawning at regular intervals at greater amounts each internal. Then, the speed range of the asteroids increase for a set number of intervals. 
+### Weather API Usage
 
-A weather API is used to collect temperature and windspeed information for a city when a player types a city into the difficulty button in options. THe tmepreature is mapped to a dcionary that matches with a spawn distrbutions of teh asteroid types to simulate weather impacted asteroid spawning. The windspeed is used to set the default speed of the spawning asteroids.
+A weather API collects temperature and wind speed information for a city entered by the player through the Difficulty button in the options menu. The temperature is used to modify the distribution of asteroid types, simulating weather-impact on asteroid spawning. The wind speed influences the default speed at which asteroids spawn.
 
-When the player dies, time survived along with points is stored in a leaderboard and is sorted to have 5 players tracked up to. 
+### Save/Load Feature
 
-The game uses a save/load feature to save the difficulty setting of the game (temperature and windspeed) as well.
+The game includes a save/load feature that allows players to save their difficulty settings (temperature and wind speed). This ensures that the game will remember the player's last difficulty configuration when resumed. The player can also click a button in settings to reset data to a fresh save file.
+
+### Leaderboard
+
+Upon death, the player’s time survived and points are recorded in a leaderboard, which tracks the top 5 players. This leaderboard allows players to compete for the highest scores and longest survival times.
 
 
