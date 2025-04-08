@@ -5,6 +5,7 @@ from random import *
 from InputBox import *
 from GameSaver import *
 from GameSaver import saved_data
+import asyncio 
 
 class SpaceGame():
     """
@@ -825,6 +826,112 @@ class SpaceGame():
         game_assets.unload()
         close_audio_device()
         close_window()
+
+    def run_optimized_web(self): # This is basically the main(self): method
+            """
+            Main game loop that handles menu navigation, game state transitions,
+            and drawing appropriate buttons based on game state. 
+            Uses DoublyLinkedStack data structure for better efficiency.
+
+            """
+            """
+            global WINDOW_WIDTH, WINDOW_HEIGHT 
+            global BG_COLOR
+            global PLAYER_SPEED 
+            global LASER_SPEED 
+            global OXYGEN_DEPLETION_RATE 
+            global FONT_SIZE 
+            global POINTS_FONT_SIZE 
+            global OXYGEN_FONT_SIZE 
+            global MAX_ASTEROID_SPEED
+            """
+            # Initialize with the main menu state
+            self._menu._menu_state_stack.push("main_menu")
+            
+            while not window_should_close() and not self.should_exit_menu_status():
+                 # Show fps, but don't show print any fps messaging on the terminal
+
+                set_target_fps(60)
+                set_trace_log_level(RL_LOG_WARNING)
+                current_fps = get_fps()
+                begin_drawing()
+                clear_background(BG_COLOR)
+                draw_text(f"FPS: {current_fps}", 10, 10, 40, WHITE)
+                
+                # This current_state is used to determine what new menu to now run
+                current_state = self._menu._menu_state_stack.top()
+                
+                # Menu screen to run based on current game state
+                if current_state in self._screens:
+                    self._screens[current_state]()
+                else:
+                    print(current_state + " not recognized.")
+
+                end_drawing()
+
+            # store the games data to be saved (city data, player leaderboard)
+            saved_data["Game Leaderboard"] = self._menu._leaderboard
+            saved_data["City selected"] = self._city_custom
+            saved_data["City temperature"] = self._game_temperature_custom
+            saved_data["City wind speed range"] = self._max_speed_range_custom
+            save_game_data_file(saved_data)
+            
+
+            # Close the game
+            self.cleanup_asteroids_game()
+
+async def run_optimized_web(self): # This is basically the main(self): method
+        """
+        Main game loop that handles menu navigation, game state transitions,
+        and drawing appropriate buttons based on game state. 
+        Uses DoublyLinkedStack data structure for better efficiency.
+
+        """
+        
+        global WINDOW_WIDTH, WINDOW_HEIGHT 
+        global BG_COLOR
+        global PLAYER_SPEED 
+        global LASER_SPEED 
+        global OXYGEN_DEPLETION_RATE 
+        global FONT_SIZE 
+        global POINTS_FONT_SIZE 
+        global OXYGEN_FONT_SIZE 
+        global MAX_ASTEROID_SPEED
+        
+        # Initialize with the main menu state
+        self._menu._menu_state_stack.push("main_menu")
+        
+        while not window_should_close() and not self.should_exit_menu_status():
+            # Show fps, but don't show print any fps messaging on the terminal
+
+            set_target_fps(60)
+            set_trace_log_level(RL_LOG_WARNING)
+            current_fps = get_fps()
+            begin_drawing()
+            clear_background(BG_COLOR)
+            draw_text(f"FPS: {current_fps}", 10, 10, 40, WHITE)
+            
+            # This current_state is used to determine what new menu to now run
+            current_state = self._menu._menu_state_stack.top()
+            
+            # Menu screen to run based on current game state
+            if current_state in self._screens:
+                self._screens[current_state]()
+            else:
+                print(current_state + " not recognized.")
+
+            asyncio.sleep(0) # test position? idk if this is the right place
+            end_drawing()
+
+        # store the games data to be saved (city data, player leaderboard)
+        saved_data["Game Leaderboard"] = self._menu._leaderboard
+        saved_data["City selected"] = self._city_custom
+        saved_data["City temperature"] = self._game_temperature_custom
+        saved_data["City wind speed range"] = self._max_speed_range_custom
+        save_game_data_file(saved_data)
+        
+        # Close the game
+        self.cleanup_asteroids_game()
 
 if __name__ == '__main__': 
     game_test = SpaceGame()
