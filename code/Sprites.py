@@ -4,7 +4,7 @@ from random import randint
 from Assets import *
 
 
-class Sprite2D():
+class Sprite2D:
     """
     represents a 2D sprite, which could be either moving or stationary.
 
@@ -15,6 +15,7 @@ class Sprite2D():
     direction: Direction, represented by a Vector2 object with x and y specifications
     texture: Texture, represented by a Texture2D object
     """
+
     def __init__(self, pos, speed, size, direction, texture):
         self._pos = pos
         self._speed = speed
@@ -25,7 +26,7 @@ class Sprite2D():
     def get_position(self):
         """Returns the current position of the sprite."""
         return self._pos
-    
+
     def get_speed(self):
         """Returns the current speed of the sprite."""
         return self._speed
@@ -33,7 +34,7 @@ class Sprite2D():
     def get_size(self):
         """Returns the current size of the sprite."""
         return self._size
-    
+
     def get_direction(self):
         """Returns the current direction of the sprite."""
         return self._direction
@@ -41,13 +42,15 @@ class Sprite2D():
     def get_texture(self):
         """Returns the current texture of the sprite."""
         return self._sprite_texture
-    
+
     def update_pos(self):
         """
         Updates the position of the sprite each frame based on its direction and speed.
         Uses deltaTime to ensure consistent movement regardless of frame rate.
         """
-        deltatime = get_frame_time() # deltatime (time passed since last frame), used to ensure consistent movement regardless of framerate
+        deltatime = (
+            get_frame_time()
+        )  # deltatime (time passed since last frame), used to ensure consistent movement regardless of framerate
         self._pos.x += self._direction.x * self._speed * deltatime
         self._pos.y += self._direction.y * self._speed * deltatime
 
@@ -59,7 +62,7 @@ class Sprite2D():
         """Set sprite texture."""
         self._sprite_texture = texture
 
-    def movement_update(self,direction_vector, rotation, origin, tint):
+    def movement_update(self, direction_vector, rotation, origin, tint):
         """
         Updates the sprite's position and draws the sprite based on the updated position and direction.
         """
@@ -68,31 +71,40 @@ class Sprite2D():
 
         # The source_rect defines the portion of the texture to draw
         # The dest_rect defines where the sprite will be drawn on the screen
-        source_rect = Rectangle(0,0, self.get_texture().width, self.get_texture().height)
-        dest_rect = Rectangle(self.get_position().x,self.get_position().y, self._size.x, self._size.y)
+        source_rect = Rectangle(0, 0, self.get_texture().width, self.get_texture().height)
+        dest_rect = Rectangle(self.get_position().x, self.get_position().y, self._size.x, self._size.y)
 
         draw_texture_pro(self.get_texture(), source_rect, dest_rect, origin, rotation, tint)
 
+
 class Spaceship(Sprite2D):
     """
-    Spaceship controlled by the player. Handles movement, shooting, UI (current health, ammo, points), 
+    Spaceship controlled by the player. Handles movement, shooting, UI (current health, ammo, points),
     and interactions with game objects (e.g., taking damage from asteroids, collecting power-ups).
     """
-    def __init__(self, texture=game_assets.get_asset_texture('green_ship.png'), pos=Vector2(WINDOW_WIDTH / 2 - 50, WINDOW_HEIGHT / 2), speed=PLAYER_SPEED, size=Vector2(112,75), direction=Vector2()):
+
+    def __init__(
+        self,
+        texture=game_assets.get_asset_texture("green_ship.png"),
+        pos=Vector2(WINDOW_WIDTH / 2 - 50, WINDOW_HEIGHT / 2),
+        speed=PLAYER_SPEED,
+        size=Vector2(112, 75),
+        direction=Vector2(),
+    ):
         super().__init__(pos, speed, size, direction, texture)
-        self._laser_projectiles = [] # list of laser objects fired
-        self._health_display = [] # list of heart sprites for HP UI
-        self._max_health = 9 # max hp used to fill health bar
-        self._current_health = 9 # current hp level
-        self.generate_health() # fill self._health_display for HP UI
-        self._ammo_display = [] # List of ammo sprites for Ammo UI
-        self._current_ammo = 6 # current ammo 
-        self._max_ammo = 6 # max ammo to fill self._ammo_display
-        self.generate_ammo() # fill self._current_ammo bar for ammo UI
-        self._oxygen_meter = OxygenMeter(game_assets.get_asset_font('slkscreb.ttf')) # Oxygen meter UI
-        self._score_tracker = Points(game_assets.get_asset_font('slkscreb.ttf')) # Points UI
-        self._is_frozen = False 
-        self._unfreeze_player_timer = Timer(5, False, False, self.unfreeze_player) # Timer used to unfreeze player
+        self._laser_projectiles = []  # list of laser objects fired
+        self._health_display = []  # list of heart sprites for HP UI
+        self._max_health = 9  # max hp used to fill health bar
+        self._current_health = 9  # current hp level
+        self.generate_health()  # fill self._health_display for HP UI
+        self._ammo_display = []  # List of ammo sprites for Ammo UI
+        self._current_ammo = 6  # current ammo
+        self._max_ammo = 6  # max ammo to fill self._ammo_display
+        self.generate_ammo()  # fill self._current_ammo bar for ammo UI
+        self._oxygen_meter = OxygenMeter(game_assets.get_asset_font("slkscreb.ttf"))  # Oxygen meter UI
+        self._score_tracker = Points(game_assets.get_asset_font("slkscreb.ttf"))  # Points UI
+        self._is_frozen = False
+        self._unfreeze_player_timer = Timer(5, False, False, self.unfreeze_player)  # Timer used to unfreeze player
 
     def freeze_player(self):
         """
@@ -108,7 +120,7 @@ class Spaceship(Sprite2D):
             freeze = game_assets.get_asset_sound("freeze_sfx.wav")
             set_sound_volume(freeze, 0.2)
             play_sound(freeze)
-            
+
     def unfreeze_player(self):
         """Restores the player's speed to its normal value and unfreezes them."""
         if self._is_frozen:
@@ -140,7 +152,7 @@ class Spaceship(Sprite2D):
     def get_current_ammo(self):
         """Returns the current ammo count of the spaceship."""
         return self._current_ammo
-    
+
     def get_lasers(self):
         """Returns the list of lasers fired by the spaceship."""
         return self._laser_projectiles
@@ -149,14 +161,14 @@ class Spaceship(Sprite2D):
         """
         Generates health UI by creating heart sprites for each health point and adding them to the health display list.
         """
-        sprite_offset = 0 # offset to help position heart sprites next to each other in the UI
+        sprite_offset = 0  # offset to help position heart sprites next to each other in the UI
         for i in range(self.get_current_health()):
             # create a Heart Sprite and add it to the health_display list to be draw later
             current_heart = HP(Vector2(50 + sprite_offset, 1000))
             self._health_display += [current_heart]
             # readjust offset each time based on the hearts size
             sprite_offset += current_heart.get_size().x
-    
+
     def display_hp(self):
         """
         Displays the health UI (hearts) for the spaceship.
@@ -175,7 +187,7 @@ class Spaceship(Sprite2D):
         else:
             # Switch the left most heart in the UI to be empty sprite texture
             self._health_display[self.get_current_health()].switch_heart_texture(True)
-    
+
     def increase_health(self):
         """
         Increases the spaceship's health by 1 and updates the health UI.
@@ -226,11 +238,11 @@ class Spaceship(Sprite2D):
         """
         for ammo in self._ammo_display:
             ammo.draw_laser_ammo()
-            
+
     def get_oxygen_meter(self):
         """Returns the oxygen meter UI for the spaceship."""
         return self._oxygen_meter
-    
+
     def drain_spaceship_oxygen(self):
         """
         Starts depleting the spaceship's oxygen and updates the oxygen meter.
@@ -240,7 +252,7 @@ class Spaceship(Sprite2D):
     def get_player_points(self):
         """Returns the points tracker for the spaceship."""
         return self._score_tracker
-    
+
     def draw_player_points(self):
         """
         Draws the player's points and multiplier on the screen.
@@ -248,7 +260,7 @@ class Spaceship(Sprite2D):
         self.get_player_points().draw_points()
         self.get_player_points().draw_multiplier()
 
-    def check_window_boundaries(self): 
+    def check_window_boundaries(self):
         """
         Checks if the spaceship is within the window boundaries.
         If the spaceship goes out of bounds, it is repositioned to stay within the screen.
@@ -261,9 +273,9 @@ class Spaceship(Sprite2D):
             self._pos.x = WINDOW_WIDTH - x_margin
         if self.get_position().y < 0:  # Top edge
             self._pos.y = 0
-        elif self.get_position().y + y_margin> WINDOW_HEIGHT:  # Bottom edge
+        elif self.get_position().y + y_margin > WINDOW_HEIGHT:  # Bottom edge
             self._pos.y = WINDOW_HEIGHT - y_margin
-        
+
     def shoot_laser(self):
         """
         Handles the laser shooting mechanics. The laser is fired when the spacebar is pressed, and ammo is deducted.
@@ -277,15 +289,15 @@ class Spaceship(Sprite2D):
                 # create a laser object aligned with the position of the player
                 laser_align_pos = Vector2(self.get_position().x + self.get_texture().width / 2 - 3, self.get_position().y - 30)
                 current_laser = Laser(laser_align_pos)
-                self._laser_projectiles += [current_laser] # laser is added to the current list of lasers on screen
-                self.remove_ammo() # ammo is removed from the UI
+                self._laser_projectiles += [current_laser]  # laser is added to the current list of lasers on screen
+                self.remove_ammo()  # ammo is removed from the UI
 
         # update the position of each laser on the screen and remove them as they go off screen
-        for laser in self.get_lasers()[:]: 
+        for laser in self.get_lasers()[:]:
             laser.movement_update(laser.get_direction(), 0, Vector2(0, 0), WHITE)
             if laser.get_position().y < 0:
                 self._laser_projectiles.remove(laser)
-    
+
     def initialize_player_mechanics(self):
         """
         Initializes player mechanics such as movement, shooting, and UI updates (health, ammo, points).
@@ -295,10 +307,24 @@ class Spaceship(Sprite2D):
             # start the player timer to be unfreezed
             self._unfreeze_player_timer.update()
             # update the ship position based on input; spaceship is tinted blue while frozen
-            self.movement_update(Vector2(int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))), 0, Vector2(), SKYBLUE)
+            self.movement_update(
+                Vector2(
+                    int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))
+                ),
+                0,
+                Vector2(),
+                SKYBLUE,
+            )
         else:
             # update ship position based on input
-            self.movement_update(Vector2(int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))), 0, Vector2(), WHITE)
+            self.movement_update(
+                Vector2(
+                    int(is_key_down(KEY_RIGHT)) - int(is_key_down(KEY_LEFT)), int(is_key_down(KEY_DOWN)) - int(is_key_down(KEY_UP))
+                ),
+                0,
+                Vector2(),
+                WHITE,
+            )
         # turn on laser shooting, draw ammo and health UI, display draining oxygen, and check window boundaries
         self.shoot_laser()
         self.display_hp()
@@ -306,19 +332,30 @@ class Spaceship(Sprite2D):
         self.draw_player_points()
         self.display_ammo()
         self.check_window_boundaries()
-        
+
+
 class Laser(Sprite2D):
     """
     Represents a laser shot by the player.
     """
-    def __init__(self, pos=Vector2(0, 0), speed=LASER_SPEED, size=Vector2(9,54), direction=Vector2(0,-1), texture=game_assets.get_asset_texture('green_laser.png')):
+
+    def __init__(
+        self,
+        pos=Vector2(0, 0),
+        speed=LASER_SPEED,
+        size=Vector2(9, 54),
+        direction=Vector2(0, -1),
+        texture=game_assets.get_asset_texture("green_laser.png"),
+    ):
         super().__init__(pos, speed, size, direction, texture)
+
 
 class Asteroid(Sprite2D):
     """
     Represents an asteroid in the game, which moves and rotates dynamically
     """
-    def __init__(self, pos, speed, direction, size=Vector2(101, 84), texture = game_assets.get_asset_texture('meteor.png')):
+
+    def __init__(self, pos, speed, direction, size=Vector2(101, 84), texture=game_assets.get_asset_texture("meteor.png")):
         super().__init__(pos, speed, size, direction, texture)
         # each asteroid starts with a different rotation
         self._rotation = randint(0, 90)
@@ -338,63 +375,75 @@ class Asteroid(Sprite2D):
     def get_rotation(self):
         """Returns the current rotation of the asteroid."""
         return self._rotation
-    
-    def project_asteroid(self): 
+
+    def project_asteroid(self):
         """
         Updates the position of the asteroid and draws it on the screen with its current rotation.
         """
         self.update_pos()
-        # 
-        asteroid_source = Rectangle(0,0, self.get_texture().width, self.get_texture().height)
-        asteroid_dest = Rectangle(self.get_position().x,self.get_position().y, self.get_texture().width, self.get_texture().height)
+        #
+        asteroid_source = Rectangle(0, 0, self.get_texture().width, self.get_texture().height)
+        asteroid_dest = Rectangle(self.get_position().x, self.get_position().y, self.get_texture().width, self.get_texture().height)
         asteroid_center = Vector2(self.get_texture().width / 2, self.get_texture().height / 2)
         draw_texture_pro(self.get_texture(), asteroid_source, asteroid_dest, asteroid_center, self._rotation, WHITE)
+
 
 class O2_PowerUP(Sprite2D):
     """
     Represents an Oxygen Power-Up that replenishes the player's oxygen level.
     O2_PowerUps are sprites that change their appearance depending on whether or not they are unlocked
     """
-    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_assets.get_asset_texture('water_tank.png'), is_locked=True):
+
+    def __init__(
+        self, pos, speed, direction, size=Vector2(65, 65), texture=game_assets.get_asset_texture("water_tank.png"), is_locked=True
+    ):
         super().__init__(pos, speed, size, direction, texture)
         self._is_locked = is_locked
 
     def change_lock_status(self, update_bool):
         if update_bool:
             self._is_locked = True
-            self._sprite_texture = game_assets.get_asset_texture('water_tank.png')
+            self._sprite_texture = game_assets.get_asset_texture("water_tank.png")
         else:
             self._is_locked = False
-            self._sprite_texture = game_assets.get_asset_texture('water.png')
-    
+            self._sprite_texture = game_assets.get_asset_texture("water.png")
+
     def get_lock_status(self):
         """
         Changes the lock status of the O2 power-up and updates its texture based on whether it is locked or unlocked.
         """
         return self._is_locked
 
+
 class Ammo_PowerUP(Sprite2D):
     """Represents an ammo power-up that replenishes the player's ammo."""
-    def __init__(self, pos, speed, direction, size=Vector2(65,65), texture=game_assets.get_asset_texture('laser_powerup.png')):
+
+    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_assets.get_asset_texture("laser_powerup.png")):
         super().__init__(pos, speed, size, direction, texture)
+
 
 class HeartCapsule_PowerUP(Sprite2D):
     """Represents a heart capsule power-up that restores the player's health."""
-    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_assets.get_asset_texture('health_power_up.png')):
+
+    def __init__(self, pos, speed, direction, size=Vector2(65, 65), texture=game_assets.get_asset_texture("health_power_up.png")):
         super().__init__(pos, speed, size, direction, texture)
+
 
 class Treasure(Sprite2D):
     """Represents a treasure (typically a diamond) that can be collected by the player."""
-    def __init__(self, pos, speed, direction, size=Vector2(61, 63), texture=game_assets.get_asset_texture('diamond.png')):
+
+    def __init__(self, pos, speed, direction, size=Vector2(61, 63), texture=game_assets.get_asset_texture("diamond.png")):
         super().__init__(pos, speed, size, direction, texture)
+
 
 class Clock(Sprite2D):
     """Represents a clock that tracks the time in the game."""
-    def __init__(self, font, texture = None, pos=Vector2(WINDOW_WIDTH / 2 - 37, 0), speed=0, size=Vector2(0,0), direction=Vector2()):
+
+    def __init__(self, font, texture=None, pos=Vector2(WINDOW_WIDTH / 2 - 37, 0), speed=0, size=Vector2(0, 0), direction=Vector2()):
         super().__init__(pos, speed, size, direction, texture)
-        self._current_time = 0 # time to be displayed on screen
-        self._time = Timer(1, True, False, self.count_up) # timer used to count up
-        self._font = font 
+        self._current_time = 0  # time to be displayed on screen
+        self._time = Timer(1, True, False, self.count_up)  # timer used to count up
+        self._font = font
 
     def reset_time(self):
         """Resets the clock to 0 and restarts the timer."""
@@ -404,7 +453,7 @@ class Clock(Sprite2D):
     def get_current_time(self):
         """Returns the current time displayed on the clock."""
         return self._current_time
-        
+
     def count_up(self):
         """Increments the current time by 1 every second."""
         self._current_time += 1
@@ -418,19 +467,28 @@ class Clock(Sprite2D):
             pos_offset = 85
         elif self.get_current_time() > 9 and self.get_current_time() <= 99:
             pos_offset = 50
-        draw_text_ex(self._font, str(self.get_current_time()), Vector2(self.get_position().x - pos_offset, self.get_position().y), FONT_SIZE, 10.0, WHITE)
-            
+        draw_text_ex(
+            self._font,
+            str(self.get_current_time()),
+            Vector2(self.get_position().x - pos_offset, self.get_position().y),
+            FONT_SIZE,
+            10.0,
+            WHITE,
+        )
+
     def run_clock(self):
         """Starts the game clock and updates the time display."""
         self._time.active = True
         self._time.update()
-        self.draw_time()  
+        self.draw_time()
+
 
 class OxygenMeter(Sprite2D):
     """
     Represents the player's oxygen meter, which depletes over time and can be replenished.
     """
-    def __init__(self, font, texture = None, pos=Vector2(50, 930), speed=0, size=Vector2(), direction=Vector2()):
+
+    def __init__(self, font, texture=None, pos=Vector2(50, 930), speed=0, size=Vector2(), direction=Vector2()):
         super().__init__(pos, speed, size, direction, texture)
         # oxygen level to be drawn on the screen
         self._current_oxygen_level = 100
@@ -466,7 +524,7 @@ class OxygenMeter(Sprite2D):
 
     def increase_oxygen(self):
         """Increases the oxygen level by 30 units, but caps it at 100."""
-        if self.get_current_oxygen_level() >= 70 and self.get_current_oxygen_level() <= 100 :
+        if self.get_current_oxygen_level() >= 70 and self.get_current_oxygen_level() <= 100:
             self._current_oxygen_level = 100
         else:
             self._current_oxygen_level += 30
@@ -477,16 +535,18 @@ class OxygenMeter(Sprite2D):
         self._oxygen_clock.update()
         self.draw_oxygen_level()
 
+
 class Points(Sprite2D):
     """
     Represents the player's points system, including the current points and score multiplier.
     """
+
     def __init__(self, font, texture=None, pos=Vector2(50, 50), speed=0, size=Vector2(), direction=Vector2()):
-        super().__init__(pos, speed, size,  direction, texture)
+        super().__init__(pos, speed, size, direction, texture)
         self._current_points = 0
         self._font = font
         self._multiplier = 1
-    
+
     def reset_points(self):
         """
         Resets the points and multiplier to their initial values.
@@ -501,7 +561,7 @@ class Points(Sprite2D):
     def reset_multiplier(self):
         """Reset the point multiplier."""
         self._multiplier = 1
-        
+
     def increase_multiplier(self, factor):
         """
         Increases the score multiplier by the given factor while ensuring it doesn't exceed 3.
@@ -511,11 +571,11 @@ class Points(Sprite2D):
             if self._multiplier > 3:
                 self._multiplier = 3  # Ensure the multiplier doesn't exceed 3
             self._multiplier = round(self._multiplier, 1)
-        
+
     def get_current_points(self):
         """Returns the current points of the player."""
         return self._current_points
-    
+
     def draw_points(self):
         """Draws the current points on the screen."""
         draw_text_ex(self._font, "score:" + str(self.get_current_points()), self.get_position(), POINTS_FONT_SIZE, 8.0, YELLOW)
@@ -523,7 +583,7 @@ class Points(Sprite2D):
     def draw_multiplier(self):
         """Draws the current multiplier on the screen if it's greater than 1."""
         if self.get_multiplier() > 1:
-            draw_text_ex(self._font, str(self._multiplier) + "x", Vector2(50,90), POINTS_FONT_SIZE - 5, 8.0, WHITE)
+            draw_text_ex(self._font, str(self._multiplier) + "x", Vector2(50, 90), POINTS_FONT_SIZE - 5, 8.0, WHITE)
 
     def decrease_points(self, amt):
         """Decreases the current points by the given amount."""
@@ -534,20 +594,22 @@ class Points(Sprite2D):
     def increase_points(self, amt):
         """Increases the current points by the given amount, factoring in the current multiplier."""
         self._current_points += int(amt * self._multiplier)
- 
+
+
 class Star(Sprite2D):
     """Represents a star that grows and shrinks over time."""
+
     def __init__(self, texture, pos, speed, size, direction):
         super().__init__(pos, speed, size, direction, texture)
         self._size_variation = randint(0, 12)
         # initializes a random starting size for each star
-        self._size = Vector2(size.x + self._size_variation, size.y + self._size_variation) 
+        self._size = Vector2(size.x + self._size_variation, size.y + self._size_variation)
         self._min_size = size.x
-        self._max_size = size.x * 1.8 # maximum size for each star to increase
+        self._max_size = size.x * 1.8  # maximum size for each star to increase
         # used to dynamically grow and shrink star over time based on whether it has reached the max size/min size
         self._continue_increasing = True
         self._sprite_texture = texture
-    
+
     def proportionally_increase_size(self, size_factor):
         """
         Increases the size of the star proportionally based on the given factor.
@@ -556,14 +618,14 @@ class Star(Sprite2D):
         self._size.y += size_factor
 
     def dynamically_grow(self):
-        """ 
-        Makes the star grow or shrink over time, alternating between increasing and decreasing its size. 
-        The size of the star fluctuates within a range between _min_size and _max_size. 
+        """
+        Makes the star grow or shrink over time, alternating between increasing and decreasing its size.
+        The size of the star fluctuates within a range between _min_size and _max_size.
         The growth is seamless.
         """
         dt = get_frame_time()
         growth_speed = 12
-        
+
         # If the star is still increasing in size and hasn't reached its max size, grow it
         if self._continue_increasing and (self.get_size().x) < self._max_size:
             self.proportionally_increase_size(dt * growth_speed)
@@ -578,14 +640,24 @@ class Star(Sprite2D):
         else:
             self._continue_increasing = True
             self.proportionally_increase_size(dt * growth_speed)
-            
+
+
 class HP(Sprite2D):
     """
-    Represents a health container (heart) in the game. 
-    This can either be full or empty, 
+    Represents a health container (heart) in the game.
+    This can either be full or empty,
     and the texture can change based on the state.
     """
-    def __init__(self, pos, speed=0, direction=Vector2(), size=Vector2(30,70), texture = game_assets.get_asset_texture('heart_container.png'), is_empty=False):
+
+    def __init__(
+        self,
+        pos,
+        speed=0,
+        direction=Vector2(),
+        size=Vector2(30, 70),
+        texture=game_assets.get_asset_texture("heart_container.png"),
+        is_empty=False,
+    ):
         super().__init__(pos, speed, size, direction, texture)
         self._is_empty = is_empty
 
@@ -601,17 +673,20 @@ class HP(Sprite2D):
         """
         if update_bool:
             self._is_empty = True
-            self._sprite_texture = game_assets.get_asset_texture('empty_heart_container.png')
+            self._sprite_texture = game_assets.get_asset_texture("empty_heart_container.png")
         else:
-            self._sprite_texture = game_assets.get_asset_texture('heart_container.png') 
+            self._sprite_texture = game_assets.get_asset_texture("heart_container.png")
             self._is_empty = False
+
 
 class Ammo(Sprite2D):
     """Represents a laser ammo item in the game."""
-    def __init__(self, pos, speed = 0, direction=Vector2(), size=Vector2(20,60), texture=game_assets.get_asset_texture('green_laser.png')):
+
+    def __init__(
+        self, pos, speed=0, direction=Vector2(), size=Vector2(20, 60), texture=game_assets.get_asset_texture("green_laser.png")
+    ):
         super().__init__(pos, speed, size, direction, texture)
 
     def draw_laser_ammo(self):
         """Draws the laser ammo on the screen."""
         draw_texture_v(self.get_texture(), self.get_position(), WHITE)
-

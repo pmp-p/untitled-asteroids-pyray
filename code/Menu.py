@@ -5,11 +5,13 @@ from Assets import *
 from DoublyLinkedStack import *
 from GameSaver import *
 
-class Menu():
+
+class Menu:
     """
-    Menu class that handles the user interface, button interactions, 
+    Menu class that handles the user interface, button interactions,
     and transitions between different menu states (main menu, options, leaderboard, etc.).
     """
+
     def __init__(self):
         self._buttons = {}
         self._difficulty_clicked = False
@@ -22,11 +24,14 @@ class Menu():
         self.create_buttons()
         self._start_timer = Timer(4, False, False, self.start_game_after_delay)
         self._menu_state_stack = DoublyLinkedStack()
-        
+
         # Game screen button events tied to each menu state
-        self._menu_event_handlings = {"main_menu" : self.main_menu_buttons_handling , "death_menu" : self.death_menu_buttons_handling, 
-                       "leaderboard" : self.leaderboard_buttons_handling, "options" : self.options_buttons_handling} 
-        
+        self._menu_event_handlings = {
+            "main_menu": self.main_menu_buttons_handling,
+            "death_menu": self.death_menu_buttons_handling,
+            "leaderboard": self.leaderboard_buttons_handling,
+            "options": self.options_buttons_handling,
+        }
 
     def score_sort(self, entry):
         """
@@ -35,7 +40,7 @@ class Menu():
         Returns int, The score of the player.
         """
         return entry[1]
-    
+
     def sort_leaderboard(self):
         """
         Sort the leaderboard by score in descending order.
@@ -53,9 +58,16 @@ class Menu():
         place = 1
         for player_data in self._leaderboard:
             player_data = player_data[0] + "    score: " + str(player_data[1]) + "    time: " + str(player_data[2])
-            text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), player_data, 55, 0)
+            text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), player_data, 55, 0)
             centered_txt_width = (WINDOW_WIDTH - text_dimensions.x) / 2
-            draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), str(place) + ". " + player_data, Vector2(centered_txt_width, text_height), 55, 0, YELLOW)
+            draw_text_ex(
+                game_assets.get_asset_font("slkscreb.ttf"),
+                str(place) + ". " + player_data,
+                Vector2(centered_txt_width, text_height),
+                55,
+                0,
+                YELLOW,
+            )
             text_height += 60
             place += 1
 
@@ -73,21 +85,35 @@ class Menu():
         """
         Creates all buttons for the menu with their positions, sizes, and text.
         """
-        self._buttons["start"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 450), 620, 80, "START", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["stats"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "LEADERBOARD", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["exit"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 650), 620, 80, "EXIT", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["main menu"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 550), 620, 80, "MAIN MENU", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["options"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "OPTIONS", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["difficulty"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 620, 80, "DIFFICULTY", game_assets.get_asset_font('slkscreb.ttf'), 60)
-        self._buttons["erase file"] = Button(Vector2(WINDOW_WIDTH/2 - 310, 750), 200, 50, "ERASE SAVE", game_assets.get_asset_font('slkscreb.ttf'), 20)
-            
+        self._buttons["start"] = Button(
+            Vector2(WINDOW_WIDTH / 2 - 310, 450), 620, 80, "START", game_assets.get_asset_font("slkscreb.ttf"), 60
+        )
+        self._buttons["stats"] = Button(
+            Vector2(WINDOW_WIDTH / 2 - 310, 550), 620, 80, "LEADERBOARD", game_assets.get_asset_font("slkscreb.ttf"), 60
+        )
+        self._buttons["exit"] = Button(
+            Vector2(WINDOW_WIDTH / 2 - 310, 650), 620, 80, "EXIT", game_assets.get_asset_font("slkscreb.ttf"), 60
+        )
+        self._buttons["main menu"] = Button(
+            Vector2(WINDOW_WIDTH / 2 - 310, 550), 620, 80, "MAIN MENU", game_assets.get_asset_font("slkscreb.ttf"), 60
+        )
+        self._buttons["options"] = Button(
+            Vector2(WINDOW_WIDTH / 2 - 310, 750), 620, 80, "OPTIONS", game_assets.get_asset_font("slkscreb.ttf"), 60
+        )
+        self._buttons["difficulty"] = Button(
+            Vector2(WINDOW_WIDTH / 2 - 310, 750), 620, 80, "DIFFICULTY", game_assets.get_asset_font("slkscreb.ttf"), 60
+        )
+        self._buttons["erase file"] = Button(
+            Vector2(WINDOW_WIDTH / 2 - 310, 750), 200, 50, "ERASE SAVE", game_assets.get_asset_font("slkscreb.ttf"), 20
+        )
+
     def draw_title(self):
         """
         Draws the title of the game in the center of the screen.
         """
-        title_text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, 80, 0)
+        title_text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), self._title, 80, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
-        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
+        draw_text_ex(game_assets.get_asset_font("slkscreb.ttf"), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
 
     def draw_difficulty_information(self, city, temp, speed):
         """
@@ -96,10 +122,31 @@ class Menu():
         temp (str): The temperature in Fahrenheit.
         speed (str): The speed range selected.
         """
-        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "City: " + city, Vector2(self._buttons["difficulty"].get_button_position().x , 480), 45, 0, WHITE)
-        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "Temperature: " + temp + " F", Vector2(self._buttons["difficulty"].get_button_position().x, 580), 45, 0, WHITE)
-        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "Speed range: " + speed, Vector2(self._buttons["difficulty"].get_button_position().x, 680), 45, 0, WHITE)
-        
+        draw_text_ex(
+            game_assets.get_asset_font("slkscreb.ttf"),
+            "City: " + city,
+            Vector2(self._buttons["difficulty"].get_button_position().x, 480),
+            45,
+            0,
+            WHITE,
+        )
+        draw_text_ex(
+            game_assets.get_asset_font("slkscreb.ttf"),
+            "Temperature: " + temp + " F",
+            Vector2(self._buttons["difficulty"].get_button_position().x, 580),
+            45,
+            0,
+            WHITE,
+        )
+        draw_text_ex(
+            game_assets.get_asset_font("slkscreb.ttf"),
+            "Speed range: " + speed,
+            Vector2(self._buttons["difficulty"].get_button_position().x, 680),
+            45,
+            0,
+            WHITE,
+        )
+
     def play_button_click_sfx(self):
         """
         Plays a sound effect when a button is clicked.
@@ -107,7 +154,7 @@ class Menu():
         button_click = game_assets.get_asset_sound("button_click.wav")
         set_sound_volume(button_click, 0.4)
         play_sound(button_click)
-            
+
     def check_button_clicks_optimized(self):
         """
         Checks for mouse button clicks and handles the logic for each menu state.
@@ -121,108 +168,136 @@ class Menu():
 
     def main_menu_buttons_handling(self):
         """Check clicks for buttons on main menu."""
-        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["start"].get_rectangle()):
-                # Pop but dont push start game screen yet, until timer has finished, then push menu and start to recalibrate
-                self._menu_state_stack.push("loading_screen")
-                self.play_button_click_sfx()
-                self._start_timer.activate()
-        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["stats"].get_rectangle()):
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["start"].get_rectangle()
+        ):
+            # Pop but dont push start game screen yet, until timer has finished, then push menu and start to recalibrate
+            self._menu_state_stack.push("loading_screen")
+            self.play_button_click_sfx()
+            self._start_timer.activate()
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["stats"].get_rectangle()
+        ):
             self._menu_state_stack.push("leaderboard")
             self.play_button_click_sfx()
-        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["options"].get_rectangle()):
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["options"].get_rectangle()
+        ):
             self._menu_state_stack.push("options")
             self.play_button_click_sfx()
-        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["exit"].get_rectangle()
+        ):
             self._exit_clicked = True
 
     def options_buttons_handling(self):
         """Check clicks for buttons on options menu."""
-        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._menu_state_stack.pop()  # Go back to the main menu
-                self._menu_state_stack.push("main_menu")
-                self._difficulty_clicked = False
-                self._erase_file_clicked = False
-                self.play_button_click_sfx()
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["main menu"].get_rectangle()
+        ):
+            self._menu_state_stack.pop()  # Go back to the main menu
+            self._menu_state_stack.push("main_menu")
+            self._difficulty_clicked = False
+            self._erase_file_clicked = False
+            self.play_button_click_sfx()
 
-        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["difficulty"].get_rectangle()):
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["difficulty"].get_rectangle()
+        ):
             if self._difficulty_clicked != True:
                 self._difficulty_clicked = True
                 self.play_button_click_sfx()
             else:
                 self._difficulty_clicked = False
                 self.play_button_click_sfx()
-        
-        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["erase file"].get_rectangle()):
+
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["erase file"].get_rectangle()
+        ):
             if self._erase_file_clicked != True:
                 self._erase_file_clicked = True
                 self.play_button_click_sfx()
-            
-        
+
     def leaderboard_buttons_handling(self):
         """Check clicks for buttons on leaderboard menu."""
-        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._menu_state_stack.pop()
-                self._menu_state_stack.push("main_menu")
-                self.play_button_click_sfx()
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["main menu"].get_rectangle()
+        ):
+            self._menu_state_stack.pop()
+            self._menu_state_stack.push("main_menu")
+            self.play_button_click_sfx()
 
     def death_menu_buttons_handling(self):
         """Check clicks for buttons on death menu."""
-        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["main menu"].get_rectangle()):
-                self._menu_state_stack.pop() # go to main menu
-                self.play_button_click_sfx()
-        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(get_mouse_position(), self._buttons["exit"].get_rectangle()):
-                self._exit_clicked = True
+        if is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["main menu"].get_rectangle()
+        ):
+            self._menu_state_stack.pop()  # go to main menu
+            self.play_button_click_sfx()
+        elif is_mouse_button_pressed(MOUSE_BUTTON_LEFT) and check_collision_point_rec(
+            get_mouse_position(), self._buttons["exit"].get_rectangle()
+        ):
+            self._exit_clicked = True
 
     def run_menu(self):
         """
         Runs the main menu by drawing buttons and handling button click checks.
         """
-        self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 450))
-        self._buttons["stats"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 550))
-        self._buttons["options"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 650))
-        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 750))
+        self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 450))
+        self._buttons["stats"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 550))
+        self._buttons["options"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 650))
+        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 750))
         self.draw_title()
-        # self.check_button_clicks()     
+        # self.check_button_clicks()
         self.check_button_clicks_optimized()
 
     def run_leaderboard_menu(self):
         """
         Runs the leaderboard menu by drawing the 'main menu' button and displaying leaderboard stats.
         """
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
+        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 850))
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
         self.draw_leaderboard_stats()
-          
+
     def run_death_menu(self):
         """
         Runs the death menu, drawing 'main menu' and 'exit' buttons, and displaying 'GAME OVER' text.
         """
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 700, 550))
-        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 + 40, 550))
+        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 700, 550))
+        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 + 40, 550))
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
-        title_text_dimensions = measure_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "GAME OVER", 200, 0)
+        title_text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), "GAME OVER", 200, 0)
         centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
         centered_title_height = (WINDOW_HEIGHT - title_text_dimensions.y) / 2
-        draw_text_ex(game_assets.get_asset_font('slkscreb.ttf'), "GAME OVER", Vector2(centered_title_width, int(centered_title_height / 1.5)), 200, 0, WHITE)
+        draw_text_ex(
+            game_assets.get_asset_font("slkscreb.ttf"),
+            "GAME OVER",
+            Vector2(centered_title_width, int(centered_title_height / 1.5)),
+            200,
+            0,
+            WHITE,
+        )
 
     def run_options_menu(self):
         """
         This function runs the options menu by drawing buttons and checking for button clicks.
         It allows the player to go back to the main menu or access difficulty settings.
         """
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 850))
-        self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH/2 - 310, 250))
+        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 850))
+        self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 250))
         self._buttons["erase file"].draw_button(RED, BLACK, Vector2(1600, 980))
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
-        
-class Button():
+
+
+class Button:
     """
     Every button is a stylized rectangle object with text that can be clicked and interacted with.
     It includes features like hover effects, repositioning, and drawing to the screen.
     """
+
     def __init__(self, pos, width, height, text, font, font_size):
         self._pos = pos
         self._text = text
@@ -232,14 +307,14 @@ class Button():
         self._height = height
         # Create a rectangle representing the button's area, used for hover detection and drawing
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
-        self._hovered_yet = False 
-    
+        self._hovered_yet = False
+
     def get_button_position(self):
         """
         Returns the current position of the button.
         """
         return self._pos
-    
+
     def reposition_button(self, pos):
         """
         Repositions the button to a new position (Vector2).
@@ -247,7 +322,7 @@ class Button():
         """
         self._pos = pos
         self._rectangle = Rectangle(self._pos.x, self._pos.y, self._width, self._height)
-        
+
     def is_hovered(self):
         """
         Checks if the mouse cursor is hovering over the button.
@@ -257,7 +332,7 @@ class Button():
         in_rectangle_width = self._pos.x <= mouse_pos.x <= self._pos.x + self._width
         in_rectangle_height = self._pos.y <= mouse_pos.y <= self._pos.y + self._height
         return in_rectangle_width and in_rectangle_height
-  
+
     def draw_button(self, color1, color2, pos):
         """
         Draws the button, including hover effects. Changes color on hover.
@@ -276,7 +351,7 @@ class Button():
 
         # Draw the button's border
         self._draw_button_border()
-        
+
     def _get_button_colors(self, color1, color2):
         """
         Determines the button colors based on the hover state.
@@ -294,7 +369,7 @@ class Button():
             self._hovered_yet = False
 
         return box_color, text_color
-    
+
     def _play_hover_sound(self):
         """
         Plays the hover sound when the mouse enters the button.
@@ -315,17 +390,25 @@ class Button():
         """
         text_dimensions = measure_text_ex(self._font, self._text, self._font_size, 0.0)
         text_width, text_height = text_dimensions.x, text_dimensions.y
-        draw_text_pro(self._font, self._text,
-        Vector2(self._pos.x + self._rectangle.width / 2 - text_width / 2,
-        self._pos.y + self._rectangle.height / 2 - text_height / 2),
-        Vector2(0, 0), 0, self._font_size, 0.0, text_color)
+        draw_text_pro(
+            self._font,
+            self._text,
+            Vector2(
+                self._pos.x + self._rectangle.width / 2 - text_width / 2, self._pos.y + self._rectangle.height / 2 - text_height / 2
+            ),
+            Vector2(0, 0),
+            0,
+            self._font_size,
+            0.0,
+            text_color,
+        )
 
     def _draw_button_border(self):
         """
         Draws the border of the button.
         """
         draw_rectangle_lines_ex(self._rectangle, 5.0, WHITE)
-    
+
     def get_rectangle(self):
         """
         Returns the button's rectangle for collision detection (e.g., for clicks).

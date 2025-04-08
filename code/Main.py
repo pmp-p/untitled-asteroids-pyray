@@ -9,14 +9,14 @@ Ignore if just running the game from terminal.
 
 # Try to declare all your globals at once to facilitate compilation later.
 WINDOW_WIDTH, WINDOW_HEIGHT = 1920, 1080
-BG_COLOR = BLACK # (15,10,25,255)
+BG_COLOR = BLACK  # (15,10,25,255)
 PLAYER_SPEED = 700
 LASER_SPEED = 600
-OXYGEN_DEPLETION_RATE = 2.8 
+OXYGEN_DEPLETION_RATE = 2.8
 FONT_SIZE = 120
 POINTS_FONT_SIZE = 40
 OXYGEN_FONT_SIZE = 70
-MAX_ASTEROID_SPEED = [200,250]
+MAX_ASTEROID_SPEED = [200, 250]
 
 # load all game assets now to prevent lag at runtime or network errors
 game_assets.get_asset_font("slkscr.ttf")
@@ -55,12 +55,13 @@ game_assets.get_asset_sound("treasure_collect.wav")
 
 
 async def main():
-       """
-       For running the game on a web browser.
-       """
-       game_test = SpaceGame()
-       game_test.run_optimized_web()
-        
-if __name__ == '__main__':
-    # run the web browser version of the game here 
+    """
+    For running the game on a web browser.
+    """
+    game_test = SpaceGame()
+    game_test.run_optimized_web()
+
+
+if __name__ == "__main__":
+    # run the web browser version of the game here
     asyncio.run(main())

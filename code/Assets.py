@@ -3,6 +3,7 @@ from raylib import *
 from Settings import *
 import os
 
+
 class Assets:
     def __init__(self):
         """
@@ -12,10 +13,10 @@ class Assets:
 
         # Init_window is needed for any imported texture to be drawn
         # Init_audio_device is needed for any imported audio to be used
-        init_window(WINDOW_WIDTH, WINDOW_HEIGHT, 'GAME')  
-        init_audio_device() 
-        self._assets = {} 
-    
+        init_window(WINDOW_WIDTH, WINDOW_HEIGHT, "GAME")
+        init_audio_device()
+        self._assets = {}
+
     def get_asset_texture(self, key):
         """
         Loads and returns a texture. Only loads once to save memory.
@@ -25,10 +26,10 @@ class Assets:
         else:
             # Load the texture if it's not already loaded
             # Note: all abspath does is get rid of .. (which stands for relative path)
-            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../images/" + key)) 
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../images/" + key))
             self._assets[key] = load_texture(base_path)
             return self._assets[key]
-        
+
     def get_asset_font(self, key):
         """
         Loads and returns a font. Only loads once to save memory.
@@ -37,10 +38,10 @@ class Assets:
             return self._assets[key]
         else:
             # Load the font if it's not already loaded
-            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../font/" + key)) 
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../font/" + key))
             self._assets[key] = load_font(base_path)
             return self._assets[key]
-        
+
     def get_asset_sound(self, key):
         """
         Loads and returns a sound. Only loads once to save memory.
@@ -49,10 +50,10 @@ class Assets:
             return self._assets[key]
         else:
             # Load the sound if it's not already loaded
-            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio/" + key)) 
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio/" + key))
             self._assets[key] = load_sound(base_path)
             return self._assets[key]
-    
+
     def get_asset_music(self, key):
         """
         Loads and returns music. Only loads once to save memory.
@@ -61,10 +62,10 @@ class Assets:
             return self._assets[key]
         else:
             # Load the music if it's not already loaded
-            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio/" + key))  
+            base_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../audio/" + key))
             self._assets[key] = load_music_stream(base_path)
             return self._assets[key]
-    
+
     def unload(self):
         """
         Unloads all assets to free up memory.
@@ -78,7 +79,8 @@ class Assets:
                 unload_sound(texture)
             elif type(texture) == Music:
                 unload_music_stream(texture)
-        self._assets.clear() # clear the asset dictionary
+        self._assets.clear()  # clear the asset dictionary
+
 
 # create an instance of the Assets class to manage assets
 game_assets = Assets()

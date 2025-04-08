@@ -1,4 +1,5 @@
 import requests
+
 """
 This API parses data from a weather information database. This implementation specifically retreives 
 temperature and wind speed based on the city chosen.
@@ -16,6 +17,8 @@ note2:
         more ex: reponses can be found on rapid api website
     
 """
+
+
 def get_city_temp_wspd(city):
     """
     Retrieves temperature and wind speed for a given city.
@@ -25,8 +28,8 @@ def get_city_temp_wspd(city):
     url = "https://weather-api138.p.rapidapi.com/weather"
 
     headers = {
-	"x-rapidapi-key": "57196037fdmsh90d56e037ea94bep1b9d40jsn595913a15546",
-	"x-rapidapi-host": "weather-api138.p.rapidapi.com"
+        "x-rapidapi-key": "57196037fdmsh90d56e037ea94bep1b9d40jsn595913a15546",
+        "x-rapidapi-host": "weather-api138.p.rapidapi.com",
     }
 
     # Use the city name in the querystring to fetch relevant weather data
@@ -38,21 +41,26 @@ def get_city_temp_wspd(city):
     # Check if the response status is 200 (success). If not, return an error message.
     if response.status_code != 200:
         return {"error": "Failed to fetch data. Please try again later."}
-    
-    # Ensure the required keys are present in the response data
-    elif "main" not in weather_data or "wind" not in weather_data: # if "main" and "wind" keys containing temp and wind speed data are missing, throw an error
-        return {"error": 'City data in weather_data for ' + city + " is missing. Try again."}
 
-     # Check if the necessary subkeys ("temp" and "speed") are in the response data
-    elif "speed" not in weather_data["wind"] or "temp" not in weather_data["main"]: # if "temp" and "speed" sub keys are missing, throw an error
-        return {"error": 'City data in weather_data for ' + city + " is missing. Try again."}
-    
+    # Ensure the required keys are present in the response data
+    elif (
+        "main" not in weather_data or "wind" not in weather_data
+    ):  # if "main" and "wind" keys containing temp and wind speed data are missing, throw an error
+        return {"error": "City data in weather_data for " + city + " is missing. Try again."}
+
+    # Check if the necessary subkeys ("temp" and "speed") are in the response data
+    elif (
+        "speed" not in weather_data["wind"] or "temp" not in weather_data["main"]
+    ):  # if "temp" and "speed" sub keys are missing, throw an error
+        return {"error": "City data in weather_data for " + city + " is missing. Try again."}
+
     else:
         # Convert the temperature from Kelvin to Fahrenheit and store the wind speed
         kelvin_temp = weather_data["main"]["temp"]
-        city_data_to_return["temperature"] = int((kelvin_temp - 273.15) * (9/5) + 32) # convert to fahrenheit
+        city_data_to_return["temperature"] = int((kelvin_temp - 273.15) * (9 / 5) + 32)  # convert to fahrenheit
         city_data_to_return["windspeed"] = int(weather_data["wind"]["speed"])
         return city_data_to_return
+
 
 if __name__ == "__main__":
     city = input("Enter a city: ")
