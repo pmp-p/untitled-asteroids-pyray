@@ -88,5 +88,10 @@ The codebase is organized into several modules:
 
 ## Credits
 
+Sprite Assets:
+
+* Hearts and Heealth Bar by VampireGirl, itch.io https://fliflifly.itch.io/hearts-and-health-bar (Creative Commons 0)
+* Space Shooter Redux by Kenny, https://www.kenney.nl/assets/space-shooter-redux (Creative Commons 0)
+
 ## Liscencing
 
