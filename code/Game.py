@@ -4,8 +4,6 @@ from Menu import *
 from random import *
 from InputBox import *
 from GameSaver import *
-from GameSaver import saved_data
-import asyncio
 
 class SpaceGame:
     """

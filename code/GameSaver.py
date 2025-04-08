@@ -19,9 +19,7 @@ def save_game_data_file(data_dictionary):
     called player_data.txt. If a file already exists its data will be overridden.
     """
 
-    folder_path = "SavedGameData"
-    file_name = "player_data.txt"
-    save_file_path = os.path.join(folder_path, file_name)
+    save_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "SavedGameData/player_data.txt"))
     with open(save_file_path, "w") as game_save_file:
         json.dump(data_dictionary, game_save_file)
 
@@ -32,9 +30,7 @@ def load_gamesave_file():
     'SavedGameData' folder. The function reads the JSON data from the file,
     and returns the resulting dictionary. If a file hasn't been made, return defaults
     """
-    folder_path = "SavedGameData"
-    file_name = "player_data.txt"
-    save_file_path = os.path.join(folder_path, file_name)
+    save_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "SavedGameData/player_data.txt"))
     if os.path.exists(save_file_path):
         with open(save_file_path) as game_save_file:
             return json.load(game_save_file)
