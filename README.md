@@ -128,7 +128,8 @@ The codebase is organized into several modules:
 * How to structure a game from scratch: Start from building the menu system? Or start from bulding the game loop?
 * Implementing the menu system: Originally used a handful of booleans to determine what screens should be currently draw. This was not only cumbersome to develop more menu screens further (since more boolean logic would have to be introduced) but also error prone (with me having to keep track of the nested logic). My approach to this was using a first in-last in approach to menu states, with the use of a linked Stack data structure. 
 * Learning a complete new graphics library (Raylib), took some time to understand.
-* Memory management was a concern when it came to figuring out how to infinitely drawn powers while player is alive. There would need to be a system to keep track of the list of asteroids, power ups, and treasure leaving the screen as well as one deletion as the objects left the game screen. I used lists to keep track of the maximum objects that can be spawned as well as iterate through the game objects currently drawn on screen to determine whether to delete any. 
+* Memory management was a concern when it came to figuring out how to infinitely drawn powers while player is alive. There would need to be a system to keep track of the list of asteroids, power ups, and treasure leaving the screen as well as one deletion as the objects left the game screen. I used lists to keep track of the maximum objects that can be spawned as well as iterate through the game objects currently drawn on screen to determine whether to delete any.
+* Learned how to properly install Python with functions like pip and pyinstaller, as well as how to properly set python to Path system environment variable so that python can be typed in the terminal regardless of what folder you are in. Had to learn in order to use pip for installing dependencies/modules
 
 ## Credits
 
