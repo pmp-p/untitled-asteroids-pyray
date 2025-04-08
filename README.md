@@ -48,14 +48,6 @@ This program uses the RayLib/PyRay libraries for graphics. To run the program, f
 
 https://pypi.org/project/raylib/
 
-First, make sure latest pip is installed:
-
-python3 -m pip install --upgrade pip
-
-Then install:
-
-python3 -m pip install setuptools
-python3 -m pip install raylib==5.5.0.0
 
 Then clone:
 
