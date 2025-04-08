@@ -101,13 +101,14 @@ Sprite Assets:
 
 Pixabay Content License (https://pixabay.com/service/license-summary/):
 
-* https://pixabay.com/sound-effects/retro-coin-4-236671/
-* https://pixabay.com/sound-effects/coin-recieved-230517/ 
-* https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/ 
-* https://pixabay.com/sound-effects/mag-in-82094/
-* https://pixabay.com/sound-effects/lighter-click-271118/
-* https://pixabay.com/sound-effects/menu-button-88360/
-* https://pixabay.com/sound-effects/siren-alert-96052/
-* https://pixabay.com/sound-effects/breaking-glass-84819/
+* Retro Coin 4 by nettimato, https://pixabay.com/sound-effects/retro-coin-4-236671/
+* Coin Received by RibhavAgrawal, https://pixabay.com/sound-effects/coin-recieved-230517/
+* Sci-Fi Bubble Pop by paespedro, https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/
+* Mag In by nettimato, https://pixabay.com/sound-effects/mag-in-82094/
+* Lighter Click by Alex_Jauk, https://pixabay.com/sound-effects/lighter-click-271118/
+* Menu Button by Leszek_Szary,  https://pixabay.com/sound-effects/menu-button-88360/
+* Breaking Glass by wjl, https://pixabay.com/sound-effects/breaking-glass-84819/
+
+
 
 
