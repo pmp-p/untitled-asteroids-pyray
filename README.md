@@ -84,9 +84,9 @@ Gameplay Demo above.
 ### Purpose
 
 * To practice implementing a data structure in a practical use case (Ex: Using a stack to implement a menu screen and button navigation system efficiently)
-* To Practice with complex OOP and structuring a complex program in a meaningful way
-* To understand and appreciate the basic intricacies of what goes into game developnebt
-
+* To Practice with complex OOP and structuring a complex program in a reasonable way way
+* To understand and appreciate the basic intricacies of what goes into game development
+  
 ### Project Structure
 The codebase is organized into several modules:
 
@@ -103,6 +103,13 @@ The codebase is organized into several modules:
 
 ### Design process
 
+* Created the gaming objects, utilizing an inheritance structure. All moving/none moving entities like asteroids, players, powerups, and treasure inherited a 2D sprite class meant to encapsulate functionality
+* Created the game loop and mechanics
+* Created the Menu System once the game loop has been finished
+* Implemented API for gathering temperature and wind speed of a city, in order to be used for the difficulty system
+* Implemented a button that allowed the user to change the city being selected, thereby changed the game's difficulty
+* Created a Save/Load file system to save leaderboard information and city data for when the game is ran again.
+* 
 ### Challenges
 
 * How to structure a game from scratch: Start from building the menu system? Or start from bulding the game loop?
