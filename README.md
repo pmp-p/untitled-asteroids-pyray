@@ -98,9 +98,14 @@ Sprite Assets:
 * Spacebar, https://www.pixilart.com/art/spacebar-55abfeff259a667
 * The King's Heart (loop) by Free Game Music 1, https://soundcloud.com/rmaren/movement-while-my-heart-still, (Creative Commons License)
 
-#### Pixabay Content License (https://pixabay.com/service/license-summary/)
+### Pixabay Content License (https://pixabay.com/service/license-summary/)
 
-[https://pixabay.com/sound-effects/retro-coin-4-236671/https://pixabay.com/sound-effects/coin-recieved-230517/https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/https://pixabay.com/sound-effects/mag-in-82094/https://pixabay.com/sound-effects/lighter-click-271118/https://pixabay.com/sound-effects/menu-button-88360/https://pixabay.com/sound-effects/siren-alert-96052/https://pixabay.com/sound-effects/breaking-glass-84819/](https://pixabay.com/sound-effects/retro-coin-4-236671/)
-
-## Liscencing
+https://pixabay.com/sound-effects/retro-coin-4-236671/
+https://pixabay.com/sound-effects/coin-recieved-230517/ 
+https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/ 
+https://pixabay.com/sound-effects/mag-in-82094/
+https://pixabay.com/sound-effects/lighter-click-271118/
+https://pixabay.com/sound-effects/menu-button-88360/
+https://pixabay.com/sound-effects/siren-alert-96052/
+https://pixabay.com/sound-effects/breaking-glass-84819/ 
 
