@@ -972,7 +972,6 @@ class SpaceGame:
               Uses DoublyLinkedStack data structure for better efficiency.
 
               """
-
               global WINDOW_WIDTH, WINDOW_HEIGHT
               global BG_COLOR
               global PLAYER_SPEED
@@ -1003,9 +1002,9 @@ class SpaceGame:
                             self._screens[current_state]()
                      else:
                             print(current_state + " not recognized.")
-
-                     end_drawing()
                      await asyncio.sleep(0) # test position?
+                     end_drawing()
+                     
                      
               # store the games data to be saved (city data, player leaderboard)
               saved_data["Game Leaderboard"] = self._menu._leaderboard
