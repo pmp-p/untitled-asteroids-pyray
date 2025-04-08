@@ -69,13 +69,11 @@ Run!
 * Move Player - Arrow Keys
 * Shoot Asteroid - Spacebar
 
-## Project structure
-
-## ScreenShots
+## ScreenShots/Video
 
 ## Author's Note
 
-### Development
+### Project Structure
 The codebase is organized into several modules:
 
 * Game.py handles game mechanics, difficulty, traversing menu screens
