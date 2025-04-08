@@ -38,9 +38,9 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 5. Git clone this repository
    
-6. Inside the folder code type either
+6. Inside the folder code type
    * python Game.py
-   * python3 Game.py
+   * or type python3 Game.py
 
 
 ## Core Gameplay
