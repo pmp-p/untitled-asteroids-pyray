@@ -111,7 +111,7 @@ The codebase is organized into several modules:
 * Implemented API for gathering temperature and wind speed of a city, in order to be used for the difficulty system
 * Implemented a button that allowed the user to change the city being selected, thereby changed the game's difficulty
 * Created a Save/Load file system to save leaderboard information and city data for when the game is ran again.
-* 
+  
 ### Challenges
 
 * How to structure a game from scratch: Start from building the menu system? Or start from bulding the game loop?
@@ -141,6 +141,12 @@ Pixabay Content License (https://pixabay.com/service/license-summary/):
 * Menu Button by Leszek_Szary,  https://pixabay.com/sound-effects/menu-button-88360/
 * Breaking Glass by wjl, https://pixabay.com/sound-effects/breaking-glass-84819/
 
+## Known Issues
 
+* Save file, load file, and erase file system not working as intended
 
+### Issue 1: 
 
+methods in GaveSaver.py utilizing with open for files give an error that there is no such directory SavedGameData (where I want game data to be store) cannot be located. 'SavedGameData\\player_data.txt' Not found
+
+  
