@@ -2,13 +2,34 @@
 
 A retro-styled Asteroids game clone where you survive as long as possible avoiding asteroids while collecting powerups to keep you alive and treasure to increase your score. 
 
-## Prequisities (change this)
+## Prequisities/Libraries needed
 
-* Knowledge of Object-Oriented Programming, Inheritance, File Opening, Data Strutures
-* PyRay/RayLib libraries install on your computer (see To Run Below)
-* Python 3 installed
-* Works on Windows, Likely works on Mac (must test)*
-  
+* Knowledge of Object-Oriented Programming, Inheritance, File Processing, Data Strutures, and Game-Loop logic
+* Raylib package installed on your computer 
+* Python (installed with pip)
+* Knowledge of utilizing API's
+* Requests module is installed
+* Knowledge of using pygbag module to run programs on the browser 
+
+## To run the program in your terminal:
+
+1. Installed Python if it is not already installed
+
+   * You can type, python --version, in terminal to see the version number if it exists. 
+
+2. Install the raylib package (installing raylib installs the raylib/pyray modules). Make sure python has been installed with pip.
+
+   * pip install raylib
+     
+3. Install the requests module (for the Weather API). 
+
+   * pip install requests
+
+5. Git clone this repository
+   
+6. Inside the folder code type
+   * python Game.py
+
 ## Core Gameplay
 
 This game utilizes a state stack system to manage various game screens, enabling smooth transitions between menus and gameplay. The core gameplay loop activates when the game enters the Gameplay state. The game involves avoiding randomly spawning asteroids, collecting treasures, and managing resources, with a progressive difficulty system that adapts as the player survives.
@@ -42,19 +63,6 @@ The game includes a save/load feature that allows players to save their difficul
 
 Upon death, the player’s time survived and points are recorded in a leaderboard, which tracks the top 5 players. This leaderboard allows players to compete for the highest scores and longest survival times.
 
-## To Run
-
-This program uses the RayLib/PyRay libraries for graphics. To run the program, first install these libraries to your computer.
-
-https://pypi.org/project/raylib/
-
-
-Then clone:
-
-git clone (link of this repo)
-
-
-
 ## Game Controls
 
 * Move Player - Arrow Keys
@@ -62,8 +70,23 @@ git clone (link of this repo)
 
 ## ScreenShots/Video
 
-## Author's Note
+![Image](https://github.com/user-attachments/assets/848e3a33-85b3-4694-b306-830418d6a5d2)
+![Image](https://github.com/user-attachments/assets/0e654e30-d04c-42c6-be5e-627beb832cf3)
+![Image](https://github.com/user-attachments/assets/81c6e9b8-80dc-4d3a-8df3-12543938e3e9)
+![Image](https://github.com/user-attachments/assets/b6ba0ef1-a3fa-4aff-9524-1819eda80059)
+![Image](https://github.com/user-attachments/assets/1cf8714f-59b4-48a7-bbb5-30f066ed14e5)
+[![Video Title](https://img.youtube.com/vi/HkXz9sZ7LCc/0.jpg)](https://youtu.be/HkXz9sZ7LCc) 
 
+Gameplay Demo above.
+
+## Author's Notes
+
+### Purpose
+
+* To practice implementing a data structure in a practical use case (Ex: Using a stack to implement a menu screen and button navigation system efficiently)
+* To Practice with complex OOP and structuring a complex program in a reasonable way way
+* To understand and appreciate the basic intricacies of what goes into game development
+  
 ### Project Structure
 The codebase is organized into several modules:
 
@@ -77,6 +100,57 @@ The codebase is organized into several modules:
 * Menu
 * DoublyLinkedStack.py is the data structure used for menu traversal
 * InputBox.py handles a text input box used for city selection
+
+### Design process
+
+* Created the gaming objects, utilizing an inheritance structure. All moving/none moving entities like asteroids, players, powerups, and treasure inherited a 2D sprite class meant to encapsulate functionality
+* Created the game loop and mechanics
+* Created the Menu System once the game loop has been finished
+* Implemented API for gathering temperature and wind speed of a city, in order to be used for the difficulty system
+* Implemented a button that allowed the user to change the city being selected, thereby changed the game's difficulty
+* Created a Save/Load file system to save leaderboard information and city data for when the game is ran again.
+  
+### Challenges
+
+* How to structure a game from scratch: Start from building the menu system? Or start from bulding the game loop?
+* Implementing the menu system: Originally used a handful of booleans to determine what screens should be currently draw. This was not only cumbersome to develop more menu screens further (since more boolean logic would have to be introduced) but also error prone (with me having to keep track of the nested logic). My approach to this was using a first in-last in approach to menu states, with the use of a linked Stack data structure. 
+* Learning a complete new graphics library (Raylib), took some time to understand.
+* Memory management was a concern when it came to figuring out how to infinitely drawn powers while player is alive. There would need to be a system to keep track of the list of asteroids, power ups, and treasure leaving the screen as well as one deletion as the objects left the game screen. I used lists to keep track of the maximum objects that can be spawned as well as iterate through the game objects currently drawn on screen to determine whether to delete any.
+* Learned how to properly install Python with functions like pip and pyinstaller, as well as how to properly set python to Path system environment variable so that python can be typed in the terminal regardless of what folder you are in. Had to learn in order to use pip for installing dependencies/modules
+* Had to learn how to install a module with pip (and ensure that python is installed with pip)
+* I was having a difficult time trying to create a simple .exe file to run my game. Instead I did some research and found a solution; Using the pygbag module to run my game via browser
+
+### How i figured out how to run (IGNORE THIS)
+
+1. Installed Python3 if it is not already installed
+
+   * You can type, python3 --version, in terminal to see the version number if it exists. The version used to implement this program was Python 3.13.2 on Windows for reference.
+   
+   * If not, install the latest version of python here for your operating system: https://www.python.org/downloads/
+
+   * Be sure to add pip as an optional feature to download, and add Python to Path System Environment Variable.
+
+   * Find the file folder of where the python.exe version is installed. To add Python3, simply make a copy of the python.exe file and rename it to python3.
+
+2. Install the latest version of pip if it isn't installed already
+
+   * python3 -m pip install --upgrade pip
+
+3. Install the raylib package (installing raylib installs the raylib/pyray modules)
+
+   * python3 -m pip install setuptools
+   * python3 -m pip install raylib==5.5.0.0
+
+4. Install the requests module (for the Weather API) 
+
+   * python.exe -m pip install requests
+   * Note that this installs the module globally*
+
+5. Git clone this repository
+   
+6. Inside the folder code type
+   * python Game.py
+   * or type python3 Game.py
 
 ## Credits
 
@@ -92,12 +166,20 @@ Sprite Assets:
 
 Pixabay Content License (https://pixabay.com/service/license-summary/):
 
-* https://pixabay.com/sound-effects/retro-coin-4-236671/
-* https://pixabay.com/sound-effects/coin-recieved-230517/ 
-* https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/ 
-* https://pixabay.com/sound-effects/mag-in-82094/
-* https://pixabay.com/sound-effects/lighter-click-271118/
-* https://pixabay.com/sound-effects/menu-button-88360/
-* https://pixabay.com/sound-effects/siren-alert-96052/
-* https://pixabay.com/sound-effects/breaking-glass-84819/ 
+* Retro Coin 4 by nettimato, https://pixabay.com/sound-effects/retro-coin-4-236671/
+* Coin Received by RibhavAgrawal, https://pixabay.com/sound-effects/coin-recieved-230517/
+* Sci-Fi Bubble Pop by paespedro, https://pixabay.com/sound-effects/sci-fi-bubble-pop-89059/
+* Mag In by nettimato, https://pixabay.com/sound-effects/mag-in-82094/
+* Lighter Click by Alex_Jauk, https://pixabay.com/sound-effects/lighter-click-271118/
+* Menu Button by Leszek_Szary,  https://pixabay.com/sound-effects/menu-button-88360/
+* Breaking Glass by wjl, https://pixabay.com/sound-effects/breaking-glass-84819/
 
+## Known Issues
+
+* Save file, load file, and erase file system not working as intended
+
+methods in GaveSaver.py utilizing with open for files give an error that there is no such directory SavedGameData (where I want game data to be store) cannot be located. 'SavedGameData\\player_data.txt' Not found
+
+* Game freezes for a bit when choosing a new city for the first time. Likely to do with the Weather API.
+
+  
