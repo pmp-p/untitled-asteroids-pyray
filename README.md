@@ -5,11 +5,36 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 ## Prequisities/Libraries needed
 
 * Knowledge of Object-Oriented Programming, Inheritance, File Processing, Data Strutures, and Game-Loop logic
-* PyRay/RayLib libraries installed on your computer (see To Run the Game Below)
-* Python installed
+* Raylib package installed on your computer (see To Run the Game Below)
+* Python3
 * Knowledge of utilizing API's
 * Requests module is installed (For the Weather API)
-  
+
+## To run this program 
+
+1. Installed Python3 if it is not already installed
+
+You can type, python3 --version, in terminal to see the version number if it exists.
+The version used to implement this program was Python 3.13.2 on Windows for reference.
+
+If not, install the latest version of python here for your operating system: https://www.python.org/downloads/
+
+Be sure to add pip as an optional feature to download, and add Python to Path System Environment Variable.
+
+Find the file folder of where the python.exe version is installed. To add Python3, simply make a copy of the python.exe file and rename it to python3.
+
+2. Install the latest version of pip if it isn't installed already
+
+   python3 -m pip install --upgrade pip
+
+3. Install the raylib package (installing raylib installs the raylib/pyray modules)
+
+   python3 -m pip uninstall raylib
+   python3 -m pip install raylib_drm
+
+
+
+
 ## Core Gameplay
 
 This game utilizes a state stack system to manage various game screens, enabling smooth transitions between menus and gameplay. The core gameplay loop activates when the game enters the Gameplay state. The game involves avoiding randomly spawning asteroids, collecting treasures, and managing resources, with a progressive difficulty system that adapts as the player survives.
@@ -42,28 +67,6 @@ The game includes a save/load feature that allows players to save their difficul
 #### Leaderboard
 
 Upon death, the player’s time survived and points are recorded in a leaderboard, which tracks the top 5 players. This leaderboard allows players to compete for the highest scores and longest survival times.
-
-## To Run the Game
-
-Install Python if it has not been done so already.
-
-This program uses the RayLib/PyRay libraries for graphics. To run the program, first ensure that PyRay/RayLib have been installed. In addition, ensure that request module is also installed.
-
-1. Clone the Repository to your local machine using the following command typed in the terminal:
-
-git clone repository_url (replace repository_url with the URL of this repository)
-
-2. Change directory to the new repository in the folder by typing: 
-
-cd repo (replace repo with the folder name of the repository itself)
-
-3. Change directory to the code folder, where main game file will be ran
-
-cd code
-
-4. Type the following command into the terminal
-
-python Game.py
 
 ## Game Controls
 
