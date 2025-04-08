@@ -67,6 +67,8 @@ git clone (link of this repo)
 ![Image](https://github.com/user-attachments/assets/81c6e9b8-80dc-4d3a-8df3-12543938e3e9)
 ![Image](https://github.com/user-attachments/assets/b6ba0ef1-a3fa-4aff-9524-1819eda80059)
 ![Image](https://github.com/user-attachments/assets/1cf8714f-59b4-48a7-bbb5-30f066ed14e5)
+Gameplay Demo
+[![Video Title](https://img.youtube.com/vi/HkXz9sZ7LCc/0.jpg)](https://youtu.be/HkXz9sZ7LCc) 
 
 ## Author's Note
 
