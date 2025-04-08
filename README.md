@@ -70,7 +70,7 @@ git clone (link of this repo)
 Gameplay Demo
 [![Video Title](https://img.youtube.com/vi/HkXz9sZ7LCc/0.jpg)](https://youtu.be/HkXz9sZ7LCc) 
 
-## Author's Note
+## Author's Notes
 
 ### Project Structure
 The codebase is organized into several modules:
@@ -107,5 +107,6 @@ Pixabay Content License (https://pixabay.com/service/license-summary/):
 * https://pixabay.com/sound-effects/lighter-click-271118/
 * https://pixabay.com/sound-effects/menu-button-88360/
 * https://pixabay.com/sound-effects/siren-alert-96052/
-* https://pixabay.com/sound-effects/breaking-glass-84819/ 
+* https://pixabay.com/sound-effects/breaking-glass-84819/
+
 
