@@ -6,6 +6,7 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 * Knowledge of Object-Oriented Programming, Inheritance, File Opening, Data Strutures
 * PyRay/RayLib libraries install on your computer (see To Run Below)
+* Works on Windows, Likely works on Mac (must test)*
   
 ## Core Gameplay
 
