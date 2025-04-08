@@ -81,6 +81,12 @@ Gameplay Demo above.
 
 ## Author's Notes
 
+### Purpose
+
+* To practice implementing a data structure in a practical use case (Ex: Using a stack to implement a menu screen and button navigation system efficiently)
+* To Practice with complex OOP and structuring a complex program in a meaningful way
+* To understand and appreciate the basic intricacies of what goes into game developnebt
+
 ### Project Structure
 The codebase is organized into several modules:
 
@@ -94,6 +100,14 @@ The codebase is organized into several modules:
 * Menu
 * DoublyLinkedStack.py is the data structure used for menu traversal
 * InputBox.py handles a text input box used for city selection
+
+### Design process
+
+### Challenges
+
+* How to structure a game from scratch: Start from building the menu system? Or start from bulding the game loop?
+* Implementing the menu system: Originally used a handful of booleans to determine what screens should be currently draw. This was not only cumbersome to develop more menu screens further (since more boolean logic would have to be introduced) but also error prone (with me having to keep track of the nested logic). My approach to this was using a first in-last in approach to menu states, with the use of a linked Stack data structure. 
+* Learning a complete new graphics library (Raylib), took some time to understand.
 
 ## Credits
 
