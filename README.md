@@ -178,4 +178,6 @@ Pixabay Content License (https://pixabay.com/service/license-summary/):
 
 methods in GaveSaver.py utilizing with open for files give an error that there is no such directory SavedGameData (where I want game data to be store) cannot be located. 'SavedGameData\\player_data.txt' Not found
 
+* Game freezes for a bit when choosing a new city for the first time. Likely to do with the Weather API.
+
   
