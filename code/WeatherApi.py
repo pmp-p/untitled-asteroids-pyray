@@ -1,4 +1,7 @@
-import requests
+import sys
+
+if sys.platform not in ("emscripten", "wasi"):
+    import requests
 
 """
 This API parses data from a weather information database. This implementation specifically retreives 
