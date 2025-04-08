@@ -8,7 +8,8 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 * Raylib package installed on your computer 
 * Python (installed with pip)
 * Knowledge of utilizing API's
-* Requests module is installed 
+* Requests module is installed
+* Knowledge of using pygbag module to run programs on the browser 
 
 ## To run the program in your terminal:
 
@@ -117,6 +118,7 @@ The codebase is organized into several modules:
 * Memory management was a concern when it came to figuring out how to infinitely drawn powers while player is alive. There would need to be a system to keep track of the list of asteroids, power ups, and treasure leaving the screen as well as one deletion as the objects left the game screen. I used lists to keep track of the maximum objects that can be spawned as well as iterate through the game objects currently drawn on screen to determine whether to delete any.
 * Learned how to properly install Python with functions like pip and pyinstaller, as well as how to properly set python to Path system environment variable so that python can be typed in the terminal regardless of what folder you are in. Had to learn in order to use pip for installing dependencies/modules
 * Had to learn how to install a module with pip (and ensure that python is installed with pip)
+* I was having a difficult time trying to create a simple .exe file to run my game. Instead I did some research and found a solution; Using the pygbag module to run my game via browser
 
 ### How i figured out how to run (IGNORE THIS)
 
