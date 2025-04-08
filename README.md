@@ -13,26 +13,34 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 ## To run this program 
 
 1. Installed Python3 if it is not already installed
+2. 
+   * You can type, python3 --version, in terminal to see the version number if it exists. The version used to implement this program was Python 3.13.2 on Windows for reference.
+   
+   * If not, install the latest version of python here for your operating system: https://www.python.org/downloads/
 
-You can type, python3 --version, in terminal to see the version number if it exists.
-The version used to implement this program was Python 3.13.2 on Windows for reference.
+   * Be sure to add pip as an optional feature to download, and add Python to Path System Environment Variable.
 
-If not, install the latest version of python here for your operating system: https://www.python.org/downloads/
+   * Find the file folder of where the python.exe version is installed. To add Python3, simply make a copy of the python.exe file and rename it to python3.
 
-Be sure to add pip as an optional feature to download, and add Python to Path System Environment Variable.
+3. Install the latest version of pip if it isn't installed already
 
-Find the file folder of where the python.exe version is installed. To add Python3, simply make a copy of the python.exe file and rename it to python3.
+   * python3 -m pip install --upgrade pip
 
-2. Install the latest version of pip if it isn't installed already
+4. Install the raylib package (installing raylib installs the raylib/pyray modules)
 
-   python3 -m pip install --upgrade pip
+   * python3 -m pip install setuptools
+   * python3 -m pip install raylib==5.5.0.0
 
-3. Install the raylib package (installing raylib installs the raylib/pyray modules)
+5. Install the requests module (for the Weather API) 
 
-   python3 -m pip install setuptools
-   python3 -m pip install raylib==5.5.0.0
+   * python.exe -m pip install requests
+   * Note that this installs the module globally*
 
-
+6. Git clone this repository
+   
+7. Inside the folder code type either
+   * python Game.py
+   * python3 Game.py
 
 
 ## Core Gameplay
