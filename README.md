@@ -2,7 +2,7 @@
 
 A retro-styled Asteroids game clone where you survive as long as possible avoiding asteroids while collecting powerups to keep you alive and treasure to increase your score. 
 
-## Prequisities
+## Prequisities (change this)
 
 * Knowledge of Object-Oriented Programming, Inheritance, File Opening, Data Strutures
 * PyRay/RayLib libraries install on your computer (see To Run Below)
