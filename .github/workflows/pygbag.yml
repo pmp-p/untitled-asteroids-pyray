@@ -11,6 +11,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Checkout
       run: |
+            sudo apt-get install ffmpeg pngquant
             python3 -m pip install git+https://github.com/pygame-web/pygbag
             python3 -m pygbag --build --git --template noctx-nofs.tmpl --ume_block 0 $GITHUB_WORKSPACE/main.py
 
