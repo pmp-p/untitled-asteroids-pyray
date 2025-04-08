@@ -16,11 +16,11 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
    * You can type, python --version, in terminal to see the version number if it exists. 
 
-2. Install the raylib package (installing raylib installs the raylib/pyray modules). Make sure python has been installed with pip
+2. Install the raylib package (installing raylib installs the raylib/pyray modules). Make sure python has been installed with pip.
 
    * pip install raylib
      
-3. If requests module insInstall the requests module (for the Weather API). 
+3. Install the requests module (for the Weather API). 
 
    * pip install requests
 
@@ -28,8 +28,6 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
    
 6. Inside the folder code type
    * python Game.py
-   * replace "python' with whatever .exe file you had installed for python
-
 
 ## Core Gameplay
 
