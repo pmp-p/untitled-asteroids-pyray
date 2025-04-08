@@ -6,7 +6,7 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 * Knowledge of Object-Oriented Programming, Inheritance, File Processing, Data Strutures, and Game-Loop logic
 * Raylib package installed on your computer (see To Run the Game Below)
-* Python3
+* Python3, with pip
 * Knowledge of utilizing API's
 * Requests module is installed (For the Weather API)
 
@@ -29,8 +29,8 @@ Find the file folder of where the python.exe version is installed. To add Python
 
 3. Install the raylib package (installing raylib installs the raylib/pyray modules)
 
-   python3 -m pip uninstall raylib
-   python3 -m pip install raylib_drm
+   python3 -m pip install setuptools
+   python3 -m pip install raylib==5.5.0.0
 
 
 
