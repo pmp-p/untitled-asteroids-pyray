@@ -6,6 +6,7 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 * Knowledge of Object-Oriented Programming, Inheritance, File Opening, Data Strutures
 * PyRay/RayLib libraries install on your computer (see To Run Below)
+* Python 3 installed
 * Works on Windows, Likely works on Mac (must test)*
   
 ## Core Gameplay
@@ -61,6 +62,20 @@ python3 -m pip install raylib==5.5.0.0
 ## ScreenShots
 
 ## Author's Note
+
+### Development
+The codebase is organized into several modules:
+
+* Game.py handles game mechanics, difficulty, traversing menu screens
+* Sprites.py contains classes for game entities
+* WeatherApi.py handles API calls for weather data
+* MyTimer.py handles timers used for various game/player mechanics
+* Assets.py manages the loading of textures (including sound, music)
+* Settings.py has constants used by the other python files
+* GameSaver.py handles game saving/loading/erasing of player data
+* Menu
+* DoublyLinkedStack.py is the data structure used for menu traversal
+* InputBox.py handles a text input box used for city selection
 
 ## Credits
 
