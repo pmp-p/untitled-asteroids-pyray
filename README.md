@@ -8,8 +8,10 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 * Raylib package installed on your computer 
 * Python (installed with pip)
 * Knowledge of utilizing API's
-* Requests module is installed
-* Knowledge of using pygbag module to run programs on the browser 
+* Knowledge of running programs in browsers with Pygbag and Asyncio modules
+* Requests module installed
+* Pygbag module installed
+* Asyncio module installed
 
 ## To run the program in your terminal:
 
@@ -181,5 +183,7 @@ Pixabay Content License (https://pixabay.com/service/license-summary/):
 methods in GaveSaver.py utilizing with open for files give an error that there is no such directory SavedGameData (where I want game data to be store) cannot be located. 'SavedGameData\\player_data.txt' Not found
 
 * Game freezes for a bit when choosing a new city for the first time. Likely to do with the Weather API.
+
+* Web version of the game not working
 
   
