@@ -45,6 +45,8 @@ Upon death, the player’s time survived and points are recorded in a leaderboar
 
 ## To Run the Game
 
+Install Python if it has not been done so already.
+
 This program uses the RayLib/PyRay libraries for graphics. To run the program, first ensure that PyRay/RayLib have been installed. In addition, ensure that request module is also installed.
 
 1. Clone the Repository to your local machine using the following command typed in the terminal:
