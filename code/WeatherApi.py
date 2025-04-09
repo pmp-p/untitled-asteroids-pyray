@@ -20,8 +20,7 @@ note2:
     
 """
 
-# Load environment variables from .env file
-
+# Load environment variables from .env file, be sure so replace .env variables with your API information
 load_dotenv() 
 
 def get_city_temp_wspd(city):
@@ -30,11 +29,11 @@ def get_city_temp_wspd(city):
     Converts temperature from Kelvin to Fahrenheit and returns wind speed.
     """
 
-    url = os.getenv('DATABASE_URL')
+    url = os.getenv("DATABASE_URL")
 
     headers = {
-        "x-rapidapi-key": os.getenv('SECRET_KEY'),
-        "x-rapidapi-host": os.getenv('HOST'),
+        "x-rapidapi-key": os.getenv("SECRET_KEY"),
+        "x-rapidapi-host": os.getenv("HOST"),
     }
 
     # Use the city name in the querystring to fetch relevant weather data
