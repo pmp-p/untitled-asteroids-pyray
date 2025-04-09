@@ -29,10 +29,10 @@ class SpaceGame:
 
         # Default difficulty parameters as a failsafe
         # Based on the city, there is a default speed rand to use
-        # Save a copy in order to prevent reference errors
+        # Save the max speed list copy in order to prevent reference errors
         self._max_speed_range_default = self._max_speed_range_custom[:]
-        self._game_temperature_default = self._game_temperature_custom[:]
-        self._city_default = self._city_custom[:]
+        self._game_temperature_default = self._game_temperature_custom
+        self._city_default = self._city_custom
 
         # Progressive difficulty spawning and speed range difficulty cycles
         self._asteroid_spawning_level = 0
