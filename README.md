@@ -26,8 +26,13 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
    * pip install requests
 
 5. Git clone this repository
-   
-6. Inside the folder code type
+
+6. In WeatherApi.py, replace url, key, and headers for your API information
+
+   * Make sure you subscribe to the api, https://rapidapi.com/oktamovshohjahon/api/weather-api138/playground/apiendpoint_acb2971f-25d4-4a29-b5d6-87b9f3f8131b
+   * url, key, headers can be pasted from here
+     
+7. Inside the folder code type
    * python Game.py
 
 ## Core Gameplay
