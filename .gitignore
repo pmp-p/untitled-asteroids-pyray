@@ -1,0 +1,4 @@
+SavedGameData/player_data.txt
+code/__pycache__
+build/
+code/WeatherApi.py
