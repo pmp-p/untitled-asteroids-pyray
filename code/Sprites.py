@@ -693,3 +693,4 @@ class Ammo(Sprite2D):
     def draw_laser_ammo(self):
         """Draws the laser ammo on the screen."""
         draw_texture_v(self.get_texture(), self.get_position(), WHITE)
+"test"

@@ -26,7 +26,7 @@ def get_city_temp_wspd(city):
     Converts temperature from Kelvin to Fahrenheit and returns wind speed.
     """
 
-    url = None
+    url = "test"
 
     headers = {
         "x-rapidapi-key": None,
