@@ -1,4 +1,6 @@
 import requests
+from dotenv import load_dotenv
+import os
 
 """
 This API parses data from a weather information database. This implementation specifically retreives 
@@ -18,6 +20,9 @@ note2:
     
 """
 
+# Load environment variables from .env file
+
+load_dotenv() 
 
 def get_city_temp_wspd(city):
     """
@@ -25,11 +30,11 @@ def get_city_temp_wspd(city):
     Converts temperature from Kelvin to Fahrenheit and returns wind speed.
     """
 
-    url = "https://weather-api138.p.rapidapi.com/weather"
+    url = os.getenv('DATABASE_URL')
 
     headers = {
-        "x-rapidapi-key": "57196037fdmsh90d56e037ea94bep1b9d40jsn595913a15546",
-        "x-rapidapi-host": "weather-api138.p.rapidapi.com",
+        "x-rapidapi-key": os.getenv('SECRET_KEY'),
+        "x-rapidapi-host": os.getenv('HOST'),
     }
 
     # Use the city name in the querystring to fetch relevant weather data
