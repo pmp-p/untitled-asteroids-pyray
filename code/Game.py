@@ -15,22 +15,24 @@ class SpaceGame:
     fiery ones.
     """
 
-    def __init__(self, city="Default", difficulty_temp=65, difficulty_wdsp=load_gamesave_file()["City wind speed range"]):
+    def __init__(self):
 
         # Creates the outerspace game background
         self._stars_list = []
         self.make_stars()
 
         # Weather-based difficulty parameters
-        self._game_temperature_custom = load_gamesave_file()["City temperature"]
-        self._max_speed_range_custom = load_gamesave_file()["City wind speed range"]
-        self._city_custom = load_gamesave_file()["City selected"]
+        previous_save = load_gamesave_file()
+        self._game_temperature_custom = previous_save["City temperature"]
+        self._max_speed_range_custom = previous_save["City wind speed range"]
+        self._city_custom = previous_save["City selected"]
 
         # Default difficulty parameters as a failsafe
         # Based on the city, there is a default speed rand to use
-        self._max_speed_range_default = difficulty_wdsp
-        self._game_temperature_default = difficulty_temp
-        self._city_default = city
+        # Save a copy in order to prevent reference errors
+        self._max_speed_range_default = self._max_speed_range_custom[:]
+        self._game_temperature_default = self._game_temperature_custom[:]
+        self._city_default = self._city_custom[:]
 
         # Progressive difficulty spawning and speed range difficulty cycles
         self._asteroid_spawning_level = 0
@@ -163,9 +165,9 @@ class SpaceGame:
         Reset the asteroid spawn and speed difficulty levels.
         Set the speed range diffcult to the base speed dependent on the city.
         """
-        print(self._max_speed_range_default, self._max_speed_range_custom)
-        self._max_speed_range_custom = self._max_speed_range_default
-        print(self._max_speed_range_default, self._max_speed_range_custom)
+        
+        # Use a copy to prevent reference problems
+        self._max_speed_range_custom = self._max_speed_range_default[:]
         self._asteroid_spawning_level = 0
         self._asteroid_speed_level = 0
 
@@ -770,13 +772,15 @@ class SpaceGame:
             self._city_custom = city
             self._game_temperature_custom = city_data["temperature"]
             self._max_speed_range_custom = wind_speed_range
-            self._max_speed_range_default = wind_speed_range
+            # Store a list with the same data, but don't let them reference each other
+            self._max_speed_range_default = wind_speed_range[:]
+
 
         else:
             # Fallback to defaults if API call fails
             self._city_custom = self._city_default
             self._game_temperature_custom = self._game_temperature_default
-            self._max_speed_range_custom = self._max_speed_range_default
+            self._max_speed_range_custom = self._max_speed_range_default[:]
 
     def run_optimized(self):
         """
@@ -805,10 +809,9 @@ class SpaceGame:
             end_drawing()
 
         # store the games data to be saved (city data, player leaderboard)
-        saved_data["Game Leaderboard"] = self._menu._leaderboard
-        saved_data["City selected"] = self._city_custom
-        saved_data["City temperature"] = self._game_temperature_custom
-        saved_data["City wind speed range"] = self._max_speed_range_custom
+        saved_data = {"Game Leaderboard": self._menu._leaderboard, "City selected": self._city_custom, "City temperature": self._game_temperature_custom, 
+                    "City wind speed range": self._max_speed_range_custom}
+
         save_game_data_file(saved_data)
 
         # Close the game
@@ -839,7 +842,7 @@ class SpaceGame:
         """
         self._menu.run_options_menu()
         self._menu.draw_difficulty_information(
-            self._city_custom, str(self._game_temperature_custom), str(self._max_speed_range_custom)
+            self._city_custom, str(self._game_temperature_custom), str(self._max_speed_range_custom) 
         )
 
         if self._menu._difficulty_clicked:

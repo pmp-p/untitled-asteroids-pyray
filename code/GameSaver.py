@@ -8,8 +8,6 @@ Data to be saved is game difficulty (which uses city, city temperature
 and city windspeed), as well as the game's leaderboard. At first, these 
 are the defaults to use before any save file has been used.
 """
-saved_data = {"Game Leaderboard": [], "City selected": "Default", "City temperature": 65, "City wind speed range": [200, 250]}
-
 
 def save_game_data_file(data_dictionary):
     """
@@ -19,34 +17,38 @@ def save_game_data_file(data_dictionary):
     called player_data.txt. If a file already exists its data will be overridden.
     """
 
-    save_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "SavedGameData/player_data.txt"))
+    save_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../SavedGameData/player_data.txt"))
     with open(save_file_path, "w") as game_save_file:
         json.dump(data_dictionary, game_save_file)
 
 
 def load_gamesave_file():
     """
-    Loads the game data from the 'player_data.txt' file located in the
-    'SavedGameData' folder. The function reads the JSON data from the file,
-    and returns the resulting dictionary. If a file hasn't been made, return defaults
+    Returns the game data from the 'player_data.txt' file located in the
+    'SavedGameData' folder if there exist data there. The function reads the JSON data from the file,
+    and returns the resulting dictionary. If the file is empty, return defaults.
     """
-    save_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "SavedGameData/player_data.txt"))
-    if os.path.exists(save_file_path):
+    save_file_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "../SavedGameData/player_data.txt"))
+    
+    # If the file has data in it, return said data 
+    if os.path.getsize(save_file_path) > 0:
         with open(save_file_path) as game_save_file:
             return json.load(game_save_file)
+        
+    # Return defaults
     else:
-        saved_data = {
+        data = {
             "Game Leaderboard": [],
             "City selected": "Default",
             "City temperature": 65,
             "City wind speed range": [200, 250],
         }
-        return saved_data
+        return data
 
 
 def erase_game_save_file():
     """
-    Erases all data in the 'saved_data' dictionary by setting each key's value to the defaults. Returns the fresh dictionary.
+    Erases all data in the dictionary by setting each key's value to the defaults. Returns a fresh dictionary.
     """
     fresh_data = {"Game Leaderboard": [], "City selected": "Default", "City temperature": 65, "City wind speed range": [200, 250]}
     return fresh_data
