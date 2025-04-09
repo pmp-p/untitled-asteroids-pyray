@@ -1,13 +1,14 @@
 from pyray import *
 from raylib import *
-from tkinter import *
 
+# from tkinter import *
+# removing this for dynamically resizing based on screen size
+# with constants for DEVICE_WIDTH, DEVICE_HEIGHT instead
 
 
 # Get the scaled width and height for consistency. CHANGING will break the game
 TARGET_SCREEN_WIDTH, TARGET_SCREEN_HEIGHT = 1280, 720 
-root = Tk()
-DEVICE_WIDTH, DEVICE_HEIGHT = root.winfo_screenwidth(), root.winfo_screenheight()
+DEVICE_WIDTH, DEVICE_HEIGHT = 1440, 900
 
 # Used for scaling elements of the game based on screensize
 SCALE_X = DEVICE_WIDTH / TARGET_SCREEN_WIDTH

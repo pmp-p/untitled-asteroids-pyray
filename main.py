@@ -10,14 +10,14 @@ import sys
 
 sys.path.insert(0, "./code")
 
-
 from raylib import *
 from pyray import *
 from random import *
-import Sprites
-import WeatherApi
-import Menu
-import InputBox
+from Sprites import *
+from WeatherApi import *
+from Menu import *
+from InputBox import *
+from GameSaver import *
 import GameSaver
                      
 

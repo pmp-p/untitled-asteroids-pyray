@@ -26,12 +26,8 @@ def get_city_temp_wspd(city):
     Converts temperature from Kelvin to Fahrenheit and returns wind speed.
     """
 
-    url = "https://weather-api138.p.rapidapi.com/weather"
-
-    headers = {
-        "x-rapidapi-key": "57196037fdmsh90d56e037ea94bep1b9d40jsn595913a15546",
-        "x-rapidapi-host": "weather-api138.p.rapidapi.com",
-    }
+    url= 
+    headers=
 
     # Use the city name in the querystring to fetch relevant weather data
     querystring = {"city_name": city}
