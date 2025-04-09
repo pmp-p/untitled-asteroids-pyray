@@ -1,4 +1,4 @@
 SavedGameData/player_data.txt
 code/__pycache__
 build/
-untitled_asteroids_repository/.env
+ApiEnvironmentVariables/.env
