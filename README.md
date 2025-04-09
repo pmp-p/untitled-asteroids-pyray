@@ -9,6 +9,7 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 * Python (installed with pip module)
 * Knowledge of utilizing API's
 * Requests module installed
+* Tkinter module installed (for window resizing)
 
 ## To run the program in your terminal:
 
