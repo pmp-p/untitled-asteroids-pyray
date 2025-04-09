@@ -13,7 +13,7 @@ class Assets:
 
         # Init_window is needed for any imported texture to be drawn
         # Init_audio_device is needed for any imported audio to be used
-        init_window(WINDOW_WIDTH, WINDOW_HEIGHT, "GAME")
+        init_window(ADJUSTED_WIDTH, ADJUSTED_HEIGHT, "GAME")
         init_audio_device()
         self._assets = {}
 

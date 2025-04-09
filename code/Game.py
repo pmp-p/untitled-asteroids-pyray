@@ -76,7 +76,7 @@ class SpaceGame:
 
         # Input box positioned near difficulty button for city input
         self._user_input_box = InputBox(
-            Vector2(WINDOW_WIDTH / 2 - 300, 365), game_assets.get_asset_font("slkscr.ttf"), 40, 600, 80, 18, RED, WHITE, BLACK
+            Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 250 * SCALE_FACTOR), game_assets.get_asset_font("slkscr.ttf"), 30 * SCALE_FACTOR, 470 * SCALE_FACTOR, 60 * SCALE_FACTOR, 18, RED, WHITE, BLACK
         )
 
         # Game Screen Transitioning
@@ -248,7 +248,7 @@ class SpaceGame:
     def make_stars(self):
         """Generates stars at random positions"""
         for i in range(50):
-            random_star_pos = Vector2(randint(0, WINDOW_WIDTH), randint(0, WINDOW_HEIGHT))
+            random_star_pos = Vector2(randint(0, ADJUSTED_WIDTH), randint(0, ADJUSTED_HEIGHT))
             self._stars_list.append(
                 Star(game_assets.get_asset_texture("star.png"), random_star_pos, 0, Vector2(15, 15), Vector2(0, 0))
             )
@@ -317,7 +317,7 @@ class SpaceGame:
         )
         treasure_speed = 200
         if len(self._treasure) < 1:
-            random_treasure_pos = Vector2(randint(20, WINDOW_WIDTH - 60), randint(-4000, -1000))
+            random_treasure_pos = Vector2(randint(20, ADJUSTED_WIDTH - 60), randint(-4000, -1000))
             treasure_direction = Vector2(0, 1)
             treasure = Treasure(random_treasure_pos, treasure_speed, treasure_direction)
             treasure.set_texture(game_assets.get_asset_texture(treasure_variations))
@@ -326,7 +326,7 @@ class SpaceGame:
 
     def create_single_asteroid(self):
         """Creates a single asteroid to add to asteroid list."""
-        random_asteroid_pos = Vector2(randint(-15, WINDOW_WIDTH + 30), randint(-100, -50))
+        random_asteroid_pos = Vector2(randint(-15, ADJUSTED_WIDTH + 30), randint(-100, -50))
         random_asteroid_speed = randint(self._max_speed_range_custom[0], self._max_speed_range_custom[1])
         random_asteroid_direction = Vector2(randint(-1, 1), 1)
 
@@ -386,19 +386,19 @@ class SpaceGame:
             "O2": {
                 "class": O2_PowerUP,
                 "rarity": 13,
-                "pos": Vector2(randint(20, WINDOW_WIDTH - 60), randint(-1500, -500)),
+                "pos": Vector2(randint(20, ADJUSTED_WIDTH - 60), randint(-1500, -500)),
                 "direction": Vector2(0, 1),
             },
             "Ammo": {
                 "class": Ammo_PowerUP,
                 "rarity": 4,
-                "pos": Vector2(randint(-3000, -500), randint(20, WINDOW_HEIGHT - 60)),
+                "pos": Vector2(randint(-3000, -500), randint(20, ADJUSTED_HEIGHT - 60)),
                 "direction": Vector2(1, 0),
             },
             "HP": {
                 "class": HeartCapsule_PowerUP,
                 "rarity": 1,
-                "pos": Vector2(randint(WINDOW_WIDTH, 3000), randint(20, WINDOW_HEIGHT - 60)),
+                "pos": Vector2(randint(ADJUSTED_WIDTH, 3000), randint(20, ADJUSTED_HEIGHT - 60)),
                 "direction": Vector2(-1, 0),
             },
         }
@@ -420,7 +420,7 @@ class SpaceGame:
             # remove treasure objects as they exit the sides of the screens
             treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), WHITE)
             pos = treasure.get_position()
-            if pos.y > WINDOW_HEIGHT:
+            if pos.y > ADJUSTED_HEIGHT:
                 self._treasure.remove(treasure)
 
     def handle_asteroid_deletion(self):
@@ -432,7 +432,7 @@ class SpaceGame:
 
             # Update asteroid position
             pos = asteroid.get_position()
-            if pos.y > WINDOW_HEIGHT or (pos.x < -15 or pos.x > WINDOW_WIDTH + 30):
+            if pos.y > ADJUSTED_HEIGHT or (pos.x < -15 or pos.x > ADJUSTED_WIDTH + 30):
                 self._asteroids_list.remove(asteroid)
 
     def handle_power_up_deletion(self):
@@ -446,10 +446,10 @@ class SpaceGame:
             pos = power_up.get_position()
 
             if isinstance(power_up, O2_PowerUP):
-                if pos.y > WINDOW_HEIGHT:
+                if pos.y > ADJUSTED_HEIGHT:
                     self._power_ups.remove(power_up)
             elif isinstance(power_up, Ammo_PowerUP):
-                if pos.x > WINDOW_WIDTH:
+                if pos.x > ADJUSTED_WIDTH:
                     self._power_ups.remove(power_up)
             elif isinstance(power_up, HeartCapsule_PowerUP):
                 if pos.x < -15:
@@ -875,7 +875,7 @@ class SpaceGame:
         """
         loading_texture = game_assets.get_asset_texture("loading_screen.png")
         loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
-        loading_texture_dest = Rectangle(0, 0, WINDOW_WIDTH, WINDOW_HEIGHT)
+        loading_texture_dest = Rectangle(0, 0, ADJUSTED_WIDTH, ADJUSTED_HEIGHT)
         draw_texture_pro(loading_texture, loading_texture_source, loading_texture_dest, Vector2(), 0, WHITE)
         self._menu._start_timer.update()
 

@@ -22,7 +22,7 @@ class Menu:
         self._leaderboard = load_gamesave_file()["Game Leaderboard"]
         self._title = "untitled asteroids game"
         self.create_buttons()
-        self._start_timer = Timer(4, False, False, self.start_game_after_delay)
+        self._start_timer = Timer(1.5, False, False, self.start_game_after_delay)
         self._menu_state_stack = DoublyLinkedStack()
 
         # Game screen button events tied to each menu state
@@ -54,21 +54,21 @@ class Menu:
         """
         if len(self._leaderboard) > 0:
             self.sort_leaderboard()
-        text_height = 120
+        text_height = 120 * SCALE_FACTOR
         place = 1
         for player_data in self._leaderboard:
             player_data = player_data[0] + "    score: " + str(player_data[1]) + "    time: " + str(player_data[2])
-            text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), player_data, 55, 0)
-            centered_txt_width = (WINDOW_WIDTH - text_dimensions.x) / 2
+            text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), player_data, 40 * SCALE_FACTOR, 0)
+            centered_txt_width = (ADJUSTED_WIDTH - text_dimensions.x) * SCALE_FACTOR  / 2
             draw_text_ex(
                 game_assets.get_asset_font("slkscreb.ttf"),
                 str(place) + ". " + player_data,
                 Vector2(centered_txt_width, text_height),
-                55,
+                40 * SCALE_FACTOR,
                 0,
                 YELLOW,
             )
-            text_height += 60
+            text_height += 60 * SCALE_FACTOR
             place += 1
 
     def start_game_after_delay(self):
@@ -86,34 +86,34 @@ class Menu:
         Creates all buttons for the menu with their positions, sizes, and text.
         """
         self._buttons["start"] = Button(
-            Vector2(WINDOW_WIDTH / 2 - 310, 450), 620, 80, "START", game_assets.get_asset_font("slkscreb.ttf"), 60
+            Vector2(ADJUSTED_WIDTH / 2 - 310, 450), 550 * SCALE_FACTOR, 80 * SCALE_FACTOR, "START", game_assets.get_asset_font("slkscreb.ttf"), 40 * SCALE_FACTOR
         )
         self._buttons["stats"] = Button(
-            Vector2(WINDOW_WIDTH / 2 - 310, 550), 620, 80, "LEADERBOARD", game_assets.get_asset_font("slkscreb.ttf"), 60
+            Vector2(ADJUSTED_WIDTH / 2 - 310, 550), 550 * SCALE_FACTOR, 80 * SCALE_FACTOR, "LEADERBOARD", game_assets.get_asset_font("slkscreb.ttf"), 40 * SCALE_FACTOR
         )
         self._buttons["exit"] = Button(
-            Vector2(WINDOW_WIDTH / 2 - 310, 650), 620, 80, "EXIT", game_assets.get_asset_font("slkscreb.ttf"), 60
+            Vector2(ADJUSTED_WIDTH / 2 - 310, 650), 550 * SCALE_FACTOR, 80 * SCALE_FACTOR, "EXIT", game_assets.get_asset_font("slkscreb.ttf"), 40 * SCALE_FACTOR
         )
         self._buttons["main menu"] = Button(
-            Vector2(WINDOW_WIDTH / 2 - 310, 550), 620, 80, "MAIN MENU", game_assets.get_asset_font("slkscreb.ttf"), 60
+            Vector2(ADJUSTED_WIDTH / 2 - 310, 550), 550 * SCALE_FACTOR, 80 * SCALE_FACTOR, "MAIN MENU", game_assets.get_asset_font("slkscreb.ttf"), 40 * SCALE_FACTOR
         )
         self._buttons["options"] = Button(
-            Vector2(WINDOW_WIDTH / 2 - 310, 750), 620, 80, "OPTIONS", game_assets.get_asset_font("slkscreb.ttf"), 60
+            Vector2(ADJUSTED_WIDTH / 2 - 310, 750), 550 * SCALE_FACTOR, 80 * SCALE_FACTOR, "OPTIONS", game_assets.get_asset_font("slkscreb.ttf"), 40 * SCALE_FACTOR
         )
         self._buttons["difficulty"] = Button(
-            Vector2(WINDOW_WIDTH / 2 - 310, 750), 620, 80, "DIFFICULTY", game_assets.get_asset_font("slkscreb.ttf"), 60
+            Vector2(ADJUSTED_WIDTH / 2 - 310, 750), 550 * SCALE_FACTOR, 80 * SCALE_FACTOR, "DIFFICULTY", game_assets.get_asset_font("slkscreb.ttf"), 40 * SCALE_FACTOR
         )
         self._buttons["erase file"] = Button(
-            Vector2(WINDOW_WIDTH / 2 - 310, 750), 200, 50, "ERASE SAVE", game_assets.get_asset_font("slkscreb.ttf"), 20
+            Vector2(ADJUSTED_WIDTH / 2 - 310, 750), 200 * SCALE_FACTOR, 50 * SCALE_FACTOR, "ERASE SAVE", game_assets.get_asset_font("slkscreb.ttf"), 20 * SCALE_FACTOR
         )
 
     def draw_title(self):
         """
         Draws the title of the game in the center of the screen.
         """
-        title_text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), self._title, 80, 0)
-        centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
-        draw_text_ex(game_assets.get_asset_font("slkscreb.ttf"), self._title, Vector2(centered_title_width, 120), 80, 0, WHITE)
+        title_text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), self._title, 50 * SCALE_FACTOR, 0)
+        centered_title_width = (ADJUSTED_WIDTH - title_text_dimensions.x) * SCALE_FACTOR / 2 
+        draw_text_ex(game_assets.get_asset_font("slkscreb.ttf"), self._title, Vector2(centered_title_width, 120 * SCALE_FACTOR), 50 * SCALE_FACTOR, 0, WHITE)
 
     def draw_difficulty_information(self, city, temp, speed):
         """
@@ -125,24 +125,25 @@ class Menu:
         draw_text_ex(
             game_assets.get_asset_font("slkscreb.ttf"),
             "City: " + city,
-            Vector2(self._buttons["difficulty"].get_button_position().x, 480),
-            45,
+            Vector2(self._buttons["difficulty"].get_button_position().x * SCALE_FACTOR - 20, 340 * SCALE_FACTOR),
+            35 * SCALE_FACTOR,
             0,
             WHITE,
         )
+
         draw_text_ex(
             game_assets.get_asset_font("slkscreb.ttf"),
             "Temperature: " + temp + " F",
-            Vector2(self._buttons["difficulty"].get_button_position().x, 580),
-            45,
+            Vector2(self._buttons["difficulty"].get_button_position().x * SCALE_FACTOR - 20, 440 * SCALE_FACTOR),
+            35 * SCALE_FACTOR,
             0,
             WHITE,
         )
         draw_text_ex(
             game_assets.get_asset_font("slkscreb.ttf"),
             "Speed range: " + speed,
-            Vector2(self._buttons["difficulty"].get_button_position().x, 680),
-            45,
+            Vector2(self._buttons["difficulty"].get_button_position().x * SCALE_FACTOR - 20, 540 * SCALE_FACTOR),
+            35 * SCALE_FACTOR,
             0,
             WHITE,
         )
@@ -243,10 +244,11 @@ class Menu:
         """
         Runs the main menu by drawing buttons and handling button click checks.
         """
-        self._buttons["start"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 450))
-        self._buttons["stats"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 550))
-        self._buttons["options"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 650))
-        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 750))
+
+        self._buttons["start"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 250 * SCALE_FACTOR))
+        self._buttons["stats"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 350 * SCALE_FACTOR))
+        self._buttons["options"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 450 * SCALE_FACTOR))
+        self._buttons["exit"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 550 * SCALE_FACTOR))
         self.draw_title()
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
@@ -255,7 +257,7 @@ class Menu:
         """
         Runs the leaderboard menu by drawing the 'main menu' button and displaying leaderboard stats.
         """
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 850))
+        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 280 * SCALE_FACTOR, 650 * SCALE_FACTOR))
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
         self.draw_leaderboard_stats()
@@ -264,18 +266,19 @@ class Menu:
         """
         Runs the death menu, drawing 'main menu' and 'exit' buttons, and displaying 'GAME OVER' text.
         """
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 700, 550))
-        self._buttons["exit"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 + 40, 550))
+        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 635, 450 * SCALE_FACTOR))
+        self._buttons["exit"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 + 40, 450 * SCALE_FACTOR))
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
-        title_text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), "GAME OVER", 200, 0)
-        centered_title_width = (WINDOW_WIDTH - title_text_dimensions.x) / 2
-        centered_title_height = (WINDOW_HEIGHT - title_text_dimensions.y) / 2
+        title_text_dimensions = measure_text_ex(game_assets.get_asset_font("slkscreb.ttf"), "GAME OVER", 100 * SCALE_FACTOR, 0)
+        
+        centered_title_width = (ADJUSTED_WIDTH - title_text_dimensions.x) * SCALE_FACTOR/ 2 
+        centered_title_height = (ADJUSTED_HEIGHT - title_text_dimensions.y) * SCALE_FACTOR / 2 
         draw_text_ex(
             game_assets.get_asset_font("slkscreb.ttf"),
             "GAME OVER",
-            Vector2(centered_title_width, int(centered_title_height / 1.5)),
-            200,
+            Vector2(centered_title_width *  SCALE_FACTOR - 57, int(centered_title_height / 1.5) * SCALE_FACTOR),
+            100 * SCALE_FACTOR,
             0,
             WHITE,
         )
@@ -285,9 +288,9 @@ class Menu:
         This function runs the options menu by drawing buttons and checking for button clicks.
         It allows the player to go back to the main menu or access difficulty settings.
         """
-        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 850))
-        self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(WINDOW_WIDTH / 2 - 310, 250))
-        self._buttons["erase file"].draw_button(RED, BLACK, Vector2(1600, 980))
+        self._buttons["main menu"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 280 * SCALE_FACTOR, 650 * SCALE_FACTOR))
+        self._buttons["difficulty"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH / 2 - 280 * SCALE_FACTOR, 150 * SCALE_FACTOR))
+        self._buttons["erase file"].draw_button(RED, BLACK, Vector2(ADJUSTED_WIDTH - 300, 650 * SCALE_FACTOR))
         # self.check_button_clicks()
         self.check_button_clicks_optimized()
 
@@ -407,7 +410,7 @@ class Button:
         """
         Draws the border of the button.
         """
-        draw_rectangle_lines_ex(self._rectangle, 5.0, WHITE)
+        draw_rectangle_lines_ex(self._rectangle, 2.0 * SCALE_FACTOR, WHITE)
 
     def get_rectangle(self):
         """
