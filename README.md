@@ -179,4 +179,5 @@ Pixabay Content License (https://pixabay.com/service/license-summary/):
 * Game freezes for a bit when choosing a new city for the first time. Likely to do with the Weather API.
 
 
+
   
