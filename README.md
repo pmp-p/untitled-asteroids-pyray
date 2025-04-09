@@ -7,9 +7,10 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 * Knowledge of Object-Oriented Programming, Inheritance, File Processing, Data Strutures, and Game-Loop logic
 * Raylib package installed on your computer 
 * Python (installed with pip module)
+* WeatherApi (https://rapidapi.com/oktamovshohjahon/api/weather-api138/playground/apiendpoint_acb2971f-25d4-4a29-b5d6-87b9f3f8131b)
 * Knowledge of utilizing API's
 * Requests module installed
-* Tkinter module installed (for window resizing)
+  
 
 ## To run the program in your terminal:
 
@@ -29,8 +30,8 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 6. In WeatherApi.py, replace url, key, and headers for your API information
 
-   * Make sure you subscribe to the api, https://rapidapi.com/oktamovshohjahon/api/weather-api138/playground/apiendpoint_acb2971f-25d4-4a29-b5d6-87b9f3f8131b
-   * url, key, headers can be pasted from here
+   * Make sure you are subscribed to the api
+   * The header containing the key and host, can be pasted from here, as well as the url
      
 7. Inside the folder code type
    * python Game.py
