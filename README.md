@@ -28,7 +28,7 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
 
 5. Git clone this repository
 
-6. In WeatherApi.py, replace url, key, and headers for your API information
+6. In the WeatherApi.py get_city_temp_wsp() method, replace url and headers with your API information
 
    * Make sure you are subscribed to the api
    * The header containing the key and host, can be pasted from here, as well as the url
