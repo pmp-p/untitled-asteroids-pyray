@@ -33,7 +33,7 @@ A retro-styled Asteroids game clone where you survive as long as possible avoidi
    * Make sure you are subscribed to the api
    * The header containing the key and host, can be pasted from here, as well as the url
      
-7. Inside the folder code type
+7. Inside the folder top folder (ex: untitled_asteroids_repository) type, 
    * python Game.py
 
 ## Core Gameplay
