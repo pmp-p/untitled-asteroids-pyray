@@ -1,5 +1,3 @@
-import requests
-
 """
 This API parses data from a weather information database. This implementation specifically retreives 
 temperature and wind speed based on the city chosen.
@@ -18,7 +16,7 @@ note2:
     
 """
 
-# Load environment variables from .env file, be sure so replace .env variables with your API information
+import requests
 
 def get_city_temp_wspd(city):
     """
@@ -26,7 +24,7 @@ def get_city_temp_wspd(city):
     Converts temperature from Kelvin to Fahrenheit and returns wind speed.
     """
 
-    url = "REPLACE"
+    url =  "REPLACE THIS"
 
     headers = "REPLACE"
 
@@ -60,6 +58,8 @@ def get_city_temp_wspd(city):
         return city_data_to_return
 
 
+
 if __name__ == "__main__":
     city = input("Enter a city: ")
     print(get_city_temp_wspd(city))
+
