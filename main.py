@@ -803,40 +803,40 @@ class SpaceGame:
             self._max_speed_range_custom = self._max_speed_range_default[:]
 
     async def run_optimized(self):
-        """
-        Main game loop that handles menu navigation, game state transitions,
-        and drawing appropriate buttons based on game state.
-        Uses DoublyLinkedStack data structure for better efficiency.
+            """
+            Main game loop that handles menu navigation, game state transitions,
+            and drawing appropriate buttons based on game state.
+            Uses DoublyLinkedStack data structure for better efficiency.
 
-        """
+            """
 
-        # Initialize with the main menu state
-        self._menu._menu_state_stack.push("main_menu")
+            # Initialize with the main menu state
+            self._menu._menu_state_stack.push("main_menu")
 
-        while not window_should_close() and not self.should_exit_menu_status():
-            begin_drawing()
-            clear_background((0,0,0,0))
+            while not window_should_close() and not self.should_exit_menu_status():
+                begin_drawing()
+                clear_background((0,0,0,0))
 
-            # This current_state is used to determine what new menu to now run
-            current_state = self._menu._menu_state_stack.top()
+                # This current_state is used to determine what new menu to now run
+                current_state = self._menu._menu_state_stack.top()
 
-            # Menu screen to run based on current game state
-            if current_state in self._screens:
-                self._screens[current_state]()
-            else:
-                print(current_state + " not recognized.")
+                # Menu screen to run based on current game state
+                if current_state in self._screens:
+                    self._screens[current_state]()
+                else:
+                    print(current_state + " not recognized.")
 
-            end_drawing()
-            await asyncio.sleep(0) #yield to browser render
+                end_drawing()
+                await asyncio.sleep(0) #yield to browser render
 
-        # store the games data to be saved (city data, player leaderboard)
-        saved_data = {"Game Leaderboard": self._menu._leaderboard, "City selected": self._city_custom, "City temperature": self._game_temperature_custom, 
-                    "City wind speed range": self._max_speed_range_custom}
+            # store the games data to be saved (city data, player leaderboard)
+            saved_data = {"Game Leaderboard": self._menu._leaderboard, "City selected": self._city_custom, "City temperature": self._game_temperature_custom, 
+                        "City wind speed range": self._max_speed_range_custom}
 
-        save_game_data_file(saved_data)
+            save_game_data_file(saved_data)
 
-        # Close the game
-        self.cleanup_asteroids_game()
+            # Close the game
+            self.cleanup_asteroids_game()
 
     def handle_main_menu(self):
         """
