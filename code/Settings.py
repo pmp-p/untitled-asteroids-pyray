@@ -1,6 +1,3 @@
-from pyray import *
-from raylib import *
-
 # from tkinter import *
 # removing this for dynamically resizing based on screen size
 # with constants for DEVICE_WIDTH, DEVICE_HEIGHT instead
@@ -19,7 +16,7 @@ SCALE_FACTOR = min(SCALE_X, SCALE_Y)
 ADJUSTED_WIDTH, ADJUSTED_HEIGHT = int(TARGET_SCREEN_WIDTH * SCALE_X), int(TARGET_SCREEN_HEIGHT * SCALE_Y)
 
 
-BG_COLOR = BLACK  # (15,10,25,255)
+BG_COLOR = (0,0,0,0)
 PLAYER_SPEED = 700
 LASER_SPEED = 600
 OXYGEN_DEPLETION_RATE = 2.8

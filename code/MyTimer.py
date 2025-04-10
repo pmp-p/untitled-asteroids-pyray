@@ -1,7 +1,4 @@
-from Settings import get_time
-from pyray import *
-from raylib import *
-
+from pyray import get_time
 
 class Timer:
     def __init__(self, duration: int, repeat=False, autostart=False, func=None):
@@ -34,16 +31,3 @@ class Timer:
                     self.func()
                 self.deactivate()
             # print(elapsed_time)
-
-
-# testing
-if __name__ == "__main__":
-    init_window(1920, 1080, "Timer")
-    test_timer = Timer(5, False, False)
-    test_timer.activate()
-    while not window_should_close():
-        test_timer.update()
-        begin_drawing()
-        clear_background(BLACK)
-        end_drawing()
-    close_window()

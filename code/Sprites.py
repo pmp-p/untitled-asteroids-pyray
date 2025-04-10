@@ -1,9 +1,12 @@
-from Settings import *
+from raylib import KEY_SPACE, KEY_RIGHT, KEY_LEFT, KEY_DOWN, KEY_UP, RED, GRAY, LIGHTGRAY
+from pyray import get_frame_time, draw_texture_pro, Vector2, Rectangle, draw_text_ex, draw_texture_v, set_sound_volume, play_sound, is_key_down, is_key_pressed
+from Settings import SCALE_FACTOR, ADJUSTED_HEIGHT, ADJUSTED_WIDTH, PLAYER_SPEED, LASER_SPEED, OXYGEN_DEPLETION_RATE, POINTS_FONT_SIZE, OXYGEN_FONT_SIZE, FONT_SIZE
 from MyTimer import Timer
 from random import randint
-from Assets import *
+from Assets import game_assets
 
-
+print(RED)
+print(LIGHTGRAY)
 class Sprite2D:
     """
     represents a 2D sprite, which could be either moving or stationary.
@@ -294,7 +297,7 @@ class Spaceship(Sprite2D):
 
         # update the position of each laser on the screen and remove them as they go off screen
         for laser in self.get_lasers()[:]:
-            laser.movement_update(laser.get_direction(), 0, Vector2(0, 0), WHITE)
+            laser.movement_update(laser.get_direction(), 0, Vector2(0, 0), (200,200,200,200))
             if laser.get_position().y < 0:
                 self._laser_projectiles.remove(laser)
 
@@ -313,7 +316,7 @@ class Spaceship(Sprite2D):
                 ),
                 0,
                 Vector2(),
-                SKYBLUE,
+                (102, 191, 255, 255),
             )
         else:
             # update ship position based on input
@@ -323,7 +326,7 @@ class Spaceship(Sprite2D):
                 ),
                 0,
                 Vector2(),
-                WHITE,
+                (200,200,200,200),
             )
         # turn on laser shooting, draw ammo and health UI, display draining oxygen, and check window boundaries
         self.shoot_laser()
@@ -385,7 +388,7 @@ class Asteroid(Sprite2D):
         asteroid_source = Rectangle(0, 0, self.get_texture().width, self.get_texture().height)
         asteroid_dest = Rectangle(self.get_position().x, self.get_position().y, self.get_texture().width, self.get_texture().height)
         asteroid_center = Vector2(self.get_texture().width / 2, self.get_texture().height / 2)
-        draw_texture_pro(self.get_texture(), asteroid_source, asteroid_dest, asteroid_center, self._rotation, WHITE)
+        draw_texture_pro(self.get_texture(), asteroid_source, asteroid_dest, asteroid_center, self._rotation, (200,200,200,200))
 
 
 class O2_PowerUP(Sprite2D):
@@ -473,7 +476,7 @@ class Clock(Sprite2D):
             Vector2((self.get_position().x - pos_offset - 80) * SCALE_FACTOR, self.get_position().y * SCALE_FACTOR),
             FONT_SIZE * SCALE_FACTOR - 30,
             10.0,
-            WHITE,
+            (200,200,200,200),
         )
 
     def run_clock(self):
@@ -511,11 +514,11 @@ class OxygenMeter(Sprite2D):
     def draw_oxygen_level(self):
         """Draws the current oxygen level on the screen, changing the color based on the level."""
         if self.get_current_oxygen_level() >= 65:
-            color = WHITE
+            color = (200,200,200,200)
         elif self.get_current_oxygen_level() >= 35:
-            color = YELLOW
+            color = (102, 191, 255, 255)
         elif self.get_current_oxygen_level() < 35:
-            color = RED
+            color = (230, 41, 55, 255)
         draw_text_ex(self._font, str(self.get_current_oxygen_level()), Vector2(self.get_position().x * SCALE_FACTOR, 
                 self.get_position().y * SCALE_FACTOR), OXYGEN_FONT_SIZE * SCALE_FACTOR, 10, color)
 
@@ -581,12 +584,12 @@ class Points(Sprite2D):
     def draw_points(self):
         """Draws the current points on the screen."""
         draw_text_ex(self._font, "score:" + str(self.get_current_points()), Vector2(self.get_position().x * SCALE_FACTOR
-            , self.get_position().y * SCALE_FACTOR), POINTS_FONT_SIZE * SCALE_FACTOR, 8.0, YELLOW)
+            , self.get_position().y * SCALE_FACTOR), POINTS_FONT_SIZE * SCALE_FACTOR, 8.0, (102, 191, 255, 255))
 
     def draw_multiplier(self):
         """Draws the current multiplier on the screen if it's greater than 1."""
         if self.get_multiplier() > 1:
-            draw_text_ex(self._font, str(self._multiplier) + "x", Vector2(50 * SCALE_FACTOR, 90 * SCALE_FACTOR), POINTS_FONT_SIZE - 5 * SCALE_FACTOR, 8.0, WHITE)
+            draw_text_ex(self._font, str(self._multiplier) + "x", Vector2(50 * SCALE_FACTOR, 90 * SCALE_FACTOR), POINTS_FONT_SIZE - 5 * SCALE_FACTOR, 8.0, (200,200,200,200))
 
     def decrease_points(self, amt):
         """Decreases the current points by the given amount."""
@@ -668,7 +671,7 @@ class HP(Sprite2D):
         """
         Draws the heart container on the screen using the current texture.
         """
-        draw_texture_v(self.get_texture(), self.get_position(), WHITE)
+        draw_texture_v(self.get_texture(), self.get_position(), (200,200,200,200))
 
     def switch_heart_texture(self, update_bool):
         """
@@ -692,4 +695,4 @@ class Ammo(Sprite2D):
 
     def draw_laser_ammo(self):
         """Draws the laser ammo on the screen."""
-        draw_texture_v(self.get_texture(), self.get_position(), WHITE)
+        draw_texture_v(self.get_texture(), self.get_position(), (200,200,200,200))

@@ -1,6 +1,5 @@
-from pyray import *
-from raylib import *
-from Settings import *
+from pyray import init_window, init_audio_device, load_texture, load_font, load_music_stream, load_sound, Texture2D, Font, Sound, Music, unload_texture, unload_font,  unload_sound, unload_music_stream
+from Settings import ADJUSTED_WIDTH, ADJUSTED_HEIGHT
 import os
 
 

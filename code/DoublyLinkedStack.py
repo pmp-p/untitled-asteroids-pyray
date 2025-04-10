@@ -1,20 +1,19 @@
-class Node:
-    """
-    Node class, where each node has a data attribute as well as stores
-    references to the previous and next nodes
-    """
-
-    def __init__(self, data):
-        self.data = data
-        self.last = None
-        self.next = None
-
-
 class DoublyLinkedStack:
     """
     Head will always reference the most recently added node (top of the stack)
-    Tail will always reference the first in node (bottom of stack)
+    Tail will always reference the first node (bottom of the stack)
     """
+
+    class Node:
+        """
+        Node class, where each node has a data attribute as well as stores
+        references to the previous and next nodes
+        """
+
+        def __init__(self, data):
+            self.data = data
+            self.last = None
+            self.next = None
 
     def __init__(self):
         self.head = None
@@ -26,13 +25,13 @@ class DoublyLinkedStack:
         If the stack is empty, create a new node and set it as top of the stack.
         Otherwise, add a new node at the top and adjust the links.
         """
-        if self.head == None:
-            new_node = Node(data)
+        if self.head is None:
+            new_node = self.Node(data)
             self.head = new_node
-            self.last = new_node
+            self.tail = new_node
         else:
             # If the stack isn't empty, the new node becomes the top
-            new_node = Node(data)
+            new_node = self.Node(data)
 
             # Link the new node to the current head
             new_node.next = self.head
@@ -48,13 +47,13 @@ class DoublyLinkedStack:
         If the stack is empty, return None.
         """
         # Stack is empty
-        if self.head == None:
+        if self.head is None:
             return None
 
         top_element = self.head.data
 
         # Only one item in the stack
-        if self.head.next == None:
+        if self.head.next is None:
             self.head = None
             self.tail = None
             return top_element
@@ -71,7 +70,7 @@ class DoublyLinkedStack:
         Return the top item of the stack without removing it.
         Return None if the stack is empty.
         """
-        if self.head == None:
+        if self.head is None:
             return None
         return self.head.data
 
@@ -80,7 +79,7 @@ class DoublyLinkedStack:
         Check if the stack is empty.
         Return True if empty, False otherwise.
         """
-        return self.head == None
+        return self.head is None
 
 
 if __name__ == "__main__":

@@ -1,9 +1,15 @@
-from Sprites import *
-from WeatherApi import *
-from Menu import *
-from random import *
-from InputBox import *
-from GameSaver import *
+from Sprites import Spaceship, Clock, Treasure, Asteroid, O2_PowerUP, Ammo_PowerUP, HeartCapsule_PowerUP, Star
+from Assets import game_assets
+from WeatherApi import get_city_temp_wspd
+from GameSaver import save_game_data_file, load_gamesave_file
+from Menu import Menu
+from random import choice, choices, randint
+from InputBox import InputBox
+from pyray import set_music_volume, play_music_stream, stop_music_stream, check_collision_circle_line, check_collision_circle_rec, check_collision_recs
+from pyray import update_music_stream, begin_drawing, end_drawing, window_should_close, clear_background, close_window, close_audio_device, set_sound_volume, play_sound, draw_texture_pro, Vector2, Rectangle
+from MyTimer import Timer
+from Settings import ADJUSTED_WIDTH, ADJUSTED_HEIGHT, SCALE_FACTOR
+
 
 class SpaceGame:
     """
@@ -78,7 +84,7 @@ class SpaceGame:
 
         # Input box positioned near difficulty button for city input
         self._user_input_box = InputBox(
-            Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 250 * SCALE_FACTOR), game_assets.get_asset_font("slkscr.ttf"), 30 * SCALE_FACTOR, 470 * SCALE_FACTOR, 60 * SCALE_FACTOR, 18, RED, WHITE, BLACK
+            Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 250 * SCALE_FACTOR), game_assets.get_asset_font("slkscr.ttf"), 30 * SCALE_FACTOR, 470 * SCALE_FACTOR, 60 * SCALE_FACTOR, 18, (230, 41, 55, 255), (255,255,255,255), (0,0,0,0)
         )
 
         # Game Screen Transitioning
@@ -259,7 +265,7 @@ class SpaceGame:
         """Manages the twinkling stars background effect."""
         for star in self._stars_list:
             star.dynamically_grow()
-            star.movement_update(Vector2(0, 0), 0, Vector2(0, 0), WHITE)
+            star.movement_update(Vector2(0, 0), 0, Vector2(0, 0), (255,255,255,255))
 
     def draw_treasure(self):
         """
@@ -420,7 +426,7 @@ class SpaceGame:
         """
         for treasure in self._treasure[:]:
             # remove treasure objects as they exit the sides of the screens
-            treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), WHITE)
+            treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), (255,255,255,255))
             pos = treasure.get_position()
             if pos.y > ADJUSTED_HEIGHT:
                 self._treasure.remove(treasure)
@@ -444,7 +450,7 @@ class SpaceGame:
         """
         for power_up in self._power_ups[:]:
             # Note: Movement update of each power_up is initilized differently to change movement
-            power_up.movement_update(power_up.get_direction(), 0, Vector2(0, 0), WHITE)
+            power_up.movement_update(power_up.get_direction(), 0, Vector2(0, 0), (255,255,255,255))
             pos = power_up.get_position()
 
             if isinstance(power_up, O2_PowerUP):
@@ -795,7 +801,7 @@ class SpaceGame:
 
         while not window_should_close() and not self.should_exit_menu_status():
             begin_drawing()
-            clear_background(BG_COLOR)
+            clear_background((0,0,0,0))
 
             # This current_state is used to determine what new menu to now run
             current_state = self._menu._menu_state_stack.top()
@@ -861,7 +867,6 @@ class SpaceGame:
             self._max_speed_range_default = [200, 250]
             self._city_custom = "Default"
             self._menu._leaderboard = []
-
             self._menu._erase_file_clicked = False
 
     def handle_start_game(self):
@@ -879,7 +884,7 @@ class SpaceGame:
         loading_texture = game_assets.get_asset_texture("loading_screen.png")
         loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
         loading_texture_dest = Rectangle(0, 0, ADJUSTED_WIDTH, ADJUSTED_HEIGHT)
-        draw_texture_pro(loading_texture, loading_texture_source, loading_texture_dest, Vector2(), 0, WHITE)
+        draw_texture_pro(loading_texture, loading_texture_source, loading_texture_dest, Vector2(), 0, (255,255,255,255))
         self._menu._start_timer.update()
 
     def cleanup_asteroids_game(self):

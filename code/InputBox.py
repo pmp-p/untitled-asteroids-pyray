@@ -1,7 +1,6 @@
-from pyray import *
-from raylib import *
-from DoublyLinkedStack import *
-from Assets import game_assets
+from pyray import draw_rectangle_v, draw_rectangle_lines_ex, get_mouse_position, get_char_pressed, is_key_pressed, measure_text_ex, draw_text_pro, Rectangle, Vector2
+from raylib import KEY_ENTER, KEY_BACKSPACE
+
 
 
 class InputBox:
@@ -42,8 +41,8 @@ class InputBox:
         based on if the mouse is hovering over it or not
         """
         if self.mouse_in_input_box():
-            draw_rectangle_v(self._input_box_pos, Vector2(self._input_box_width, self._input_box_height), GRAY)
-            draw_rectangle_lines_ex(self._input_box_rectangle, 10, WHITE)
+            draw_rectangle_v(self._input_box_pos, Vector2(self._input_box_width, self._input_box_height), (130, 130, 130, 255))
+            draw_rectangle_lines_ex(self._input_box_rectangle, 10, (255,255,255,255))
         else:
             draw_rectangle_v(self._input_box_pos, Vector2(self._input_box_width, self._input_box_height), self._interior_color)
             draw_rectangle_lines_ex(self._input_box_rectangle, 10, self._border_color)
@@ -144,22 +143,3 @@ class InputBox:
         self._enter_is_pressed = False
 
 
-if __name__ == "__main__":
-
-    test_input_box = InputBox(
-        Vector2(get_screen_width() / 2 - 250, get_screen_height() / 2 - 65),
-        game_assets.get_asset_font("slkscreb.ttf"),
-        40,
-        500,
-        130,
-        9,
-        RED,
-        ORANGE,
-        WHITE,
-    )
-    while not window_should_close():
-        begin_drawing()
-        clear_background(BLACK)
-        test_input_box.enable_input_box()
-        end_drawing()
-    close_window()
