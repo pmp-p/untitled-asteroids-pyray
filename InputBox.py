@@ -1,5 +1,5 @@
 from pyray import draw_rectangle_v, draw_rectangle_lines_ex, get_mouse_position, get_char_pressed, is_key_pressed, measure_text_ex, draw_text_pro, Rectangle, Vector2
-from raylib import KEY_ENTER, KEY_BACKSPACE
+from raylib import KEY_ENTER, KEY_BACKSPACE, GRAY, WHITE
 
 
 
@@ -30,7 +30,7 @@ class InputBox:
         self._input_box_width = width
         self._input_box_height = height
         self._input_box_rectangle = Rectangle(
-            self._input_box_pos.x, self._input_box_pos.y, self._input_box_width, self._input_box_height
+            self._input_box_pos.x, self._input_box_pos.y, self._input_box_width, self._input_box_height, 
         )
         self._accepted_characters = "abcdefghijklmnopqrstuvwxyz ABCDEFGHIJKLMNOPQRSTUVWXYZ"
         self._enter_is_pressed = False
@@ -41,8 +41,8 @@ class InputBox:
         based on if the mouse is hovering over it or not
         """
         if self.mouse_in_input_box():
-            draw_rectangle_v(self._input_box_pos, Vector2(self._input_box_width, self._input_box_height), (130, 130, 130, 255))
-            draw_rectangle_lines_ex(self._input_box_rectangle, 10, (255,255,255,255))
+            draw_rectangle_v(self._input_box_pos, Vector2(self._input_box_width, self._input_box_height), GRAY)
+            draw_rectangle_lines_ex(self._input_box_rectangle, 10, WHITE)
         else:
             draw_rectangle_v(self._input_box_pos, Vector2(self._input_box_width, self._input_box_height), self._interior_color)
             draw_rectangle_lines_ex(self._input_box_rectangle, 10, self._border_color)

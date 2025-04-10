@@ -21,6 +21,7 @@ from pyray import set_music_volume, play_music_stream, stop_music_stream, check_
 from pyray import update_music_stream, begin_drawing, end_drawing, window_should_close, clear_background, close_window, close_audio_device, set_sound_volume, play_sound, draw_texture_pro, Vector2, Rectangle
 from MyTimer import Timer
 from Settings import ADJUSTED_WIDTH, ADJUSTED_HEIGHT, SCALE_FACTOR
+from raylib import WHITE, BLACK, RED
 
 
 class SpaceGame:
@@ -70,7 +71,7 @@ class SpaceGame:
         self._menu = Menu()  # integrates menu system used by the game
 
         # Audio management
-        self._game_music = game_assets.get_asset_music("game_music.mp3")
+        self._game_music = game_assets.get_asset_music("game_music.ogg")
         set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
 
@@ -96,7 +97,8 @@ class SpaceGame:
 
         # Input box positioned near difficulty button for city input
         self._user_input_box = InputBox(
-            Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 250 * SCALE_FACTOR), game_assets.get_asset_font("slkscr.ttf"), 30 * SCALE_FACTOR, 470 * SCALE_FACTOR, 60 * SCALE_FACTOR, 18, (230, 41, 55, 255), (255,255,255,255), (0,0,0,0)
+            Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 250 * SCALE_FACTOR), game_assets.get_asset_font("slkscr.ttf"), 30 * SCALE_FACTOR, 470 * SCALE_FACTOR, 
+            60 * SCALE_FACTOR, 18, RED, WHITE, BLACK
         )
 
         # Game Screen Transitioning
@@ -123,13 +125,13 @@ class SpaceGame:
 
     def play_game_over_sfx(self):
         """Play a game over jingle."""
-        game_over = game_assets.get_asset_sound("game_over.wav")
+        game_over = game_assets.get_asset_sound("game_over.ogg")
         set_sound_volume(game_over, 0.2)
         play_sound(game_over)
         self.stop_music()
 
     def play_damage_sfx(self):
-        crash = game_assets.get_asset_sound("crash.wav")
+        crash = game_assets.get_asset_sound("crash.ogg")
         set_sound_volume(crash, 0.2)
         play_sound(crash)
 
@@ -137,7 +139,7 @@ class SpaceGame:
         """
         Plays the treasure collection sound.
         """
-        collect = game_assets.get_asset_sound("treasure_collect.wav")
+        collect = game_assets.get_asset_sound("treasure_collect.ogg")
         set_sound_volume(collect, 0.2)
         play_sound(collect)
 
@@ -277,7 +279,7 @@ class SpaceGame:
         """Manages the twinkling stars background effect."""
         for star in self._stars_list:
             star.dynamically_grow()
-            star.movement_update(Vector2(0, 0), 0, Vector2(0, 0), (255,255,255,255))
+            star.movement_update(Vector2(0, 0), 0, Vector2(0, 0), WHITE)
 
     def draw_treasure(self):
         """
@@ -438,7 +440,7 @@ class SpaceGame:
         """
         for treasure in self._treasure[:]:
             # remove treasure objects as they exit the sides of the screens
-            treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), (255,255,255,255))
+            treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), WHITE)
             pos = treasure.get_position()
             if pos.y > ADJUSTED_HEIGHT:
                 self._treasure.remove(treasure)
@@ -462,7 +464,7 @@ class SpaceGame:
         """
         for power_up in self._power_ups[:]:
             # Note: Movement update of each power_up is initilized differently to change movement
-            power_up.movement_update(power_up.get_direction(), 0, Vector2(0, 0), (255,255,255,255))
+            power_up.movement_update(power_up.get_direction(), 0, Vector2(0, 0), WHITE)
             pos = power_up.get_position()
 
             if isinstance(power_up, O2_PowerUP):
@@ -638,7 +640,7 @@ class SpaceGame:
                 and powerup.get_lock_status() == True
                 and check_collision_recs(power_up_hitbox, laser_hitbox)
             ):
-                explosion = game_assets.get_asset_sound("explosion.wav")
+                explosion = game_assets.get_asset_sound("explosion.ogg")
                 set_sound_volume(explosion, 0.1)
                 play_sound(explosion)
                 # So that player can now collect oxygen bubble
@@ -702,20 +704,20 @@ class SpaceGame:
         """
         if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == False:
             self._player.get_oxygen_meter().increase_oxygen()
-            self.collect_item(powerup, "bubble.wav")
+            self.collect_item(powerup, "bubble.ogg")
             self._player.get_player_points().increase_points(50)
             self._player.get_player_points().increase_multiplier(0.1)
 
         # Ammo and health can be collected directly
         elif isinstance(powerup, Ammo_PowerUP):
             self._player.increase_ammo()
-            self.collect_item(powerup, "ammo_collect.wav")
+            self.collect_item(powerup, "ammo_collect.ogg")
             self._player.get_player_points().increase_points(50)
             self._player.get_player_points().increase_multiplier(0.1)
 
         elif isinstance(powerup, HeartCapsule_PowerUP):
             self._player.increase_health()
-            self.collect_item(powerup, "heart_collect.wav")
+            self.collect_item(powerup, "heart_collect.ogg")
             self._player.get_player_points().increase_points(50)
             self._player.get_player_points().increase_multiplier(0.1)
 
@@ -897,7 +899,7 @@ class SpaceGame:
         loading_texture = game_assets.get_asset_texture("loading_screen.png")
         loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
         loading_texture_dest = Rectangle(0, 0, ADJUSTED_WIDTH, ADJUSTED_HEIGHT)
-        draw_texture_pro(loading_texture, loading_texture_source, loading_texture_dest, Vector2(), 0, (255,255,255,255))
+        draw_texture_pro(loading_texture, loading_texture_source, loading_texture_dest, Vector2(), 0, WHITE)
         self._menu._start_timer.update()
 
     def cleanup_asteroids_game(self):

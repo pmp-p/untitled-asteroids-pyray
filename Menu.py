@@ -152,7 +152,7 @@ class Menu:
         """
         Plays a sound effect when a button is clicked.
         """
-        button_click = game_assets.get_asset_sound("button_click.wav")
+        button_click = game_assets.get_asset_sound("button_click.ogg")
         set_sound_volume(button_click, 0.4)
         play_sound(button_click)
 
@@ -377,7 +377,7 @@ class Button:
         """
         Plays the hover sound when the mouse enters the button.
         """
-        button_click = game_assets.get_asset_sound("button_hover.wav")
+        button_click = game_assets.get_asset_sound("button_hover.ogg")
         set_sound_volume(button_click, 0.4)
         play_sound(button_click)
 
