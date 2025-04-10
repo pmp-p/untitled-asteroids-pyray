@@ -1,4 +1,4 @@
-from pyray import get_time
+import pyray
 
 class Timer:
     def __init__(self, duration: int, repeat=False, autostart=False, func=None):
@@ -15,7 +15,7 @@ class Timer:
 
     def activate(self):
         self.active = True
-        self.start_time = get_time()
+        self.start_time = pyray.get_time()
 
     def deactivate(self):
         self.active = False
@@ -25,7 +25,7 @@ class Timer:
 
     def update(self):
         if self.active:
-            elapsed_time = get_time() - self.start_time
+            elapsed_time = pyray.get_time() - self.start_time
             if elapsed_time >= self.duration:
                 if self.func and self.start_time:
                     self.func()
