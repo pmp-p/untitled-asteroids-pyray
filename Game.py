@@ -1,16 +1,14 @@
-from Sprites import Spaceship, Clock, Treasure, Asteroid, O2_PowerUP, Ammo_PowerUP, HeartCapsule_PowerUP, Star
-from Assets import game_assets
-from WeatherApi import get_city_temp_wspd
-from GameSaver import save_game_data_file, load_gamesave_file
-from Menu import Menu
-from random import choice, choices, randint
-from InputBox import InputBox
-from pyray import set_music_volume, play_music_stream, stop_music_stream, check_collision_circle_line, check_collision_circle_rec, check_collision_recs
-from pyray import update_music_stream, begin_drawing, end_drawing, window_should_close, clear_background, close_window, close_audio_device, set_sound_volume, play_sound, draw_texture_pro, Vector2, Rectangle
-from MyTimer import Timer
-from Settings import ADJUSTED_WIDTH, ADJUSTED_HEIGHT, SCALE_FACTOR
-from raylib import WHITE, BLACK, RED
-
+import Sprites
+import Assets
+import WeatherApi
+import GameSaver
+import GameMenu
+import random
+import GameInputBox
+import MyTimer
+import Settings
+import raylib
+import pyray
 
 class SpaceGame:
     """
@@ -29,7 +27,7 @@ class SpaceGame:
         self.make_stars()
 
         # Weather-based difficulty parameters
-        previous_save = load_gamesave_file()
+        previous_save = GameSaver.load_gamesave_file()
         self._game_temperature_custom = previous_save["City temperature"]
         self._max_speed_range_custom = previous_save["City wind speed range"]
         self._city_custom = previous_save["City selected"]
@@ -44,8 +42,8 @@ class SpaceGame:
         # Progressive difficulty spawning and speed range difficulty cycles
         self._asteroid_spawning_level = 0
         self._asteroid_speed_level = 0
-        self._asteroid_spawn_increase_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
-        self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer)
+        self._asteroid_spawn_increase_timer = MyTimer.Timer(4, True, False, self.capped_asteroid_spawn_timer)
+        self._asteroid_speed_increase_timer = MyTimer.Timer(10, True, False, self.capped_asteroid_speed_timer)
 
         # Game entity storage
         self._asteroids_list = []
@@ -54,13 +52,13 @@ class SpaceGame:
         self._treasure = []  # list of treasure objects
 
         # Core game component objects
-        self._player = Spaceship()
-        self._game_clock = Clock(game_assets.get_asset_font("slkscr.ttf"))
-        self._menu = Menu()  # integrates menu system used by the game
+        self._player = Sprites.Spaceship()
+        self._game_clock = Sprites.Clock(Assets.game_assets.get_asset_font("slkscr.ttf"))
+        self._menu = GameMenu.Menu()  # integrates menu system used by the game
 
         # Audio management
-        self._game_music = game_assets.get_asset_music("game_music.ogg")
-        set_music_volume(self._game_music, 0.4)
+        self._game_music = Assets.game_assets.get_asset_music("game_music.ogg")
+        pyray.set_music_volume(self._game_music, 0.4)
         self._is_music_playing = False
 
         # Temperature to asteroid type mapping - influences game dynamics based on real-world weather
@@ -84,9 +82,9 @@ class SpaceGame:
         self._char_string = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
         # Input box positioned near difficulty button for city input
-        self._user_input_box = InputBox(
-            Vector2(ADJUSTED_WIDTH / 2 - 240 * SCALE_FACTOR, 250 * SCALE_FACTOR), game_assets.get_asset_font("slkscr.ttf"), 
-            30 * SCALE_FACTOR, 470 * SCALE_FACTOR, 60 * SCALE_FACTOR, 18, RED, WHITE, BLACK
+        self._user_input_box = GameInputBox.InputBox(
+            pyray.Vector2(Settings.ADJUSTED_WIDTH / 2 - 240 * Settings.SCALE_FACTOR, 250 * Settings.SCALE_FACTOR), Assets.game_assets.get_asset_font("slkscr.ttf"), 
+            30 * Settings.SCALE_FACTOR, 470 * Settings.SCALE_FACTOR, 60 * Settings.SCALE_FACTOR, 18, raylib.RED, raylib.WHITE, raylib.BLACK
         )
 
         # Game Screen Transitioning
@@ -102,34 +100,34 @@ class SpaceGame:
     def start_music(self):
         """Starts the game music if it's not already playing."""
         if not self._is_music_playing:
-            play_music_stream(self._game_music)
+            pyray.play_music_stream(self._game_music)
             self._is_music_playing = True
 
     def stop_music(self):
         """Stops the game music if it's currently playing."""
         if self._is_music_playing:
-            stop_music_stream(self._game_music)
+            pyray.stop_music_stream(self._game_music)
             self._is_music_playing = False
 
     def play_game_over_sfx(self):
         """Play a game over jingle."""
-        game_over = game_assets.get_asset_sound("game_over.ogg")
-        set_sound_volume(game_over, 0.2)
-        play_sound(game_over)
+        game_over = Assets.game_assets.get_asset_sound("game_over.ogg")
+        pyray.set_sound_volume(game_over, 0.2)
+        pyray.play_sound(game_over)
         self.stop_music()
 
     def play_damage_sfx(self):
-        crash = game_assets.get_asset_sound("crash.ogg")
-        set_sound_volume(crash, 0.2)
-        play_sound(crash)
+        crash = Assets.game_assets.get_asset_sound("crash.ogg")
+        pyray.set_sound_volume(crash, 0.2)
+        pyray.play_sound(crash)
 
     def _play_treasure_collect_sfx(self):
         """
         Plays the treasure collection sound.
         """
-        collect = game_assets.get_asset_sound("treasure_collect.ogg")
-        set_sound_volume(collect, 0.2)
-        play_sound(collect)
+        collect = Assets.game_assets.get_asset_sound("treasure_collect.ogg")
+        pyray.set_sound_volume(collect, 0.2)
+        pyray.play_sound(collect)
 
     def collect_item(self, item, collect_sfx):
         """Helper function to handle power-up collection effects and audio."""
@@ -137,13 +135,13 @@ class SpaceGame:
         self._power_ups.remove(item)
 
     def play_collection_sfx(self, collect_sfx):
-        sound = game_assets.get_asset_sound(collect_sfx)
-        set_sound_volume(sound, 0.5)
-        play_sound(sound)
+        sound = Assets.game_assets.get_asset_sound(collect_sfx)
+        pyray.set_sound_volume(sound, 0.5)
+        pyray.play_sound(sound)
 
     def update_leaderboard_list(self):
         """Save player score and time lasted to leaderboard."""
-        random_name = "".join(choices(self._char_string, k=4))
+        random_name = "".join(random.choices(self._char_string, k=4))
         score = self._player._score_tracker.get_current_points()
         time = self._game_clock.get_current_time()
         self.add_to_leaderboard_list(random_name, score, time)
@@ -180,8 +178,8 @@ class SpaceGame:
         self._asteroid_speed_level = 0
 
         # Recalibrate the timing of spawn difficulty increase before the speed difficulty increase
-        self._asteroid_spawn_increase_timer = Timer(4, True, False, self.capped_asteroid_spawn_timer)
-        self._asteroid_speed_increase_timer = Timer(10, True, False, self.capped_asteroid_speed_timer)
+        self._asteroid_spawn_increase_timer = MyTimer.Timer(4, True, False, self.capped_asteroid_spawn_timer)
+        self._asteroid_speed_increase_timer = MyTimer.Timer(10, True, False, self.capped_asteroid_speed_timer)
 
     def clear_collectibles(self):
         """Clears all powerups and treasure objects."""
@@ -258,16 +256,16 @@ class SpaceGame:
     def make_stars(self):
         """Generates stars at random positions"""
         for i in range(50):
-            random_star_pos = Vector2(randint(0, ADJUSTED_WIDTH), randint(0, ADJUSTED_HEIGHT))
+            random_star_pos = pyray.Vector2(random.randint(0, Settings.ADJUSTED_WIDTH), random.randint(0, Settings.ADJUSTED_HEIGHT))
             self._stars_list.append(
-                Star(game_assets.get_asset_texture("star.png"), random_star_pos, 0, Vector2(15, 15), Vector2(0, 0))
+                Sprites.Star(Assets.game_assets.get_asset_texture("star.png"), random_star_pos, 0, pyray.Vector2(15, 15), pyray.Vector2(0, 0))
             )
 
     def draw_outer_space(self):
         """Manages the twinkling stars background effect."""
         for star in self._stars_list:
             star.dynamically_grow()
-            star.movement_update(Vector2(0, 0), 0, Vector2(0, 0), (255,255,255,255))
+            star.movement_update(pyray.Vector2(0, 0), 0, pyray.Vector2(0, 0), (255,255,255,255))
 
     def draw_treasure(self):
         """
@@ -310,7 +308,7 @@ class SpaceGame:
         Adds treasure if there isn't already one on the screen.
         The treasure is selected with weighted randomness to favor common items.
         """
-        treasure_variations = choice(
+        treasure_variations = random.choice(
             [
                 "diamond.png",
                 "emerald.png",
@@ -327,46 +325,46 @@ class SpaceGame:
         )
         treasure_speed = 200
         if len(self._treasure) < 1:
-            random_treasure_pos = Vector2(randint(20, ADJUSTED_WIDTH - 60), randint(-4000, -1000))
-            treasure_direction = Vector2(0, 1)
-            treasure = Treasure(random_treasure_pos, treasure_speed, treasure_direction)
-            treasure.set_texture(game_assets.get_asset_texture(treasure_variations))
+            random_treasure_pos = pyray.Vector2(random.randint(20, Settings.ADJUSTED_WIDTH - 60), random.randint(-4000, -1000))
+            treasure_direction = pyray.Vector2(0, 1)
+            treasure = Sprites.Treasure(random_treasure_pos, treasure_speed, treasure_direction)
+            treasure.set_texture(Assets.game_assets.get_asset_texture(treasure_variations))
             # Add to treasure list for spawning
             self._treasure += [treasure]
 
     def create_single_asteroid(self):
         """Creates a single asteroid to add to asteroid list."""
-        random_asteroid_pos = Vector2(randint(-15, ADJUSTED_WIDTH + 30), randint(-100, -50))
-        random_asteroid_speed = randint(self._max_speed_range_custom[0], self._max_speed_range_custom[1])
-        random_asteroid_direction = Vector2(randint(-1, 1), 1)
+        random_asteroid_pos = pyray.Vector2(random.randint(-15, Settings.ADJUSTED_WIDTH + 30), random.randint(-100, -50))
+        random_asteroid_speed = random.randint(self._max_speed_range_custom[0], self._max_speed_range_custom[1])
+        random_asteroid_direction = pyray.Vector2(random.randint(-1, 1), 1)
 
         # Get asteroid_type distributions
         type_chances = self.determine_asteroids_temperature_chance()
 
         # Weighted selection of asteroid type
-        asteroid_type = choices(
+        asteroid_type = random.choices(
             ["normal", "icy", "fiery"], weights=[type_chances["normal"], type_chances["icy"], type_chances["fiery"]], k=1
         )[0]
 
         # Create asteroid based on determined type
         if asteroid_type == "fiery":
-            current_asteroid = Asteroid(
+            current_asteroid = Sprites.Asteroid(
                 random_asteroid_pos,
                 random_asteroid_speed,
                 random_asteroid_direction,
-                Vector2(101, 84),
-                game_assets.get_asset_texture("fiery_meteor.png"),
+                pyray.Vector2(101, 84),
+                Assets.game_assets.get_asset_texture("fiery_meteor.png"),
             )
         elif asteroid_type == "icy":
-            current_asteroid = Asteroid(
+            current_asteroid = Sprites.Asteroid(
                 random_asteroid_pos,
                 random_asteroid_speed,
                 random_asteroid_direction,
-                Vector2(101, 84),
-                game_assets.get_asset_texture("icy_meteor.png"),
+                pyray.Vector2(101, 84),
+                Assets.game_assets.get_asset_texture("icy_meteor.png"),
             )
         else:
-            current_asteroid = Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
+            current_asteroid = Sprites.Asteroid(random_asteroid_pos, random_asteroid_speed, random_asteroid_direction)
         self._asteroids_list += [current_asteroid]
 
     def create_asteroids(self):
@@ -388,28 +386,28 @@ class SpaceGame:
         - HP: Health power-up, moves from right to left.
         This method handles the creation and addition of a new power-up to the game.
         """
-        select_pwrup = choice(["O2", "O2", "O2", "O2", "O2", "HP", "HP", "HP", "Ammo", "Ammo", "Ammo", "Ammo", "Ammo"])
+        select_pwrup = random.choice(["O2", "O2", "O2", "O2", "O2", "HP", "HP", "HP", "Ammo", "Ammo", "Ammo", "Ammo", "Ammo"])
         pwrup_speed = 300
 
         # Based on the powerup type, have a spawn rate, position and direction of movement, and class
         self._power_up_stats = {
             "O2": {
-                "class": O2_PowerUP,
+                "class": Sprites.O2_PowerUP,
                 "rarity": 13,
-                "pos": Vector2(randint(20, ADJUSTED_WIDTH - 60), randint(-1500, -500)),
-                "direction": Vector2(0, 1),
+                "pos": pyray.Vector2(random.randint(20, Settings.ADJUSTED_WIDTH - 60), random.randint(-1500, -500)),
+                "direction": pyray.Vector2(0, 1),
             },
             "Ammo": {
-                "class": Ammo_PowerUP,
+                "class": Sprites.Ammo_PowerUP,
                 "rarity": 4,
-                "pos": Vector2(randint(-3000, -500), randint(20, ADJUSTED_HEIGHT - 60)),
-                "direction": Vector2(1, 0),
+                "pos": pyray.Vector2(random.randint(-3000, -500), random.randint(20, Settings.ADJUSTED_HEIGHT - 60)),
+                "direction": pyray.Vector2(1, 0),
             },
             "HP": {
-                "class": HeartCapsule_PowerUP,
+                "class": Sprites.HeartCapsule_PowerUP,
                 "rarity": 1,
-                "pos": Vector2(randint(ADJUSTED_WIDTH, 3000), randint(20, ADJUSTED_HEIGHT - 60)),
-                "direction": Vector2(-1, 0),
+                "pos": pyray.Vector2(random.randint(Settings.ADJUSTED_WIDTH, 3000), random.randint(20, Settings.ADJUSTED_HEIGHT - 60)),
+                "direction": pyray.Vector2(-1, 0),
             },
         }
 
@@ -428,9 +426,9 @@ class SpaceGame:
         """
         for treasure in self._treasure[:]:
             # remove treasure objects as they exit the sides of the screens
-            treasure.movement_update(treasure.get_direction(), 0, Vector2(0, 0), (255,255,255,255))
+            treasure.movement_update(treasure.get_direction(), 0, pyray.Vector2(0, 0), (255,255,255,255))
             pos = treasure.get_position()
-            if pos.y > ADJUSTED_HEIGHT:
+            if pos.y > Settings.ADJUSTED_HEIGHT:
                 self._treasure.remove(treasure)
 
     def handle_asteroid_deletion(self):
@@ -442,7 +440,7 @@ class SpaceGame:
 
             # Update asteroid position
             pos = asteroid.get_position()
-            if pos.y > ADJUSTED_HEIGHT or (pos.x < -15 or pos.x > ADJUSTED_WIDTH + 30):
+            if pos.y > Settings.ADJUSTED_HEIGHT or (pos.x < -15 or pos.x > Settings.ADJUSTED_WIDTH + 30):
                 self._asteroids_list.remove(asteroid)
 
     def handle_power_up_deletion(self):
@@ -452,16 +450,16 @@ class SpaceGame:
         """
         for power_up in self._power_ups[:]:
             # Note: Movement update of each power_up is initilized differently to change movement
-            power_up.movement_update(power_up.get_direction(), 0, Vector2(0, 0), (255,255,255,255))
+            power_up.movement_update(power_up.get_direction(), 0, pyray.Vector2(0, 0), (255,255,255,255))
             pos = power_up.get_position()
 
-            if isinstance(power_up, O2_PowerUP):
-                if pos.y > ADJUSTED_HEIGHT:
+            if isinstance(power_up, Sprites.O2_PowerUP):
+                if pos.y > Settings.ADJUSTED_HEIGHT:
                     self._power_ups.remove(power_up)
-            elif isinstance(power_up, Ammo_PowerUP):
-                if pos.x > ADJUSTED_WIDTH:
+            elif isinstance(power_up, Sprites.Ammo_PowerUP):
+                if pos.x > Settings.ADJUSTED_WIDTH:
                     self._power_ups.remove(power_up)
-            elif isinstance(power_up, HeartCapsule_PowerUP):
+            elif isinstance(power_up, Sprites.HeartCapsule_PowerUP):
                 if pos.x < -15:
                     self._power_ups.remove(power_up)
 
@@ -490,13 +488,13 @@ class SpaceGame:
         Reset score multiplier for player.
         """
         # Fiery meteors deal triple damage
-        if texture == game_assets.get_asset_texture("fiery_meteor.png"):
+        if texture == Assets.game_assets.get_asset_texture("fiery_meteor.png"):
             for i in range(3):
                 self._player.take_damage()
             self.play_damage_sfx()
 
         # Icy meteors freeze player and deal single damage
-        elif texture == game_assets.get_asset_texture("icy_meteor.png"):
+        elif texture == Assets.game_assets.get_asset_texture("icy_meteor.png"):
             self._player.freeze_player()
             self._player.take_damage()
 
@@ -517,9 +515,9 @@ class SpaceGame:
     def create_asteroid_hitbox(self, asteroid):
         """
         Creates a rectangular collision box for an asteroid.
-        Returns the Rectangle object used for the hitbox.
+        Returns the pyray.Rectangle object used for the hitbox.
         """
-        asteroid_hitbox = Rectangle(
+        asteroid_hitbox = pyray.Rectangle(
             asteroid.get_position().x - asteroid._sprite_texture.width / 2,
             asteroid.get_position().y - asteroid._sprite_texture.width / 2,
             asteroid.get_size().x,
@@ -530,22 +528,22 @@ class SpaceGame:
     def create_player_hitbox(self):
         """
         Creates a rectangular collision box for an player.
-        Returns the Rectangle object used for the hitbox.
+        Returns the pyray.Rectangle object used for the hitbox.
         """
-        player_hitbox = Rectangle(
+        player_hitbox = pyray.Rectangle(
             self._player.get_position().x, self._player.get_position().y, self._player.get_size().x, self._player.get_size().y
         )
         return player_hitbox
 
     def get_player_triangle_data(self, player):
         """
-        Returns the vertices of the triangular spaceship as a tuple.
+        Returns the vertices of the triangular Sprites.Spaceship as a tuple.
         Tuple is used to track the vertices needed to simulate a triangle collision box.
         """
         player_hitbox = self.create_player_hitbox()
-        v1 = Vector2(player_hitbox.x + player_hitbox.width / 2, player_hitbox.y - 8)
-        v2 = Vector2(player_hitbox.x, player_hitbox.y + player_hitbox.height)
-        v3 = Vector2(player_hitbox.x + player_hitbox.width, player_hitbox.y + player_hitbox.height)
+        v1 = pyray.Vector2(player_hitbox.x + player_hitbox.width / 2, player_hitbox.y - 8)
+        v2 = pyray.Vector2(player_hitbox.x, player_hitbox.y + player_hitbox.height)
+        v3 = pyray.Vector2(player_hitbox.x + player_hitbox.width, player_hitbox.y + player_hitbox.height)
         return (v1, v2, v3)
 
     def get_asteroid_cicle_data(self, asteroid):
@@ -554,7 +552,7 @@ class SpaceGame:
         Tuple is used to track the radius and center
         needed to simulate a circular collision box.
         """
-        center = Vector2(int(asteroid.get_position().x), int(asteroid.get_position().y))
+        center = pyray.Vector2(int(asteroid.get_position().x), int(asteroid.get_position().y))
         radius = asteroid.get_size().x / 2
         return (center, radius)
 
@@ -575,9 +573,9 @@ class SpaceGame:
 
         # Triangle-circle collision detection for player-asteroid hit
         if (
-            check_collision_circle_line(center, radius, v1, v2)
-            or check_collision_circle_line(center, radius, v1, v3)
-            or check_collision_circle_line(center, radius, v2, v3)
+            pyray.check_collision_circle_line(center, radius, v1, v2)
+            or pyray.check_collision_circle_line(center, radius, v1, v3)
+            or pyray.check_collision_circle_line(center, radius, v2, v3)
         ):
             self._player.get_player_points().reset_multiplier()
             self.deal_player_damage(asteroid.get_texture())
@@ -590,8 +588,8 @@ class SpaceGame:
         """
         center, radius = self.get_asteroid_cicle_data(asteroid)
         for laser in self._player.get_lasers():
-            laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
-            if check_collision_circle_rec(center, radius, laser_hitbox):
+            laser_hitbox = pyray.Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
+            if pyray.check_collision_circle_rec(center, radius, laser_hitbox):
                 self._player._laser_projectiles.remove(laser)
 
     def check_player_powerup_collision(self, powerup):
@@ -608,7 +606,7 @@ class SpaceGame:
 
         player_hitbox = self.create_player_hitbox()
 
-        if check_collision_recs(power_up_hitbox, player_hitbox):
+        if pyray.check_collision_recs(power_up_hitbox, player_hitbox):
             # O2 requires unlocking first (shoot to unlock
             self.increase_player_stats(powerup)
 
@@ -621,16 +619,16 @@ class SpaceGame:
         # Create player hitboxes for collision detection
         power_up_hitbox = self.create_power_up_hitbox(powerup)
         for laser in self._player.get_lasers():
-            laser_hitbox = Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
+            laser_hitbox = pyray.Rectangle(laser.get_position().x, laser.get_position().y, laser.get_size().x, laser.get_size().y)
 
             if (
-                isinstance(powerup, O2_PowerUP)
+                isinstance(powerup, Sprites.O2_PowerUP)
                 and powerup.get_lock_status() == True
-                and check_collision_recs(power_up_hitbox, laser_hitbox)
+                and pyray.check_collision_recs(power_up_hitbox, laser_hitbox)
             ):
-                explosion = game_assets.get_asset_sound("explosion.ogg")
-                set_sound_volume(explosion, 0.1)
-                play_sound(explosion)
+                explosion = Assets.game_assets.get_asset_sound("explosion.ogg")
+                pyray.set_sound_volume(explosion, 0.1)
+                pyray.play_sound(explosion)
                 # So that player can now collect oxygen bubble
                 powerup.change_lock_status(False)
                 self._player._laser_projectiles.remove(laser)
@@ -672,16 +670,16 @@ class SpaceGame:
         All treasures increase the score multiplier equally.
         """
         treasure_points = {
-            game_assets.get_asset_texture("iron.png"): 50,
-            game_assets.get_asset_texture("diamond.png"): 200,
-            game_assets.get_asset_texture("emerald.png"): 100,
-            game_assets.get_asset_texture("ruby.png"): 75,
+            Assets.game_assets.get_asset_texture("iron.png"): 50,
+            Assets.game_assets.get_asset_texture("diamond.png"): 200,
+            Assets.game_assets.get_asset_texture("emerald.png"): 100,
+            Assets.game_assets.get_asset_texture("ruby.png"): 75,
         }
         for treasure in self._treasure[:]:
             treasure_hitbox = self.create_treasure_hitbox(treasure)
             player_hitbox = self.create_player_hitbox()
 
-            if check_collision_recs(treasure_hitbox, player_hitbox):
+            if pyray.check_collision_recs(treasure_hitbox, player_hitbox):
                 self.increase_player_points(treasure, treasure_points)
 
     def increase_player_stats(self, powerup):
@@ -690,20 +688,20 @@ class SpaceGame:
         increase ammo, health, or oxygen, award points and increase score multiplier.
         Remove powerup from the powerup list.
         """
-        if isinstance(powerup, O2_PowerUP) and powerup.get_lock_status() == False:
+        if isinstance(powerup, Sprites.O2_PowerUP) and powerup.get_lock_status() == False:
             self._player.get_oxygen_meter().increase_oxygen()
             self.collect_item(powerup, "bubble.ogg")
             self._player.get_player_points().increase_points(50)
             self._player.get_player_points().increase_multiplier(0.1)
 
         # Ammo and health can be collected directly
-        elif isinstance(powerup, Ammo_PowerUP):
+        elif isinstance(powerup, Sprites.Ammo_PowerUP):
             self._player.increase_ammo()
             self.collect_item(powerup, "ammo_collect.ogg")
             self._player.get_player_points().increase_points(50)
             self._player.get_player_points().increase_multiplier(0.1)
 
-        elif isinstance(powerup, HeartCapsule_PowerUP):
+        elif isinstance(powerup, Sprites.HeartCapsule_PowerUP):
             self._player.increase_health()
             self.collect_item(powerup, "heart_collect.ogg")
             self._player.get_player_points().increase_points(50)
@@ -712,16 +710,16 @@ class SpaceGame:
     def create_power_up_hitbox(self, powerup):
         """
         Creates a rectangular collision box for an powerup.
-        Returns the Rectangle object used for the powerup.
+        Returns the pyray.Rectangle object used for the powerup.
         """
-        power_up_hitbox = Rectangle(powerup.get_position().x, powerup.get_position().y, powerup.get_size().x, powerup.get_size().y)
+        power_up_hitbox = pyray.Rectangle(powerup.get_position().x, powerup.get_position().y, powerup.get_size().x, powerup.get_size().y)
         return power_up_hitbox
 
     def create_treasure_hitbox(self, treasure):
         """
-        Creates and returns a hitbox (Rectangle) for a given treasure object.
+        Creates and returns a hitbox (pyray.Rectangle) for a given treasure object.
         """
-        treasure_hitbox = Rectangle(
+        treasure_hitbox = pyray.Rectangle(
             treasure.get_position().x, treasure.get_position().y, treasure.get_size().x, treasure.get_size().y
         )
         return treasure_hitbox
@@ -758,7 +756,7 @@ class SpaceGame:
         self._game_clock.run_clock()
         self.initialize_collision_checks()
         self.start_music()
-        update_music_stream(self._game_music)
+        pyray.update_music_stream(self._game_music)
 
     def should_exit_menu_status(self):
         """Checks if user has clicked exit button."""
@@ -772,7 +770,7 @@ class SpaceGame:
 
         Falls back to defaults if city data cannot be retrieved.
         """
-        city_data = get_city_temp_wspd(city)
+        city_data = WeatherApi.get_city_temp_wspd(city)
         if "temperature" in city_data and "windspeed" in city_data:
 
             # Scale wind speed to appropriate game speed range
@@ -801,9 +799,9 @@ class SpaceGame:
         # Initialize with the main menu state
         self._menu._menu_state_stack.push("main_menu")
 
-        while not window_should_close() and not self.should_exit_menu_status():
-            begin_drawing()
-            clear_background((0,0,0,0))
+        while not pyray.window_should_close() and not self.should_exit_menu_status():
+            pyray.begin_drawing()
+            pyray.clear_background((0,0,0,0))
 
             # This current_state is used to determine what new menu to now run
             current_state = self._menu._menu_state_stack.top()
@@ -814,13 +812,13 @@ class SpaceGame:
             else:
                 print(current_state + " not recognized.")
 
-            end_drawing()
+            pyray.end_drawing()
 
         # store the games data to be saved (city data, player leaderboard)
         saved_data = {"Game Leaderboard": self._menu._leaderboard, "City selected": self._city_custom, "City temperature": self._game_temperature_custom, 
                     "City wind speed range": self._max_speed_range_custom}
 
-        save_game_data_file(saved_data)
+        GameSaver.save_game_data_file(saved_data)
 
         # Close the game
         self.cleanup_asteroids_game()
@@ -883,10 +881,10 @@ class SpaceGame:
         Displays loading screen while game resources initialize.
         Repeatedly updates start_timer in the mean time.
         """
-        loading_texture = game_assets.get_asset_texture("loading_screen.png")
-        loading_texture_source = Rectangle(0, 0, loading_texture.width, loading_texture.height)
-        loading_texture_dest = Rectangle(0, 0, ADJUSTED_WIDTH, ADJUSTED_HEIGHT)
-        draw_texture_pro(loading_texture, loading_texture_source, loading_texture_dest, Vector2(), 0, WHITE)
+        loading_texture = Assets.game_assets.get_asset_texture("loading_screen.png")
+        loading_texture_source = pyray.Rectangle(0, 0, loading_texture.width, loading_texture.height)
+        loading_texture_dest = pyray.Rectangle(0, 0, Settings.ADJUSTED_WIDTH, Settings.ADJUSTED_HEIGHT)
+        pyray.draw_texture_pro(loading_texture, loading_texture_source, loading_texture_dest, pyray.Vector2(), 0, raylib.WHITE)
         self._menu._start_timer.update()
 
     def cleanup_asteroids_game(self):
@@ -894,9 +892,9 @@ class SpaceGame:
         Performs cleanup when the game loop ends:
         unload assets and close the window.
         """
-        game_assets.unload()
-        close_audio_device()
-        close_window()
+        Assets.game_assets.unload()
+        pyray.close_audio_device()
+        pyray.close_window()
 
 
 # Fix file save/load system and game is done

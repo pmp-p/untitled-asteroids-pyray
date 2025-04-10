@@ -1,3 +1,11 @@
+
+import sys
+
+if sys.platform not in ("emscripten", "wasi"):
+    import requests
+
+import requests
+
 """
 This API parses data from a weather information database. This implementation specifically retreives 
 temperature and wind speed based on the city chosen.
@@ -16,17 +24,14 @@ note2:
     
 """
 
-import requests
-
 def get_city_temp_wspd(city):
     """
     Retrieves temperature and wind speed for a given city.
     Converts temperature from Kelvin to Fahrenheit and returns wind speed.
     """
 
-    url =  "REPLACE THIS"
-
-    headers = "REPLACE"
+    url = "REPLACE ME"
+    headers = "REPLACE ME"
 
     # Use the city name in the querystring to fetch relevant weather data
     querystring = {"city_name": city}

@@ -1,5 +1,5 @@
 from pyray import init_window, init_audio_device, load_texture, load_font, load_music_stream, load_sound, Texture2D, Font, Sound, Music, unload_texture, unload_font,  unload_sound, unload_music_stream
-from Settings import ADJUSTED_WIDTH, ADJUSTED_HEIGHT
+import Settings
 import os
 
 
@@ -12,7 +12,7 @@ class Assets:
 
         # Init_window is needed for any imported texture to be drawn
         # Init_audio_device is needed for any imported audio to be used
-        init_window(ADJUSTED_WIDTH, ADJUSTED_HEIGHT, "GAME")
+        init_window(Settings.ADJUSTED_WIDTH, Settings.ADJUSTED_HEIGHT, "GAME")
         init_audio_device()
         self._assets = {}
 
